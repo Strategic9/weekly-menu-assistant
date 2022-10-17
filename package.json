@@ -1,0 +1,37 @@
+{
+  "name": "weekly-menu-assistant",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@chakra-ui/react": "^1.7.2",
+    "@hookform/resolvers": "^2.8.4",
+    "axios": "^0.24.0",
+    "next": "12.0.7",
+    "nookies": "^2.5.2",
+    "react": "17.0.2",
+    "react-alert": "^7.0.3",
+    "react-beautiful-dnd": "^13.1.0",
+    "react-datepicker": "^4.6.0",
+    "react-dom": "17.0.2",
+    "react-hook-form": "^7.21.0",
+    "react-icons": "^4.3.1",
+    "react-query": "^3.34.0",
+    "yup": "^0.32.11"
+  },
+  "devDependencies": {
+    "@types/node": "16.11.11",
+    "@types/nookies": "^2.0.3",
+    "@types/react": "17.0.37",
+    "@types/react-alert": "^5.2.1",
+    "@types/react-beautiful-dnd": "^13.1.2",
+    "@types/react-datepicker": "^4.3.4",
+    "eslint": "8.4.0",
+    "eslint-config-next": "12.0.7",
+    "typescript": "4.5.2"
+  }
+}
