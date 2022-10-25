@@ -4,12 +4,12 @@ import { api } from "../api";
 export type Category = {
     id: string;
     name: string;
-    created_at: string;
+    createdAt: string;
 }
 
 export type GetCategoriesResponse = {
-    categories: Category[];
-    totalCount: number;
+    items: Category[];
+    count: number;
 }
 
 export async function getCategories(page?: number): Promise<GetCategoriesResponse> {
@@ -19,13 +19,14 @@ export async function getCategories(page?: number): Promise<GetCategoriesRespons
         }
     });
 
-    const totalCount = Number(headers['x-total-count']);
+    const count = data.count
 
-    const categories = data.categories.map(category => {
+
+    const items = data.items.map(category => {
         return {
             id: category.id,
             name: category.name,
-            created_at: new Date(category.created_at).toLocaleDateString('se', {
+            createdAt: new Date(category.createdAt).toLocaleDateString('se', {
                 day: '2-digit',
                 month: 'long',
                 year: 'numeric'
@@ -34,8 +35,8 @@ export async function getCategories(page?: number): Promise<GetCategoriesRespons
     })
 
     return {
-        categories,
-        totalCount
+        items,
+        count
     };
 }
 
@@ -49,14 +50,21 @@ export function useCategories(page: number, options: UseQueryOptions) {
     });
 }
 
-export function useCategory(category_id: string) {
-    const { data: useCategoriesData } = useCategories(currentPage, {});
-    const data = useCategoriesData as GetCategoriesResponse;
+// get one category
+export async function getCategoryById(categoryId: string) {
+    const { data } = await api.get<Category>(`categories/${categoryId}`)
 
-    return useQuery(['category', category_id], () => {
-        const category = data.categories.find((c: Category) => c.id === category_id);
-        return { category };
-    }, {
-        staleTime: 1000 * 60 * 10, // 10 minutes
-    });
+    return {
+        id: data.id,
+        name: data.name,
+        createdAt: new Date(data.createdAt).toLocaleDateString('se', {
+            day: '2-digit',
+            month: 'long',
+            year: 'numeric'
+        })
+    }
+}
+
+export function useCategory(category_id: string) {
+    return useQuery(['category'], () => getCategoryById(category_id));
 }

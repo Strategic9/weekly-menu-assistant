@@ -6,29 +6,29 @@ export type Grocery = {
     id: string;
     name: string;
     category: Category;
-    created_at: string;
+    createdAt: string;
 }
 
 export type GetGroceriesResponse = {
-    groceries: Grocery[];
-    totalCount: number;
+    items: Grocery[];
+    count: number;
 }
 
 export async function getGroceries(page: number): Promise<GetGroceriesResponse> {
     const { data, headers } = await api.get<GetGroceriesResponse>('groceries', {
         params: {
-            page
+            include: "category"
         }
     });
 
-    const totalCount = Number(headers['x-total-count']);
+    const count = data.count;
 
-    const groceries = data.groceries.map(grocery => {
+    const items = data.items.map(grocery => {
         return {
             id: grocery.id,
             name: grocery.name,
             category: grocery.category,
-            created_at: new Date(grocery.created_at).toLocaleDateString('se', {
+            createdAt: new Date(grocery.createdAt).toLocaleDateString('se', {
                 day: '2-digit',
                 month: 'long',
                 year: 'numeric'
@@ -37,8 +37,8 @@ export async function getGroceries(page: number): Promise<GetGroceriesResponse> 
     })
 
     return {
-        groceries,
-        totalCount
+        items,
+        count
     };
 }
 
@@ -52,14 +52,29 @@ export function useGroceries(page: number, options: UseQueryOptions) {
     });
 }
 
-export function useGrocery(grocery_id: string) {
-    const { data: useGroceriesData } = useGroceries(currentPage, {});
-    const data = useGroceriesData as GetGroceriesResponse;
+// get one grocery
+export async function getGroceryById(groceryId: string, include: string) {
+    const { data } = await api.get<Grocery>(`groceries/${groceryId}`, {
+        params: {
+            include: "category"
+        }
+    })
 
-    return useQuery(['grocery', grocery_id], () => {
-        const grocery = data.groceries.find((g: Grocery) => g.id === grocery_id);
-        return { grocery };
-    }, {
-        staleTime: 1000 * 60 * 10, // 10 minutes
-    });
+    const grocery = {
+        id: data.id,
+        name: data.name,
+        category: data.category,
+        createdAt: new Date(data.createdAt).toLocaleDateString('se', {
+            day: '2-digit',
+            month: 'long',
+            year: 'numeric'
+        })
+    }
+    return {
+        grocery
+    }
+}
+
+export function useGrocery(grocery_id: string) {
+    return useQuery(['groceries'], () => getGroceryById(grocery_id, 'category'));
 }

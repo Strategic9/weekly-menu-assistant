@@ -9,15 +9,14 @@ import { useMutation } from 'react-query';
 import { Input } from "../../../components/Form/Input";
 import { api } from "../../../services/api";
 import { queryClient } from "../../../services/queryClient";
-import { useCategory } from "../../../services/hooks/useCategories";
+import { Category, getCategoryById } from "../../../services/hooks/useCategories";
 import { useRouter } from "next/router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useAlert } from "react-alert";
 import PageWrapper from "../../page-wrapper";
 
 type CreateCategoryFormData = {
     name: string;
-    category: string;
 }
 
 const createCategoryFormSchema = yup.object({
@@ -26,15 +25,38 @@ const createCategoryFormSchema = yup.object({
 
 export default function CategoryPage() {
     const router = useRouter();
-    const { category: category_id } = router.query;
     const alert = useAlert();
-    const { data, isLoading, error } = useCategory(category_id as string);
+    const {category: categoryId } = router.query
+    const [isLoading, setIsLoading] = useState(true)
+    const [category, setCategory] = useState<Category>()
+    const [error, setError] = useState(false)
     const { register, handleSubmit, formState: { errors }, setValue } = useForm({
         resolver: yupResolver(createCategoryFormSchema),
     });
 
+    useEffect(()=> {
+        const getCategory = async () => {
+            setIsLoading(true)
+            const category = await getCategoryById(categoryId as string)
+            .then((response) => {
+                setCategory(response)
+                setIsLoading(false)
+            })
+            .catch(({ response }) => {
+                setIsLoading(false)
+                setError(true)
+            });
+        }
+
+        if(!router.isReady) {
+            setIsLoading(true)
+        } else {
+            getCategory()
+        }
+    }, [router.isReady, categoryId])
+
     const editCategory = useMutation(async (category: CreateCategoryFormData) => {
-        await api.put('categories', { ...category }).then(() => {
+        await api.patch(`categories/${categoryId}`, { ...category }).then(() => {
             alert.success("Category updated with success");
             router.push('..');
         })
@@ -52,8 +74,8 @@ export default function CategoryPage() {
     }
 
     useEffect(() => {
-        setValue('name', data?.category.name);
-    }, [data, setValue]);
+        setValue('name', category?.name);
+    }, [category, setValue]);
 
     return (
         <PageWrapper>
