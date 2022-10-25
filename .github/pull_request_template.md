@@ -11,3 +11,8 @@
 
 ## Screenshots
 <!-- If your work add visual changes, please add some screenshots of the changes -->
+
+## Can this PR be merged now?
+<!-- Choose the one that matches the status of this PR-->
+ - [ ] Yes, the task is completed and it is working as expected
+ - [ ] No, this PR is a WIP and **MUST NOT BE MERGED YET** :)
