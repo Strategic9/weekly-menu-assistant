@@ -16,3 +16,6 @@
 <!-- Choose the one that matches the status of this PR-->
  - [ ] Yes, the task is completed and it is working as expected
  - [ ] No, this PR is a WIP and **MUST NOT BE MERGED YET** :)
+
+## Any additional notes?
+ <!-- if there is something you need to add that doesn't fit in any of the previous sections, add it here -->
