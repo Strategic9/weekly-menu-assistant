@@ -42,14 +42,14 @@ export default function GroceryPage() {
     }, [router.isReady, groceryId])
 
     const editGrocery = useMutation(async (grocery: CreateGroceryFormData) => {
-        await api.patch(`groceries/${groceryId}`, {
-            name: grocery.name,
-            category: {
-                id: grocery.categoryId
-            }
-        })
         try {
-            alert.success("Grocery updated with success")
+            await api.patch(`groceries/${groceryId}`, {
+                name: grocery.name,
+                category: {
+                    id: grocery.categoryId
+                }
+            })
+            alert.success('Grocery updated with success')
             router.push('..');
         } catch (response) {
             alert.error(response.data.message);
