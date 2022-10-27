@@ -1,5 +1,6 @@
 import { useQuery, UseQueryOptions, } from "react-query";
 import { api } from "../api";
+import { setDate } from "../utils";
 
 export type Category = {
     id: string;
@@ -26,11 +27,7 @@ export async function getCategories(page?: number): Promise<GetCategoriesRespons
         return {
             id: category.id,
             name: category.name,
-            createdAt: new Date(category.createdAt).toLocaleDateString('se', {
-                day: '2-digit',
-                month: 'long',
-                year: 'numeric'
-            })
+            createdAt: setDate(category)
         }
     })
 
@@ -57,11 +54,7 @@ export async function getCategoryById(categoryId: string) {
     return {
         id: data.id,
         name: data.name,
-        createdAt: new Date(data.createdAt).toLocaleDateString('se', {
-            day: '2-digit',
-            month: 'long',
-            year: 'numeric'
-        })
+        createdAt: setDate(data)
     }
 }
 

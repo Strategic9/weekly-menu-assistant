@@ -1,5 +1,6 @@
 import { useQuery, UseQueryOptions, } from "react-query";
 import { api } from "../api";
+import { setDate } from "../utils";
 import { Category } from "./useCategories";
 
 export type Grocery = {
@@ -28,11 +29,7 @@ export async function getGroceries(page: number): Promise<GetGroceriesResponse> 
             id: grocery.id,
             name: grocery.name,
             category: grocery.category,
-            createdAt: new Date(grocery.createdAt).toLocaleDateString('se', {
-                day: '2-digit',
-                month: 'long',
-                year: 'numeric'
-            })
+            createdAt: setDate(grocery)
         }
     })
 
@@ -64,11 +61,7 @@ export async function getGroceryById(groceryId: string, include: string) {
         id: data.id,
         name: data.name,
         category: data.category,
-        createdAt: new Date(data.createdAt).toLocaleDateString('se', {
-            day: '2-digit',
-            month: 'long',
-            year: 'numeric'
-        })
+        createdAt: setDate(data)
     }
     return {
         grocery

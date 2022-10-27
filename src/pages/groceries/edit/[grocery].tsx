@@ -24,18 +24,17 @@ export default function GroceryPage() {
     useEffect(()=> {
         const getGrocery = async () => {
             setIsLoading(true)
-            const grocery = await getGroceryById(groceryId as string, 'category')
-            .then((response) => {
-                setGrocery(response.grocery)
+            try {
+                const item = await getGroceryById(groceryId as string, 'category')
+                setGrocery(item.grocery)
                 setIsLoading(false)
-            })
-            .catch(({ response }) => {
+            } catch (error) {
                 setIsLoading(false)
                 setError(true)
-            });
+            };
         }
 
-        if(!router.isReady) {
+        if (!router.isReady) {
             setIsLoading(true)
         } else {
             getGrocery()
@@ -49,13 +48,12 @@ export default function GroceryPage() {
                 id: grocery.categoryId
             }
         })
-            .then((response) => {
-                alert.success("Grocery updated with success")
-                router.push('..');
-            })
-            .catch(({ response }) => {
-                alert.error(response.data.message);
-            });
+        try {
+            alert.success("Grocery updated with success")
+            router.push('..');
+        } catch (response) {
+            alert.error(response.data.message);
+        };
     }, {
         onSuccess: () => {
             queryClient.invalidateQueries('groceries');

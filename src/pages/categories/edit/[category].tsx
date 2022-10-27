@@ -35,20 +35,20 @@ export default function CategoryPage() {
     });
 
     useEffect(()=> {
+
         const getCategory = async () => {
             setIsLoading(true)
-            const category = await getCategoryById(categoryId as string)
-            .then((response) => {
-                setCategory(response)
+            try {
+                const category = await getCategoryById(categoryId as string)
+                setCategory(category)
                 setIsLoading(false)
-            })
-            .catch(({ response }) => {
+            } catch (error) {
                 setIsLoading(false)
                 setError(true)
-            });
+            }
         }
 
-        if(!router.isReady) {
+        if (!router.isReady) {
             setIsLoading(true)
         } else {
             getCategory()
