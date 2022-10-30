@@ -19,7 +19,7 @@ export function Profile({ showProfileData = true }: ProfileProps) {
                     </Text>
                 </Box>
             )}
-            <Avatar className="avatarImg" size="md" name="João Rodrigues" src="https://github.com/joaoalrodrigues.png" />
+            <Avatar className="avatar-img" size="md" name="João Rodrigues" src="https://github.com/joaoalrodrigues.png" />
         </Flex>
     );
 }
