@@ -20,6 +20,7 @@ export function SearchBox() {
             position="relative"
             bg="grain"
             borderRadius="full"
+            className="header-search"
         >
             <Input
                 color="black"
