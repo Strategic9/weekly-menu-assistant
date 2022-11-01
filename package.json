@@ -2,6 +2,7 @@
   "name": "weekly-menu-assistant",
   "private": true,
   "scripts": {
+    "test": "jest",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
@@ -10,22 +11,27 @@
     "format": "prettier --write './**/*.{js,jsx,ts,tsx,css,md,json}' --config ./.prettierrc"
   },
   "dependencies": {
-    "@chakra-ui/react": "^1.7.2",
+    "@chakra-ui/react": "^2.0.0",
+    "@emotion/react": "^11.10.4",
+    "@emotion/styled": "^11.10.4",
     "@hookform/resolvers": "^2.8.4",
     "axios": "^0.24.0",
+    "framer-motion": "^7.6.1",
     "next": "12.0.7",
     "nookies": "^2.5.2",
-    "react": "17.0.2",
+    "react": "^18.2.0",
     "react-alert": "^7.0.3",
     "react-beautiful-dnd": "^13.1.0",
     "react-datepicker": "^4.6.0",
-    "react-dom": "17.0.2",
+    "react-dom": "^18.2.0",
     "react-hook-form": "^7.21.0",
     "react-icons": "^4.3.1",
     "react-query": "^3.34.0",
     "yup": "^0.32.11"
   },
   "devDependencies": {
+    "@testing-library/react": "^12.1.2",
+    "@types/jest": "^29.2.0",
     "@types/node": "16.11.11",
     "@types/nookies": "^2.0.3",
     "@types/react": "17.0.37",

@@ -15,7 +15,6 @@ import PageWrapper from '../page-wrapper'
 
 type CreateCategoryFormData = {
   name: string
-  category: string
 }
 
 const createCategoryFormSchema = yup.object({

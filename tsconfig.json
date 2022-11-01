@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "target": "es5",
+    "types": ["node", "jest"],
     "lib": [
       "dom",
       "dom.iterable",
@@ -25,6 +26,9 @@
     "**/*.tsx"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "**/*.test.*",
+    "**/__mocks__/*",
+    "**/__tests__/*"
   ]
 }

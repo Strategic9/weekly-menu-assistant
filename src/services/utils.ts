@@ -32,3 +32,10 @@ export function addDays(date: Date, days: number) {
   const referenceDay = new Date(date)
   return new Date(referenceDay.setDate(date.getDate() + days))
 }
+
+export const setDate = (data) =>
+  new Date(data.createdAt).toLocaleDateString('se', {
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric'
+  })

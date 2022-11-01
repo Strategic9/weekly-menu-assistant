@@ -29,7 +29,7 @@ import { useAlert } from 'react-alert'
 import PageWrapper from '../page-wrapper'
 
 type UseGroceryData = {
-  groceries: Grocery[]
+  items: Grocery[]
   totalCount: number
 }
 
@@ -96,7 +96,7 @@ export default function GroceryList({ groceries, totalCount }) {
                 </Tr>
               </Thead>
               <Tbody>
-                {data.groceries.map((grocery) => (
+                {data.items.map((grocery) => (
                   <Tr key={grocery.id}>
                     <Td>
                       <Box>
@@ -112,7 +112,7 @@ export default function GroceryList({ groceries, totalCount }) {
                         </Text>
                       )}
                     </Td>
-                    {isWideVersion && <Td>{grocery.created_at}</Td>}
+                    {isWideVersion && <Td>{grocery.createdAt}</Td>}
                     {isWideVersion && (
                       <Td>
                         <HStack>

@@ -32,12 +32,12 @@ type Category = {
   id: string
   name: string
   category: string
-  created_at: string
+  createdAt: string
 }
 
 type UseCategoryData = {
-  categories: Category[]
-  totalCount: number
+  items: Category[]
+  count: number
 }
 
 export default function CategoryList({ categories, totalCount }) {
@@ -90,7 +90,7 @@ export default function CategoryList({ categories, totalCount }) {
                 </Tr>
               </Thead>
               <Tbody>
-                {data.categories.map((category) => (
+                {data.items.map((category) => (
                   <Tr key={category.id}>
                     <Td>
                       <Box>
@@ -99,7 +99,7 @@ export default function CategoryList({ categories, totalCount }) {
                         </Text>
                       </Box>
                     </Td>
-                    {isWideVersion && <Td>{category.created_at}</Td>}
+                    {isWideVersion && <Td>{category.createdAt}</Td>}
                     {isWideVersion && (
                       <Td>
                         <HStack>
@@ -131,7 +131,7 @@ export default function CategoryList({ categories, totalCount }) {
             </Table>
 
             <Pagination
-              totalCountOfRegisters={data.totalCount}
+              totalCountOfRegisters={data.count}
               currentPage={page}
               onPageChange={setPage}
             />
