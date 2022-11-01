@@ -3,6 +3,7 @@ import { Text } from "@chakra-ui/react";
 export function Logo() {
     return (
         <Text
+            className="header-logo"
             fontSize={["2xl", "3xl"]}
             fontWeight="bold"
             letterSpacing="tight"

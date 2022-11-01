@@ -8,7 +8,7 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 import { GetCategoriesResponse, useCategories } from '../../services/hooks/useCategories';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Grocery } from '../../services/hooks/useGroceries';
 import Modal from '../Modal';
 import { useMutation } from 'react-query';
@@ -19,7 +19,7 @@ import { queryClient } from '../../services/queryClient';
 export type CreateGroceryFormData = {
     id?: string;
     name: string;
-    category?: string;
+    categoryId: string;
 }
 
 interface GroceryFormParams {
@@ -30,12 +30,12 @@ interface GroceryFormParams {
 
 const createGroceryFormSchema = yup.object({
     name: yup.string().required('Name is required'),
-    category: yup.string()
+    categoryId: yup.string().required('A category must be selected')
 });
 
 export default function GroceryForm(props: GroceryFormParams) {
     const { data: useCategoriesData } = useCategories(null, {});
-    const categoryData = useCategoriesData as GetCategoriesResponse;
+    const categoryData = useCategoriesData as GetCategoriesResponse
 
     const { register, handleSubmit, formState: { errors }, setValue } = useForm({
         resolver: yupResolver(createGroceryFormSchema)
@@ -46,7 +46,7 @@ export default function GroceryForm(props: GroceryFormParams) {
         if (data) {
             setValue('id', data.id);
             setValue('name', data.name);
-            setValue('category', data.category?.id);
+            setValue('categoryId', data.category?.id);
         }
     }, [props.initialData, setValue]);
 
@@ -59,7 +59,7 @@ export default function GroceryForm(props: GroceryFormParams) {
             p={["6", "8"]}
             onSubmit={handleSubmit(props.handleSubmit)}
         >
-            <Heading size="lg" fontWeight="normal">Create grocery</Heading>
+            <Heading size="lg" fontWeight="normal">{`${props.initialData ? 'Edit' : 'Create'}`} grocery</Heading>
 
             <Divider my="6" borderColor="gray.700" />
 
@@ -74,10 +74,10 @@ export default function GroceryForm(props: GroceryFormParams) {
                     <Select
                         name="category"
                         label="Category"
-                        error={errors.category}
-                        {...register("category")}
+                        error={errors.categoryId}
+                        {...register("categoryId")}
                     >
-                        {categoryData?.categories.map(category =>
+                        {categoryData?.items.map(category =>
                             <option key={category.id} value={category.id}>{category.name}</option>)
                         }
                     </Select>
@@ -113,7 +113,10 @@ export function GroceryFormModal({ buttonProps, buttonLabel, onAddIngredient, ne
 
     const createGrocery = useMutation(async (grocery: CreateGroceryFormData) => {
         await api.post('groceries', {
-            ...grocery
+            name: grocery.name,
+            category: {
+                id: grocery.categoryId
+            }
         })
             .then((response) => {
                 const { grocery } = response.data;
@@ -144,7 +147,7 @@ export function GroceryFormModal({ buttonProps, buttonLabel, onAddIngredient, ne
                         id: '',
                         name: newIngredient,
                         category: null,
-                        created_at: null
+                        createdAt: null
                     }}
                 />
             </Modal>

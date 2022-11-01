@@ -5,28 +5,55 @@ import { useMutation } from 'react-query';
 
 import { api } from "../../../services/api";
 import { queryClient } from "../../../services/queryClient";
-import { useGrocery } from "../../../services/hooks/useGroceries";
+import { getGroceryById, Grocery, useGrocery } from "../../../services/hooks/useGroceries";
 import { useRouter } from "next/router";
 import { useAlert } from "react-alert";
 import GroceryForm, { CreateGroceryFormData } from "../../../components/Form/GroceryForm";
 import PageWrapper from "../../page-wrapper";
+import { useEffect, useState } from "react";
 
 
 export default function GroceryPage() {
     const router = useRouter();
-    const { grocery: grocery_id } = router.query;
+    const { grocery: groceryId } = router.query;
     const alert = useAlert();
-    const { data, isLoading, error } = useGrocery(grocery_id as string);
+    const [isLoading, setIsLoading] = useState(true)
+    const [data, setGrocery] = useState<Grocery>()
+    const [error, setError] = useState(false)
+
+    useEffect(()=> {
+        const getGrocery = async () => {
+            setIsLoading(true)
+            try {
+                const item = await getGroceryById(groceryId as string, 'category')
+                setGrocery(item.grocery)
+                setIsLoading(false)
+            } catch (error) {
+                setIsLoading(false)
+                setError(true)
+            };
+        }
+
+        if (!router.isReady) {
+            setIsLoading(true)
+        } else {
+            getGrocery()
+        }
+    }, [router.isReady, groceryId])
 
     const editGrocery = useMutation(async (grocery: CreateGroceryFormData) => {
-        await api.put('groceries', { id: grocery_id, ...grocery })
-            .then(() => {
-                alert.success("Grocery updated with success");
-                router.push('..');
+        try {
+            await api.patch(`groceries/${groceryId}`, {
+                name: grocery.name,
+                category: {
+                    id: grocery.categoryId
+                }
             })
-            .catch(({ response }) => {
-                alert.error(response.data.message);
-            });
+            alert.success('Grocery updated with success')
+            router.push('..');
+        } catch (response) {
+            alert.error(response.data.message);
+        };
     }, {
         onSuccess: () => {
             queryClient.invalidateQueries('groceries');
@@ -49,7 +76,7 @@ export default function GroceryPage() {
                     <Text>Fail to obtain grocery data.</Text>
                 </Flex>
             ) : (
-                <GroceryForm handleSubmit={handleEditGrocery} initialData={data?.grocery} />
+                <GroceryForm handleSubmit={handleEditGrocery} initialData={data} />
             )}
         </PageWrapper>
     );
