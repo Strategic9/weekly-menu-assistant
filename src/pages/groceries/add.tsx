@@ -14,16 +14,18 @@ export default function CreateGrocery() {
     const alert = useAlert();
 
     const createGrocery = useMutation(async (grocery: CreateGroceryFormData) => {
-        await api.post('groceries', {
-            ...grocery
-        })
-            .then(() => {
-                alert.success("Grocery added with success");
-                router.push('.');
+        try {
+            await api.post('groceries', {
+                name: grocery.name,
+                category: {
+                    id: grocery.categoryId
+                }
             })
-            .catch(({ response }) => {
-                alert.error(response.data.message);
-            });
+            alert.success("Grocery added with success");
+            router.push('.');
+        } catch ({ response }) {
+            alert.error(response.data.status && 400 && "Validate all values are correct");
+        };
     }, {
         onSuccess: () => {
             queryClient.invalidateQueries('groceries');
