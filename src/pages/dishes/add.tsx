@@ -34,16 +34,6 @@ export default function CreateDish() {
         .catch(({ response }) => {
             alert.error(response.data.message);
         });
-        // await api.post('dishes', {
-        //     ...dish
-        // })
-        //     .then(() => {
-        //         alert.success("Dish added with success");
-        //         router.push('.');
-        //     })
-        //     .catch(({ response }) => {
-        //         alert.error(response.data.message);
-        //     });
     }, {
         onSuccess: () => {
             queryClient.invalidateQueries('dishes')
