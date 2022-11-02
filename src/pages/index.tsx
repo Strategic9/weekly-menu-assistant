@@ -3,6 +3,9 @@ import { SubmitHandler, useForm } from 'react-hook-form'
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup'
 import { Input } from '../components/Form/Input'
+import { api } from '../services/api'
+import { localStorage } from '../services/localstorage'
+import { useRouter } from "next/router";
 
 type SignInFormData = {
   email: string
@@ -22,9 +25,16 @@ export default function SignIn() {
   } = useForm({
     resolver: yupResolver(signInFormSchema)
   })
+  const router = useRouter();
 
   const handleSignIn: SubmitHandler<SignInFormData> = async (values) => {
-    await new Promise((resolve) => setTimeout(resolve, 2000))
+    await api.post('users/login', {
+      ...values
+    }).then((res) => {
+      localStorage.set('token', res.data?.token);
+      router.push('dashboard');
+    }).catch(({resError}) => {
+    })
   }
 
   return (

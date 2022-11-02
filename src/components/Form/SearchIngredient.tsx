@@ -32,7 +32,7 @@ const SearchIngredientBase: ForwardRefRenderFunction<HTMLInputElement, SearchIng
   const [newIngredient, setNewIngredient] = useState()
   const { data: useGroceriesData } = useGroceries(null, {})
   const groceriesData = useGroceriesData as GetGroceriesResponse
-  const itemsList = groceriesData?.groceries
+  const itemsList = groceriesData?.items
 
   const filterResults = (e) => {
     const text = e.target.value

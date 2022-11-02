@@ -22,7 +22,7 @@ import { Pagination } from '../../components/Pagination'
 import { useState } from 'react'
 import { GetServerSideProps } from 'next'
 import { queryClient } from '../../services/queryClient'
-import { api } from '../../services/api'
+import { api, HTTPHandler } from '../../services/api'
 import { useDishes } from '../../services/hooks/useDishes'
 import TooltipButton from '../../components/TooltipButton'
 import { useAlert } from 'react-alert'
@@ -68,7 +68,7 @@ export default function DishList({ users, totalCount }) {
     await queryClient.prefetchQuery(
       'dishes',
       async () => {
-        const response = await api.get('dishes')
+        const response = await HTTPHandler.get('dishes');
 
         return response.data
       },

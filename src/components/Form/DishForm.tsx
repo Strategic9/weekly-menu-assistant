@@ -34,7 +34,7 @@ export type CreateDishFormData = {
   id?: string
   name: string
   description?: string
-  ingredients?: Grocery[]
+  ingredients?: string[]
 }
 
 interface DishFormParams {
@@ -191,7 +191,7 @@ export function DishFormModal({
           name: newDish,
           description: '',
           ingredients: [],
-          created_at: null
+          createdAt: null
         }}
       />
     </Modal>

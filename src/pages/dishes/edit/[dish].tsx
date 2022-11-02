@@ -15,14 +15,14 @@ type CreateDishFormData = {
   id?: string
   name: string
   description: string
-  ingredients: Grocery[]
+  ingredients: string[]
 }
 
 export default function DishPage() {
-  const router = useRouter()
-  const { dish: dish_id } = router.query
-  const alert = useAlert()
-  const { data, isFetching, isLoading } = useDish(dish_id as string)
+  const router = useRouter();
+  const { dish: dish_id } = router.query;
+  const alert = useAlert();
+  const { data, isFetching, isLoading } = useDish(dish_id as string);
 
   const editDish = useMutation(
     async (dish: CreateDishFormData) => {
