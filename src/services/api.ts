@@ -16,14 +16,31 @@ export const HTTPHandler = {
     } : {};
     return api.post(url, {...values}, {...config});
   },
+  put: (url: string, values) => {
+    const token = localStorage.get('token');
+    const config = token ? {
+      headers: {
+        Authorization: `Bearer ${localStorage.get('token')}`
+      }
+    } : {};
+    return api.put(url, {...values}, {...config});
+  },
   get: (url: string, params?) => {
     const token = localStorage.get('token');
-    const parameters = {...params};
     const config = token ? {
       headers: {
         Authorization: `Bearer ${localStorage.get('token')}`
       }
     } : {};
     return api.get(url, {...config, ...params});
+  },
+  delete: (url: string, params?) => {
+    const token = localStorage.get('token');
+    const config = token ? {
+      headers: {
+        Authorization: `Bearer ${localStorage.get('token')}`
+      }
+    } : {};
+    return api.delete(url, {...config, ...params});
   }
 }
