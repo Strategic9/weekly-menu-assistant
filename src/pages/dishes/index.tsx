@@ -79,7 +79,7 @@ export default function DishList({ users, totalCount }) {
   }
 
   async function handleDelete(id: string) {
-    await api
+    await HTTPHandler
       .delete(`dishes/${id}`)
       .then(async () => {
         await queryClient.invalidateQueries(['dishes', page])

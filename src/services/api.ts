@@ -5,6 +5,19 @@ export const api = axios.create({
   baseURL: 'http://localhost:3001/'
 });
 
+api.interceptors.response.use(
+    response => {
+      return response
+    },
+    error => {
+        const errorResponse = { ...error };
+        if (errorResponse?.response?.status === 403) {
+            window.location.href = "/";
+        }
+        return Promise.reject(error);
+    }
+)
+
 export const HTTPHandler = {
   api,
   post: (url: string, values) => {
