@@ -60,7 +60,7 @@ export function useDish(dish_id: string) {
   return useQuery(
     ['dish', dish_id],
     () => {
-      const dish = data.dishes.find((d: Dish) => d.id === dish_id)
+      const dish = data?.dishes.find((d: Dish) => d.id === dish_id)
       return { dish }
     },
     {

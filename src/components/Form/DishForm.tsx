@@ -34,10 +34,11 @@ export type CreateDishFormData = {
   id?: string
   name: string
   description?: string
-  ingredients?: string[]
+  ingredients?: {id: string}[];
 }
 
 interface DishFormParams {
+  title: string;
   handleSubmit: SubmitHandler<CreateDishFormData>
   handleCancel?: () => void
   initialData?: Dish
@@ -50,6 +51,7 @@ const createDishFormSchema = yup.object({
 })
 
 export default function DishForm(props: DishFormParams) {
+  const defaultValues = { ...props.initialData, ...{ ingredients: props.initialData?.ingredients.map((e: any) => e.grocery)}}
   const {
     register,
     control,
@@ -58,7 +60,7 @@ export default function DishForm(props: DishFormParams) {
     formState: { errors }
   } = useForm({
     resolver: yupResolver(createDishFormSchema),
-    defaultValues: props.initialData
+    defaultValues
   })
 
   const { fields, append, remove } = useFieldArray({
@@ -76,7 +78,7 @@ export default function DishForm(props: DishFormParams) {
       onSubmit={handleSubmit(props.handleSubmit)}
     >
       <Heading size="lg" fontWeight="normal">
-        Add Dish
+        {props.title} Dish
       </Heading>
 
       <Divider my="6" borderColor="gray.700" />

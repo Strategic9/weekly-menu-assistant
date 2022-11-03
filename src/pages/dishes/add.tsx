@@ -53,7 +53,7 @@ export default function CreateDish() {
 
     return (
         <PageWrapper>
-            <DishForm handleSubmit={handleCreateDish} />
+            <DishForm title={'Edit'} handleSubmit={handleCreateDish} />
         </PageWrapper>
     );
 }

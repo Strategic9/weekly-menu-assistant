@@ -16,14 +16,14 @@ export const HTTPHandler = {
     } : {};
     return api.post(url, {...values}, {...config});
   },
-  put: (url: string, values) => {
+  patch: (url: string, values) => {
     const token = localStorage.get('token');
     const config = token ? {
       headers: {
         Authorization: `Bearer ${localStorage.get('token')}`
       }
     } : {};
-    return api.put(url, {...values}, {...config});
+    return api.patch(url, {...values}, {...config});
   },
   get: (url: string, params?) => {
     const token = localStorage.get('token');
