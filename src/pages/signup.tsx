@@ -39,7 +39,7 @@ export default function SignUp() {
       ...values
     })
       .then(() => {
-        router.push('dashboard')
+        router.push('/')
       })
       .catch(() => {})
   }
