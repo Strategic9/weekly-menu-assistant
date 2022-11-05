@@ -18,11 +18,11 @@ import { SubmitHandler, useForm } from 'react-hook-form'
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup'
 import { GetCategoriesResponse, useCategories } from '../../services/hooks/useCategories'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { Grocery } from '../../services/hooks/useGroceries'
 import Modal from '../Modal'
 import { useMutation } from 'react-query'
-import { api } from '../../services/api'
+import { HTTPHandler } from '../../services/api'
 import { useAlert } from 'react-alert'
 import { queryClient } from '../../services/queryClient'
 
@@ -136,22 +136,20 @@ export function GroceryFormModal({
 
   const createGrocery = useMutation(
     async (grocery: CreateGroceryFormData) => {
-      await api
-        .post('groceries', {
-          name: grocery.name,
-          category: {
-            id: grocery.categoryId
-          }
-        })
-        .then((response) => {
-          const { grocery } = response.data
-          alert.success('Grocery added with success')
-          onAddIngredient(grocery)
-          modalDisclosure.onClose()
-        })
-        .catch(({ response }) => {
-          alert.error(response.data.message)
-        })
+      await HTTPHandler.post('groceries', {
+        name: grocery.name,
+        category: {
+          id: grocery.categoryId
+        }
+      })
+      .then((response) => {
+        alert.success('Grocery added with success')
+        onAddIngredient(response.data)
+        modalDisclosure.onClose()
+      })
+      .catch(({ response }) => {
+        alert.error(response.data.message)
+      })
     },
     {
       onSuccess: () => {

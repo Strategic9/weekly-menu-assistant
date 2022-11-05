@@ -20,9 +20,8 @@ import { RiEditLine, RiDeleteBinLine } from 'react-icons/ri'
 import Link from 'next/link'
 import { Pagination } from '../../components/Pagination'
 import { useState } from 'react'
-import { GetServerSideProps } from 'next'
 import { queryClient } from '../../services/queryClient'
-import { api, HTTPHandler } from '../../services/api'
+import { HTTPHandler } from '../../services/api'
 import { useDishes } from '../../services/hooks/useDishes'
 import TooltipButton from '../../components/TooltipButton'
 import { useAlert } from 'react-alert'
@@ -33,6 +32,7 @@ type Dish = {
   name: string
   description: string
   created_at: string
+  ingredients: Array<any>
 }
 
 type UseDishData = {
@@ -88,6 +88,12 @@ export default function DishList({ users, totalCount }) {
       .catch(() => alert.error('Fail to delete dish'))
   }
 
+  function getDishIngredients(dish: Dish): string {
+    return !!dish.ingredients && dish.ingredients.length > 0
+      ? dish.ingredients.map((i) => i.grocery.name).join(', ')
+      : ''
+  }
+
   return (
     <PageWrapper>
       <Box flex="1" borderRadius={8} bg="grain" p="8">
@@ -111,7 +117,7 @@ export default function DishList({ users, totalCount }) {
               <Thead bg="tan.400" color="black">
                 <Tr>
                   <Th>Dish</Th>
-                  {isWideVersion && <Th>Creation date</Th>}
+                  {isWideVersion && <Th>Ingredients</Th>}
                   {isWideVersion && <Th width="8"></Th>}
                 </Tr>
               </Thead>
@@ -125,7 +131,7 @@ export default function DishList({ users, totalCount }) {
                         </Text>
                       </Box>
                     </Td>
-                    {isWideVersion && <Td>{dish.created_at}</Td>}
+                    {isWideVersion && <Td>{getDishIngredients(dish)}</Td>}
                     {isWideVersion && (
                       <Td>
                         <HStack>
