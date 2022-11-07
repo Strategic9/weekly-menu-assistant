@@ -34,11 +34,11 @@ export type CreateDishFormData = {
   id?: string
   name: string
   description?: string
-  ingredients?: {id: string}[];
+  ingredients?: { id: string }[]
 }
 
 interface DishFormParams {
-  title: string;
+  title: string
   handleSubmit: SubmitHandler<CreateDishFormData>
   handleCancel?: () => void
   initialData?: Dish
@@ -51,7 +51,10 @@ const createDishFormSchema = yup.object({
 })
 
 export default function DishForm(props: DishFormParams) {
-  const defaultValues = { ...props.initialData, ...{ ingredients: props.initialData?.ingredients.map((e: any) => e.grocery)}}
+  const defaultValues = {
+    ...props.initialData,
+    ...{ ingredients: props.initialData?.ingredients.map((e: any) => e.grocery) }
+  }
   const {
     register,
     control,

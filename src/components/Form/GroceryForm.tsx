@@ -142,14 +142,14 @@ export function GroceryFormModal({
           id: grocery.categoryId
         }
       })
-      .then((response) => {
-        alert.success('Grocery added with success')
-        onAddIngredient(response.data)
-        modalDisclosure.onClose()
-      })
-      .catch(({ response }) => {
-        alert.error(response.data.message)
-      })
+        .then((response) => {
+          alert.success('Grocery added with success')
+          onAddIngredient(response.data)
+          modalDisclosure.onClose()
+        })
+        .catch(({ response }) => {
+          alert.error(response.data.message)
+        })
     },
     {
       onSuccess: () => {

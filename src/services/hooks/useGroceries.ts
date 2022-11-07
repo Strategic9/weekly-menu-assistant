@@ -21,7 +21,7 @@ export async function getGroceries(page: number): Promise<GetGroceriesResponse> 
       include: 'category'
     }
   })
-  
+
   // await api.get<GetGroceriesResponse>('groceries', {
   //   params: {
   //     include: 'category'

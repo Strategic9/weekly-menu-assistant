@@ -68,7 +68,7 @@ export default function DishList({ users, totalCount }) {
     await queryClient.prefetchQuery(
       'dishes',
       async () => {
-        const response = await HTTPHandler.get('dishes');
+        const response = await HTTPHandler.get('dishes')
 
         return response.data
       },
@@ -79,8 +79,7 @@ export default function DishList({ users, totalCount }) {
   }
 
   async function handleDelete(id: string) {
-    await HTTPHandler
-      .delete(`dishes/${id}`)
+    await HTTPHandler.delete(`dishes/${id}`)
       .then(async () => {
         await queryClient.invalidateQueries(['dishes', page])
         alert.success('Dish deleted')
