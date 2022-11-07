@@ -36,7 +36,6 @@ export default function SignIn() {
         localStorage.set('token', res.data?.token)
         router.push('dashboard')
       })
-      .catch(({ resError }) => {})
   }
 
   return (

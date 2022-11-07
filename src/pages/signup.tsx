@@ -37,11 +37,9 @@ export default function SignUp() {
   const handleSignUp: SubmitHandler<SignUpFormData> = async (values) => {
     await HTTPHandler.post('/users', {
       ...values
+    }).then(() => {
+      router.push('/')
     })
-      .then(() => {
-        router.push('/')
-      })
-      .catch(() => {})
   }
 
   return (
