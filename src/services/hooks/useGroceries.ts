@@ -22,12 +22,6 @@ export async function getGroceries(page: number): Promise<GetGroceriesResponse> 
     }
   })
 
-  // await api.get<GetGroceriesResponse>('groceries', {
-  //   params: {
-  //     include: 'category'
-  //   }
-  // })
-
   const count = data.count
 
   const items = data.items.map((grocery) => {
