@@ -1,5 +1,5 @@
 import { useQuery, UseQueryOptions } from 'react-query'
-import { api } from '../api'
+import { api, HTTPHandler } from '../api'
 import { Grocery } from './useGroceries'
 
 export type Dish = {
@@ -7,7 +7,7 @@ export type Dish = {
   name: string
   description: string
   ingredients: Grocery[]
-  created_at: string
+  createdAt: string
 }
 
 export type GetDishesResponse = {
@@ -16,21 +16,20 @@ export type GetDishesResponse = {
 }
 
 export async function getDishes(page: number): Promise<GetDishesResponse> {
-  const { data, headers } = await api.get<GetDishesResponse>('dishes', {
+  const { data } = await HTTPHandler.get('dishes', {
     params: {
       page
     }
   })
 
-  const totalCount = Number(headers['x-total-count'])
-
-  const dishes = data.dishes.map((dish) => {
+  const totalCount = data.items.length
+  const dishes = data.items.map((dish) => {
     return {
       id: dish.id,
       name: dish.name,
       description: dish.description,
       ingredients: dish.ingredients,
-      created_at: new Date(dish.created_at).toLocaleDateString('se', {
+      createdAt: new Date(dish.createdAt).toLocaleDateString('se', {
         day: '2-digit',
         month: 'long',
         year: 'numeric'
@@ -61,7 +60,7 @@ export function useDish(dish_id: string) {
   return useQuery(
     ['dish', dish_id],
     () => {
-      const dish = data.dishes.find((d: Dish) => d.id === dish_id)
+      const dish = data?.dishes.find((d: Dish) => d.id === dish_id)
       return { dish }
     },
     {

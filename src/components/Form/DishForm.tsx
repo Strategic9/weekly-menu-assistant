@@ -20,7 +20,6 @@ import { Input } from './Input'
 import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form'
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup'
-import { useEffect } from 'react'
 import { Dish } from '../../services/hooks/useDishes'
 import Modal from '../Modal'
 import { useMutation } from 'react-query'
@@ -34,10 +33,11 @@ export type CreateDishFormData = {
   id?: string
   name: string
   description?: string
-  ingredients?: Grocery[]
+  ingredients?: { id: string }[]
 }
 
 interface DishFormParams {
+  title: string
   handleSubmit: SubmitHandler<CreateDishFormData>
   handleCancel?: () => void
   initialData?: Dish
@@ -50,6 +50,10 @@ const createDishFormSchema = yup.object({
 })
 
 export default function DishForm(props: DishFormParams) {
+  const defaultValues = {
+    ...props.initialData,
+    ...{ ingredients: props.initialData?.ingredients.map((e: any) => e.grocery) }
+  }
   const {
     register,
     control,
@@ -58,7 +62,7 @@ export default function DishForm(props: DishFormParams) {
     formState: { errors }
   } = useForm({
     resolver: yupResolver(createDishFormSchema),
-    defaultValues: props.initialData
+    defaultValues
   })
 
   const { fields, append, remove } = useFieldArray({
@@ -76,7 +80,7 @@ export default function DishForm(props: DishFormParams) {
       onSubmit={handleSubmit(props.handleSubmit)}
     >
       <Heading size="lg" fontWeight="normal">
-        Add Dish
+        {props.title} Dish
       </Heading>
 
       <Divider my="6" borderColor="gray.700" />
@@ -191,7 +195,7 @@ export function DishFormModal({
           name: newDish,
           description: '',
           ingredients: [],
-          created_at: null
+          createdAt: null
         }}
       />
     </Modal>

@@ -3,36 +3,43 @@ import { SubmitHandler, useForm } from 'react-hook-form'
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup'
 import { Input } from '../components/Form/Input'
-import { api } from '../services/api'
-import { localStorage } from '../services/localstorage'
+import { HTTPHandler } from '../services/api'
 import { useRouter } from 'next/router'
 
-type SignInFormData = {
+type SignUpFormData = {
   email: string
   password: string
+  firstName: string
+  lastName: string
 }
 
-const signInFormSchema = yup.object({
+const signUpFormSchema = yup.object({
   email: yup.string().required('Email is required').email('Invalid email'),
-  password: yup.string().required('Password is required')
+  password: yup
+    .string()
+    .required('Password is required')
+    .min(8, 'Password must be at least 8 characters')
+    .max(36, 'Password must be at most 36 characters'),
+  firstName: yup.string().required('First Name is required'),
+  lastName: yup.string().required('Last Name is required')
 })
 
-export default function SignIn() {
+export default function SignUp() {
   const {
     register,
     handleSubmit,
     formState: { errors }
   } = useForm({
-    resolver: yupResolver(signInFormSchema)
+    resolver: yupResolver(signUpFormSchema)
   })
   const router = useRouter()
 
-  const handleSignIn: SubmitHandler<SignInFormData> = async (values) => {
-    const res = await api.post('users/login', {
+  const handleSignUp: SubmitHandler<SignUpFormData> = async (values) => {
+    await HTTPHandler.post('/users', {
       ...values
-    });
-    localStorage.set('token', res.data?.token);
-    router.push('dashboard');
+    }).then(() => {
+      router.push('/')
+    })
   }
 
   return (
@@ -45,7 +52,7 @@ export default function SignIn() {
         p="8"
         borderRadius={8}
         flexDir="column"
-        onSubmit={handleSubmit(handleSignIn)}
+        onSubmit={handleSubmit(handleSignUp)}
         boxShadow="xl"
         rounded="md"
       >
@@ -57,10 +64,17 @@ export default function SignIn() {
             error={errors.password}
             {...register('password')}
           />
+          <Input
+            type="text"
+            label="First Name"
+            error={errors.firstName}
+            {...register('firstName')}
+          />
+          <Input type="text" label="Last Name" error={errors.lastName} {...register('lastName')} />
         </Stack>
 
         <Button type="submit" mt="6" colorScheme="oxblood">
-          Sign In
+          Sign Up
         </Button>
       </Flex>
     </Flex>

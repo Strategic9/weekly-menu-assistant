@@ -1,7 +1,7 @@
 import { SubmitHandler } from 'react-hook-form'
 import { useMutation } from 'react-query'
 
-import { api } from '../../services/api'
+import { api, HTTPHandler } from '../../services/api'
 import { queryClient } from '../../services/queryClient'
 import { useAlert } from 'react-alert'
 import { Grocery } from '../../services/hooks/useGroceries'
@@ -12,6 +12,12 @@ import DishForm from '../../components/Form/DishForm'
 type CreateDishFormData = {
   name: string
   description: string
+  ingredients: { id: string }[]
+}
+
+type FormData = {
+  name: string
+  description: string
   ingredients: Grocery[]
 }
 
@@ -20,10 +26,9 @@ export default function CreateDish() {
   const alert = useAlert()
   const createDish = useMutation(
     async (dish: CreateDishFormData) => {
-      await api
-        .post('dishes', {
-          ...dish
-        })
+      await HTTPHandler.post('dishes', {
+        ...dish
+      })
         .then(() => {
           alert.success('Dish added with success')
           router.push('.')
@@ -41,13 +46,18 @@ export default function CreateDish() {
 
   // const { errors } = formState;
 
-  const handleCreateDish: SubmitHandler<CreateDishFormData> = async (values) => {
-    await createDish.mutateAsync(values)
+  const handleCreateDish: SubmitHandler<FormData> = async ({ name, description, ingredients }) => {
+    const newDish: CreateDishFormData = {
+      name,
+      description,
+      ingredients: ingredients.map(({ id }) => ({ id }))
+    }
+    await createDish.mutateAsync(newDish)
   }
 
   return (
     <PageWrapper>
-      <DishForm handleSubmit={handleCreateDish} />
+      <DishForm title={'Edit'} handleSubmit={handleCreateDish} />
     </PageWrapper>
   )
 }

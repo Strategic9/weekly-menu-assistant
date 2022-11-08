@@ -2,7 +2,7 @@ import { Spinner, Flex } from '@chakra-ui/react'
 import { SubmitHandler } from 'react-hook-form'
 import { useMutation } from 'react-query'
 
-import { api } from '../../../services/api'
+import { api, HTTPHandler } from '../../../services/api'
 import { queryClient } from '../../../services/queryClient'
 import { useAlert } from 'react-alert'
 import { useRouter } from 'next/router'
@@ -11,7 +11,14 @@ import { Grocery } from '../../../services/hooks/useGroceries'
 import PageWrapper from '../../page-wrapper'
 import DishForm from '../../../components/Form/DishForm'
 
-type CreateDishFormData = {
+type UpdateDishFormData = {
+  id?: string
+  name: string
+  description: string
+  ingredients: string[]
+}
+
+type FormData = {
   id?: string
   name: string
   description: string
@@ -25,11 +32,16 @@ export default function DishPage() {
   const { data, isFetching, isLoading } = useDish(dish_id as string)
 
   const editDish = useMutation(
-    async (dish: CreateDishFormData) => {
-      await api
-        .put('dishes', {
-          ...dish
-        })
+    async (dish: FormData) => {
+      const { name, description } = dish
+      const updatedDish = {
+        name,
+        description,
+        ingredients: dish.ingredients.map(({ id }) => ({ id }))
+      }
+      await HTTPHandler.patch(`dishes/${dish.id}`, {
+        ...updatedDish
+      })
         .then(() => {
           alert.success('Dish updated with success')
           router.push('..')
@@ -45,7 +57,7 @@ export default function DishPage() {
     }
   )
 
-  const handleEditDish: SubmitHandler<CreateDishFormData> = async (values) => {
+  const handleEditDish: SubmitHandler<FormData> = async (values) => {
     await editDish.mutateAsync(values)
   }
 
@@ -56,7 +68,7 @@ export default function DishPage() {
           <Spinner />
         </Flex>
       ) : (
-        <DishForm handleSubmit={handleEditDish} initialData={data.dish} />
+        <DishForm title={'Edit'} handleSubmit={handleEditDish} initialData={data.dish} />
       )}
     </PageWrapper>
   )

@@ -1,5 +1,5 @@
 import { useQuery, UseQueryOptions } from 'react-query'
-import { api } from '../api'
+import { api, HTTPHandler } from '../api'
 import { setDate } from '../utils'
 
 export type Category = {
@@ -14,7 +14,7 @@ export type GetCategoriesResponse = {
 }
 
 export async function getCategories(page?: number): Promise<GetCategoriesResponse> {
-  const { data, headers } = await api.get<GetCategoriesResponse>('categories', {
+  const { data } = await HTTPHandler.get('categories', {
     params: {
       page
     }
