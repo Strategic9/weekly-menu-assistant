@@ -20,19 +20,20 @@ import { RiEditLine, RiDeleteBinLine } from 'react-icons/ri'
 import Link from 'next/link'
 import { Pagination } from '../../components/Pagination'
 import { useState } from 'react'
-import { GetServerSideProps } from 'next'
 import { queryClient } from '../../services/queryClient'
-import { api, HTTPHandler } from '../../services/api'
+import { HTTPHandler } from '../../services/api'
 import { useDishes } from '../../services/hooks/useDishes'
 import TooltipButton from '../../components/TooltipButton'
 import { useAlert } from 'react-alert'
 import PageWrapper from '../page-wrapper'
+import { Grocery } from '../../services/hooks/useGroceries'
 
 type Dish = {
   id: string
   name: string
   description: string
   created_at: string
+  ingredients: Array<{ grocery: Grocery }>
 }
 
 type UseDishData = {
@@ -68,7 +69,7 @@ export default function DishList({ users, totalCount }) {
     await queryClient.prefetchQuery(
       'dishes',
       async () => {
-        const response = await HTTPHandler.get('dishes');
+        const response = await HTTPHandler.get('dishes')
 
         return response.data
       },
@@ -79,13 +80,18 @@ export default function DishList({ users, totalCount }) {
   }
 
   async function handleDelete(id: string) {
-    await HTTPHandler
-      .delete(`dishes/${id}`)
+    await HTTPHandler.delete(`dishes/${id}`)
       .then(async () => {
         await queryClient.invalidateQueries(['dishes', page])
         alert.success('Dish deleted')
       })
       .catch(() => alert.error('Fail to delete dish'))
+  }
+
+  function getDishIngredients(dish: Dish): string {
+    return !!dish.ingredients && dish.ingredients.length > 0
+      ? dish.ingredients.map((i) => i.grocery.name).join(', ')
+      : ''
   }
 
   return (
@@ -111,7 +117,7 @@ export default function DishList({ users, totalCount }) {
               <Thead bg="tan.400" color="black">
                 <Tr>
                   <Th>Dish</Th>
-                  {isWideVersion && <Th>Creation date</Th>}
+                  {isWideVersion && <Th>Ingredients</Th>}
                   {isWideVersion && <Th width="8"></Th>}
                 </Tr>
               </Thead>
@@ -125,7 +131,7 @@ export default function DishList({ users, totalCount }) {
                         </Text>
                       </Box>
                     </Td>
-                    {isWideVersion && <Td>{dish.created_at}</Td>}
+                    {isWideVersion && <Td>{getDishIngredients(dish)}</Td>}
                     {isWideVersion && (
                       <Td>
                         <HStack>
@@ -167,14 +173,3 @@ export default function DishList({ users, totalCount }) {
     </PageWrapper>
   )
 }
-
-// export const getServerSideProps: GetServerSideProps = async () => {
-//     const { users, totalCount } = await getUsers(1);
-
-//     return {
-//         props: {
-//             users,
-//             totalCount
-//         }
-//     }
-// }

@@ -50,59 +50,61 @@ const SearchIngredientBase: ForwardRefRenderFunction<HTMLInputElement, SearchIng
   }, [itemsList])
 
   return (
-    <Popover
-      isOpen={isOpen}
-      onOpen={onOpen}
-      onClose={onClose}
-      placement="bottom-start"
-      autoFocus={false}
-      {...rest}
-    >
-      <PopoverTrigger>
-        <Input
-          name={name}
-          label={label}
-          error={error}
-          placeholder="Search"
-          onChange={(e) => filterResults(e)}
-        />
-      </PopoverTrigger>
-      <PopoverContent borderRadius="none">
-        {!!newIngredient && (
-          <GroceryFormModal
-            buttonProps={{
-              width: '100%',
-              justifyContent: 'space-between',
-              borderRadius: 'none',
-              size: 'sm',
-              rightIcon: <Icon as={BiPlus} />
-            }}
-            buttonLabel={newIngredient}
-            onAddIngredient={onAddIngredient}
-            newIngredient={newIngredient}
+    <div onBlur={onClose}>
+      <Popover
+        isOpen={isOpen}
+        onOpen={onOpen}
+        onClose={onClose}
+        placement="bottom-start"
+        autoFocus={false}
+        {...rest}
+      >
+        <PopoverTrigger>
+          <Input
+            name={name}
+            label={label}
+            error={error}
+            placeholder="Search"
+            onChange={(e) => filterResults(e)}
           />
-        )}
-        {results ? (
-          results.map((el) => (
-            <Box key={el.id}>
-              <Button
-                width="100%"
-                justifyContent="left"
-                borderRadius="none"
-                size="sm"
-                onClick={() => onAddIngredient(el)}
-              >
-                {el.name}
-              </Button>
+        </PopoverTrigger>
+        <PopoverContent borderRadius="none">
+          {!!newIngredient && (
+            <GroceryFormModal
+              buttonProps={{
+                width: '100%',
+                justifyContent: 'space-between',
+                borderRadius: 'none',
+                size: 'sm',
+                rightIcon: <Icon as={BiPlus} />
+              }}
+              buttonLabel={newIngredient}
+              onAddIngredient={onAddIngredient}
+              newIngredient={newIngredient}
+            />
+          )}
+          {results ? (
+            results.map((el) => (
+              <Box key={el.id}>
+                <Button
+                  width="100%"
+                  justifyContent="left"
+                  borderRadius="none"
+                  size="sm"
+                  onClick={() => onAddIngredient(el)}
+                >
+                  {el.name}
+                </Button>
+              </Box>
+            ))
+          ) : (
+            <Box py="4" mx="auto">
+              <Spinner />
             </Box>
-          ))
-        ) : (
-          <Box py="4" mx="auto">
-            <Spinner />
-          </Box>
-        )}
-      </PopoverContent>
-    </Popover>
+          )}
+        </PopoverContent>
+      </Popover>
+    </div>
   )
 }
 

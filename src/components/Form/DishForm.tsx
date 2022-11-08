@@ -20,7 +20,6 @@ import { Input } from './Input'
 import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form'
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup'
-import { useEffect } from 'react'
 import { Dish } from '../../services/hooks/useDishes'
 import Modal from '../Modal'
 import { useMutation } from 'react-query'
@@ -34,11 +33,11 @@ export type CreateDishFormData = {
   id?: string
   name: string
   description?: string
-  ingredients?: {id: string}[];
+  ingredients?: { id: string }[]
 }
 
 interface DishFormParams {
-  title: string;
+  title: string
   handleSubmit: SubmitHandler<CreateDishFormData>
   handleCancel?: () => void
   initialData?: Dish
@@ -51,7 +50,10 @@ const createDishFormSchema = yup.object({
 })
 
 export default function DishForm(props: DishFormParams) {
-  const defaultValues = { ...props.initialData, ...{ ingredients: props.initialData?.ingredients.map((e: any) => e.grocery)}}
+  const defaultValues = {
+    ...props.initialData,
+    ...{ ingredients: props.initialData?.ingredients.map((e: any) => e.grocery) }
+  }
   const {
     register,
     control,

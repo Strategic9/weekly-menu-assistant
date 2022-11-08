@@ -18,11 +18,11 @@ import { SubmitHandler, useForm } from 'react-hook-form'
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup'
 import { GetCategoriesResponse, useCategories } from '../../services/hooks/useCategories'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { Grocery } from '../../services/hooks/useGroceries'
 import Modal from '../Modal'
 import { useMutation } from 'react-query'
-import { api } from '../../services/api'
+import { HTTPHandler } from '../../services/api'
 import { useAlert } from 'react-alert'
 import { queryClient } from '../../services/queryClient'
 
@@ -65,6 +65,11 @@ export default function GroceryForm(props: GroceryFormParams) {
     }
   }, [props.initialData, setValue])
 
+  const handleSubmitGroceryForm = (e: any) => {
+    e.stopPropagation()
+    handleSubmit(props.handleSubmit)(e)
+  }
+
   return (
     <Box
       as="form"
@@ -72,7 +77,7 @@ export default function GroceryForm(props: GroceryFormParams) {
       borderRadius={8}
       bg="grain"
       p={['6', '8']}
-      onSubmit={handleSubmit(props.handleSubmit)}
+      onSubmit={handleSubmitGroceryForm}
     >
       <Heading size="lg" fontWeight="normal">
         {`${props.initialData ? 'Edit' : 'Create'}`} grocery
@@ -136,17 +141,15 @@ export function GroceryFormModal({
 
   const createGrocery = useMutation(
     async (grocery: CreateGroceryFormData) => {
-      await api
-        .post('groceries', {
-          name: grocery.name,
-          category: {
-            id: grocery.categoryId
-          }
-        })
+      await HTTPHandler.post('groceries', {
+        name: grocery.name,
+        category: {
+          id: grocery.categoryId
+        }
+      })
         .then((response) => {
-          const { grocery } = response.data
           alert.success('Grocery added with success')
-          onAddIngredient(grocery)
+          onAddIngredient(response.data)
           modalDisclosure.onClose()
         })
         .catch(({ response }) => {

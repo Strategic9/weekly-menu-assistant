@@ -22,7 +22,7 @@ export async function getDishes(page: number): Promise<GetDishesResponse> {
     }
   })
 
-  const totalCount = data.items.length;
+  const totalCount = data.items.length
   const dishes = data.items.map((dish) => {
     return {
       id: dish.id,

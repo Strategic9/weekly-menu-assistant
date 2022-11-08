@@ -26,14 +26,14 @@ type FormData = {
 }
 
 export default function DishPage() {
-  const router = useRouter();
-  const { dish: dish_id } = router.query;
-  const alert = useAlert();
-  const { data, isFetching, isLoading } = useDish(dish_id as string);
+  const router = useRouter()
+  const { dish: dish_id } = router.query
+  const alert = useAlert()
+  const { data, isFetching, isLoading } = useDish(dish_id as string)
 
   const editDish = useMutation(
     async (dish: FormData) => {
-      const { name, description } = dish;
+      const { name, description } = dish
       const updatedDish = {
         name,
         description,
@@ -41,13 +41,14 @@ export default function DishPage() {
       }
       await HTTPHandler.patch(`dishes/${dish.id}`, {
         ...updatedDish
-      }).then(() => {
-        alert.success('Dish updated with success')
-        router.push('..')
       })
-      .catch(({ response }) => {
-        alert.error(response.data.message)
-      })
+        .then(() => {
+          alert.success('Dish updated with success')
+          router.push('..')
+        })
+        .catch(({ response }) => {
+          alert.error(response.data.message)
+        })
     },
     {
       onSuccess: () => {

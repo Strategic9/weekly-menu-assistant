@@ -1,59 +1,46 @@
 import axios from 'axios'
-import { localStorage } from './localstorage';
+import { localStorage } from './localstorage'
+
+export const getHeaders = () => {
+  const token = localStorage.get('token')
+  return token
+    ? {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    : {}
+}
 
 export const api = axios.create({
   baseURL: 'http://localhost:3001/'
-});
+})
 
 api.interceptors.response.use(
-    response => {
-      return response
-    },
-    error => {
-        const errorResponse = { ...error };
-        if (errorResponse?.response?.status === 403) {
-            window.location.href = "/";
-        }
-        return Promise.reject(error);
+  (response) => {
+    return response
+  },
+  (error) => {
+    const errorResponse = { ...error }
+    if (errorResponse?.response?.status === 403) {
+      window.location.href = '/'
     }
+    return Promise.reject(error)
+  }
 )
 
 export const HTTPHandler = {
   api,
   post: (url: string, values) => {
-    const token = localStorage.get('token');
-    const config = token ? {
-      headers: {
-        Authorization: `Bearer ${localStorage.get('token')}`
-      }
-    } : {};
-    return api.post(url, {...values}, {...config});
+    return api.post(url, { ...values }, { ...getHeaders() })
   },
   patch: (url: string, values) => {
-    const token = localStorage.get('token');
-    const config = token ? {
-      headers: {
-        Authorization: `Bearer ${localStorage.get('token')}`
-      }
-    } : {};
-    return api.patch(url, {...values}, {...config});
+    return api.patch(url, { ...values }, { ...getHeaders() })
   },
   get: (url: string, params?) => {
-    const token = localStorage.get('token');
-    const config = token ? {
-      headers: {
-        Authorization: `Bearer ${localStorage.get('token')}`
-      }
-    } : {};
-    return api.get(url, {...config, ...params});
+    return api.get(url, { ...getHeaders(), ...params })
   },
   delete: (url: string, params?) => {
-    const token = localStorage.get('token');
-    const config = token ? {
-      headers: {
-        Authorization: `Bearer ${localStorage.get('token')}`
-      }
-    } : {};
-    return api.delete(url, {...config, ...params});
+    return api.delete(url, { ...getHeaders(), ...params })
   }
 }
