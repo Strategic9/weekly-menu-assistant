@@ -28,14 +28,11 @@ export default function SignIn() {
   const router = useRouter()
 
   const handleSignIn: SubmitHandler<SignInFormData> = async (values) => {
-    await api
-      .post('users/login', {
-        ...values
-      })
-      .then((res) => {
-        localStorage.set('token', res.data?.token)
-        router.push('dashboard')
-      })
+    const res = await api.post('users/login', {
+      ...values
+    });
+    localStorage.set('token', res.data?.token);
+    router.push('dashboard');
   }
 
   return (

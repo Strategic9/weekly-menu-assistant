@@ -26,13 +26,14 @@ import { useDishes } from '../../services/hooks/useDishes'
 import TooltipButton from '../../components/TooltipButton'
 import { useAlert } from 'react-alert'
 import PageWrapper from '../page-wrapper'
+import { Grocery } from '../../services/hooks/useGroceries'
 
 type Dish = {
   id: string
   name: string
   description: string
   created_at: string
-  ingredients: Array<any>
+  ingredients: Array<{grocery: Grocery}>
 }
 
 type UseDishData = {
@@ -172,14 +173,3 @@ export default function DishList({ users, totalCount }) {
     </PageWrapper>
   )
 }
-
-// export const getServerSideProps: GetServerSideProps = async () => {
-//     const { users, totalCount } = await getUsers(1);
-
-//     return {
-//         props: {
-//             users,
-//             totalCount
-//         }
-//     }
-// }
