@@ -22,7 +22,7 @@ import { Pagination } from '../../components/Pagination'
 import { useState } from 'react'
 import { GetServerSideProps } from 'next'
 import { queryClient } from '../../services/queryClient'
-import { api } from '../../services/api'
+import { api, HTTPHandler } from '../../services/api'
 import TooltipButton from '../../components/TooltipButton'
 import { useAlert } from 'react-alert'
 import { useCategories } from '../../services/hooks/useCategories'
@@ -53,8 +53,7 @@ export default function CategoryList({ categories, totalCount }) {
   })
 
   const handleDelete = async (id: string) => {
-    await api
-      .delete(`categories/${id}`)
+    await HTTPHandler.delete(`categories/${id}`)
       .then(async () => {
         await queryClient.invalidateQueries(['categories', page])
         alert.success('Category deleted')
@@ -82,11 +81,10 @@ export default function CategoryList({ categories, totalCount }) {
         ) : (
           <>
             <Table colorScheme="whiteAlpha" color="gray.700">
-              <Thead bg="tan.400" color="black">
+              <Thead bg="gray.200" color="black">
                 <Tr>
                   <Th>Category</Th>
-                  {isWideVersion && <Th>Creation date</Th>}
-                  {isWideVersion && <Th width="8"></Th>}
+                  <Th width="8">Actions</Th>
                 </Tr>
               </Thead>
               <Tbody>
@@ -99,32 +97,31 @@ export default function CategoryList({ categories, totalCount }) {
                         </Text>
                       </Box>
                     </Td>
-                    {isWideVersion && <Td>{category.createdAt}</Td>}
-                    {isWideVersion && (
-                      <Td>
-                        <HStack>
-                          <Tooltip label="Remove" bg="tan.400" color="white" placement="top-start">
-                            <Button
-                              size="sm"
-                              colorScheme="tan"
-                              justifyContent="center"
-                              leftIcon={<Icon as={RiDeleteBinLine} fontSize="16" />}
-                              iconSpacing="0"
-                              onClick={() => handleDelete(category.id)}
-                            />
-                          </Tooltip>
-                          <Link href={`/categories/edit/${category.id}`} passHref>
-                            <TooltipButton
-                              tooltipLabel="Edit"
-                              size="sm"
-                              colorScheme="tan"
-                              leftIcon={<Icon as={RiEditLine} fontSize="16" />}
-                              iconSpacing="0"
-                            />
-                          </Link>
-                        </HStack>
-                      </Td>
-                    )}
+                    <Td>
+                      <HStack>
+                        <Tooltip label="Remove" bg="red.100" color="white" placement="top-start">
+                          <Button
+                            size="sm"
+                            bg="red.100"
+                            color="white"
+                            justifyContent="center"
+                            leftIcon={<Icon as={RiDeleteBinLine} fontSize="16" />}
+                            iconSpacing="0"
+                            _hover={{ bg: 'red.200' }}
+                            onClick={() => handleDelete(category.id)}
+                          />
+                        </Tooltip>
+                        <Link href={`/categories/edit/${category.id}`} passHref>
+                          <TooltipButton
+                            tooltipLabel="Edit"
+                            size="sm"
+                            bg="gray.200"
+                            leftIcon={<Icon as={RiEditLine} fontSize="16" />}
+                            iconSpacing="0"
+                          />
+                        </Link>
+                      </HStack>
+                    </Td>
                   </Tr>
                 ))}
               </Tbody>

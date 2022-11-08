@@ -21,7 +21,7 @@ export async function getGroceries(page: number): Promise<GetGroceriesResponse> 
       include: 'category'
     }
   })
-  
+
   // await api.get<GetGroceriesResponse>('groceries', {
   //   params: {
   //     include: 'category'
@@ -57,7 +57,7 @@ export function useGroceries(page: number, options: UseQueryOptions) {
 
 // get one grocery
 export async function getGroceryById(groceryId: string, include: string) {
-  const { data } = await api.get<Grocery>(`groceries/${groceryId}`, {
+  const { data } = await HTTPHandler.get<Grocery>(`groceries/${groceryId}`, {
     params: {
       include: 'category'
     }

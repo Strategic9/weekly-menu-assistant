@@ -2,10 +2,14 @@ import { extendTheme } from '@chakra-ui/react'
 
 export const theme = extendTheme({
   colors: {
-    grain: '#D7CEC7',
+    grain: '#efebe8',
+    red: {
+      '100': '#BF434A',
+      '200': '#7C0A0F'
+    },
     gray: {
-      '100': '#efefef',
-      '200': '#a4a4a4',
+      '100': '#f7f5f3',
+      '200': '#e3dcd7',
       '300': '#7d7d7d',
       '400': '#636363',
       '500': '#565656',
@@ -15,27 +19,23 @@ export const theme = extendTheme({
       '900': '#1b1b1b'
     },
     oxblood: {
-      '100': '#cb2f38',
-      '200': '#b62a32',
-      '300': '#a1252c',
-      '400': '#8c2126',
-      '500': '#781c21',
-      '600': '#63171B',
-      '700': '#4e1215',
-      '800': '#3a0d10',
-      '900': '#25090a'
+      '100': '#487566',
+      '200': '#30574B',
+      '300': '#1C4638',
+      '400': '#0E3629',
+      '500': '#042319'
     },
     tan: {
-      '300': '#D1B9a2',
-      '400': '#C8AC91',
-      '500': '#C09F80',
-      '600': '#B8926F',
-      '700': '#AF855E'
+      '300': '#D7EFBF',
+      '400': '#BDE598',
+      '500': '#91C263',
+      '600': '#659933',
+      '700': '#427313'
     }
   },
   fonts: {
-    heading: 'Roboto',
-    body: 'Roboto'
+    heading: `'Poppins', sans-serif`,
+    body: `'Poppins', sans-serif`
   },
   styles: {
     global: {

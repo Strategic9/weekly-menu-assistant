@@ -43,7 +43,7 @@ export default function MenuHistory({ menus, totalCount }) {
         ) : (
           <>
             <Table colorScheme="whiteAlpha" color="gray.700">
-              <Thead bg="tan.400" color="black">
+              <Thead bg="gray.200" color="black">
                 <Tr>
                   <Th>Start Date</Th>
                   <Th>End Date</Th>

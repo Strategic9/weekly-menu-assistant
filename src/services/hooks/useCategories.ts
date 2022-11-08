@@ -48,7 +48,7 @@ export function useCategories(page: number, options: UseQueryOptions) {
 
 // get one category
 export async function getCategoryById(categoryId: string) {
-  const { data } = await api.get<Category>(`categories/${categoryId}`)
+  const { data } = await HTTPHandler.get(`categories/${categoryId}`)
 
   return {
     id: data.id,

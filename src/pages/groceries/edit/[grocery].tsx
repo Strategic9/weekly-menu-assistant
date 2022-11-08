@@ -3,7 +3,7 @@ import { Flex, Text, Spinner } from '@chakra-ui/react'
 import { SubmitHandler } from 'react-hook-form'
 import { useMutation } from 'react-query'
 
-import { api } from '../../../services/api'
+import { api, HTTPHandler } from '../../../services/api'
 import { queryClient } from '../../../services/queryClient'
 import { getGroceryById, Grocery, useGrocery } from '../../../services/hooks/useGroceries'
 import { useRouter } from 'next/router'
@@ -43,7 +43,7 @@ export default function GroceryPage() {
   const editGrocery = useMutation(
     async (grocery: CreateGroceryFormData) => {
       try {
-        await api.patch(`groceries/${groceryId}`, {
+        await HTTPHandler.patch(`groceries/${groceryId}`, {
           name: grocery.name,
           category: {
             id: grocery.categoryId
