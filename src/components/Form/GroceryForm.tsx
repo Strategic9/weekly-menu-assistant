@@ -65,6 +65,11 @@ export default function GroceryForm(props: GroceryFormParams) {
     }
   }, [props.initialData, setValue])
 
+  const handleSubmitGroceryForm = (e: any) => {
+    e.stopPropagation()
+    handleSubmit(props.handleSubmit)(e)
+  }
+
   return (
     <Box
       as="form"
@@ -72,7 +77,7 @@ export default function GroceryForm(props: GroceryFormParams) {
       borderRadius={8}
       bg="grain"
       p={['6', '8']}
-      onSubmit={handleSubmit(props.handleSubmit)}
+      onSubmit={handleSubmitGroceryForm}
     >
       <Heading size="lg" fontWeight="normal">
         {`${props.initialData ? 'Edit' : 'Create'}`} grocery
