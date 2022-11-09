@@ -6,6 +6,7 @@ import { Input } from '../components/Form/Input'
 import { api } from '../services/api'
 import { localStorage } from '../services/localstorage'
 import { useRouter } from 'next/router'
+import { useAlert } from 'react-alert';
 
 type SignInFormData = {
   email: string
@@ -26,13 +27,20 @@ export default function SignIn() {
     resolver: yupResolver(signInFormSchema)
   })
   const router = useRouter()
+  const alert = useAlert()
 
   const handleSignIn: SubmitHandler<SignInFormData> = async (values) => {
-    const res = await api.post('users/login', {
+    await api.post('users/login', {
       ...values
     })
-    localStorage.set('token', res.data?.token)
-    router.push('dashboard')
+    .then((res) => {
+      alert.success('Sign up succesfull')
+      localStorage.set('token', res.data?.token)
+      router.push('dashboard')
+    })
+    .catch(() => {
+      alert.error('Please verify the information')
+    })
   }
 
   return (
