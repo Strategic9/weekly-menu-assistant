@@ -22,6 +22,12 @@ export async function getGroceries(page: number): Promise<GetGroceriesResponse> 
     }
   })
 
+  // await api.get<GetGroceriesResponse>('groceries', {
+  //   params: {
+  //     include: 'category'
+  //   }
+  // })
+
   const count = data.count
 
   const items = data.items.map((grocery) => {
@@ -51,7 +57,7 @@ export function useGroceries(page: number, options: UseQueryOptions) {
 
 // get one grocery
 export async function getGroceryById(groceryId: string, include: string) {
-  const { data } = await api.get<Grocery>(`groceries/${groceryId}`, {
+  const { data } = await HTTPHandler.get<Grocery>(`groceries/${groceryId}`, {
     params: {
       include: 'category'
     }

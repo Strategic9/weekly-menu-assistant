@@ -3,7 +3,7 @@ import { useRouter } from 'next/router'
 import { SubmitHandler } from 'react-hook-form'
 import { useMutation } from 'react-query'
 
-import { api } from '../../services/api'
+import { api, HTTPHandler } from '../../services/api'
 import { queryClient } from '../../services/queryClient'
 import { useAlert } from 'react-alert'
 import GroceryForm, { CreateGroceryFormData } from '../../components/Form/GroceryForm'
@@ -16,7 +16,7 @@ export default function CreateGrocery() {
   const createGrocery = useMutation(
     async (grocery: CreateGroceryFormData) => {
       try {
-        await api.post('groceries', {
+        await HTTPHandler.post('groceries', {
           name: grocery.name,
           category: {
             id: grocery.categoryId

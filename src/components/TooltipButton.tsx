@@ -7,7 +7,7 @@ interface TooltipButtonProps extends ButtonProps {
 
 const TooltipButtonBase = function ({ tooltipLabel, ...rest }: TooltipButtonProps, ref) {
   return (
-    <Tooltip label={tooltipLabel} bg="tan.400" color="white" placement="top-start">
+    <Tooltip label={tooltipLabel} bg="gray.600" color="white" placement="top-start">
       <Button as="a" cursor="pointer" ref={ref} {...rest}></Button>
     </Tooltip>
   )

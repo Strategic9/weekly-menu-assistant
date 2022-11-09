@@ -33,7 +33,7 @@ type Dish = {
   name: string
   description: string
   created_at: string
-  ingredients: Array<{grocery: Grocery}>
+  ingredients: Array<{ grocery: Grocery }>
 }
 
 type UseDishData = {
@@ -114,7 +114,7 @@ export default function DishList({ users, totalCount }) {
         ) : (
           <>
             <Table colorScheme="whiteAlpha" color="gray.700">
-              <Thead bg="tan.400" color="black">
+              <Thead bg="gray.200" color="black">
                 <Tr>
                   <Th>Dish</Th>
                   {isWideVersion && <Th>Ingredients</Th>}
@@ -135,13 +135,15 @@ export default function DishList({ users, totalCount }) {
                     {isWideVersion && (
                       <Td>
                         <HStack>
-                          <Tooltip label="Remove" bg="tan.400" color="white" placement="top-start">
+                          <Tooltip label="Remove" bg="red.200" color="white" placement="top-start">
                             <Button
                               size="sm"
-                              colorScheme="tan"
+                              bg="red.100"
+                              color="white"
                               justifyContent="center"
                               leftIcon={<Icon as={RiDeleteBinLine} fontSize="16" />}
                               iconSpacing="0"
+                              _hover={{ bg: 'red.200' }}
                               onClick={() => handleDelete(dish.id)}
                             />
                           </Tooltip>
@@ -149,7 +151,7 @@ export default function DishList({ users, totalCount }) {
                             <TooltipButton
                               tooltipLabel="Edit"
                               size="sm"
-                              colorScheme="tan"
+                              bg="gray.200"
                               leftIcon={<Icon as={RiEditLine} fontSize="16" />}
                               iconSpacing="0"
                             />

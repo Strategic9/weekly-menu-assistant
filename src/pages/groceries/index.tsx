@@ -23,14 +23,14 @@ import { useState } from 'react'
 import { GetServerSideProps } from 'next'
 import { Grocery, useGroceries } from '../../services/hooks/useGroceries'
 import { queryClient } from '../../services/queryClient'
-import { api } from '../../services/api'
+import { api, HTTPHandler } from '../../services/api'
 import TooltipButton from '../../components/TooltipButton'
 import { useAlert } from 'react-alert'
 import PageWrapper from '../page-wrapper'
 
 type UseGroceryData = {
   items: Grocery[]
-  totalCount: number
+  count: number
 }
 
 export default function GroceryList({ groceries, totalCount }) {
@@ -46,8 +46,7 @@ export default function GroceryList({ groceries, totalCount }) {
   })
 
   const handleDelete = async (id: string) => {
-    await api
-      .delete(`groceries/${id}`)
+    await HTTPHandler.delete(`groceries/${id}`)
       .then(async () => {
         await queryClient.invalidateQueries(['groceries', page])
         alert.success('Grocery deleted')
@@ -87,12 +86,11 @@ export default function GroceryList({ groceries, totalCount }) {
         ) : (
           <>
             <Table colorScheme="whiteAlpha" color="gray.700">
-              <Thead bg="tan.400" color="black">
+              <Thead bg="gray.200" color="black">
                 <Tr>
                   <Th>Grocery</Th>
                   <Th>Category</Th>
-                  {isWideVersion && <Th>Creation date</Th>}
-                  {isWideVersion && <Th width="8"></Th>}
+                  {isWideVersion && <Th width="8">Actions</Th>}
                 </Tr>
               </Thead>
               <Tbody>
@@ -112,17 +110,18 @@ export default function GroceryList({ groceries, totalCount }) {
                         </Text>
                       )}
                     </Td>
-                    {isWideVersion && <Td>{grocery.createdAt}</Td>}
                     {isWideVersion && (
                       <Td>
                         <HStack>
-                          <Tooltip label="Remove" bg="tan.400" color="white" placement="top-start">
+                          <Tooltip label="Remove" bg="red.200" color="white" placement="top-start">
                             <Button
                               size="sm"
-                              colorScheme="tan"
+                              bg="red.100"
+                              color="white"
                               justifyContent="center"
                               leftIcon={<Icon as={RiDeleteBinLine} fontSize="16" />}
                               iconSpacing="0"
+                              _hover={{ bg: 'red.200' }}
                               onClick={() => handleDelete(grocery.id)}
                             />
                           </Tooltip>
@@ -130,7 +129,7 @@ export default function GroceryList({ groceries, totalCount }) {
                             <TooltipButton
                               tooltipLabel="Edit"
                               size="sm"
-                              colorScheme="tan"
+                              bg="gray.200"
                               leftIcon={<Icon as={RiEditLine} fontSize="16" />}
                               iconSpacing="0"
                             />
@@ -144,7 +143,7 @@ export default function GroceryList({ groceries, totalCount }) {
             </Table>
 
             <Pagination
-              totalCountOfRegisters={data.totalCount}
+              totalCountOfRegisters={data.count}
               currentPage={page}
               onPageChange={setPage}
             />
