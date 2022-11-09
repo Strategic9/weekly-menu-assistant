@@ -33,7 +33,7 @@ type Dish = {
   name: string
   description: string
   created_at: string
-  ingredients: Array<{grocery: Grocery}>
+  ingredients: Array<{ grocery: Grocery }>
 }
 
 type UseDishData = {

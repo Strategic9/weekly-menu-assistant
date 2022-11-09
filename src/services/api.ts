@@ -1,15 +1,15 @@
 import axios from 'axios'
-import { localStorage } from './localstorage';
+import { localStorage } from './localstorage'
 
 export const getHeaders = () => {
   const token = localStorage.get('token')
   return token
-      ? {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
+    ? {
+        headers: {
+          Authorization: `Bearer ${token}`
         }
-      : {}
+      }
+    : {}
 }
 
 export const api = axios.create({
