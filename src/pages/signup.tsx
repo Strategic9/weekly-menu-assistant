@@ -5,6 +5,7 @@ import { yupResolver } from '@hookform/resolvers/yup/dist/yup'
 import { Input } from '../components/Form/Input'
 import { HTTPHandler } from '../services/api'
 import { useRouter } from 'next/router'
+import { useAlert } from 'react-alert'
 
 type SignUpFormData = {
   email: string
@@ -33,13 +34,19 @@ export default function SignUp() {
     resolver: yupResolver(signUpFormSchema)
   })
   const router = useRouter()
+  const alert = useAlert()
 
   const handleSignUp: SubmitHandler<SignUpFormData> = async (values) => {
-    await HTTPHandler.post('/users', {
+    await HTTPHandler.post('users', {
       ...values
-    }).then(() => {
-      router.push('/')
     })
+      .then(() => {
+        alert.success('Sign up succesfull')
+        router.push('/')
+      })
+      .catch(() => {
+        alert.error('Please verify the information')
+      })
   }
 
   return (

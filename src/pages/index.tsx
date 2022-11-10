@@ -33,25 +33,26 @@ export default function SignIn() {
   const clientId = '344445011201-knrbtue9u5o35rfndovhqjrj7m5627re.apps.googleusercontent.com'
 
   const useGapi = async () => {
-    const gapi = await import('gapi-script').then((pack) => pack.gapi);
+    const gapi = await import('gapi-script').then((pack) => pack.gapi)
     const initClient = () => {
       gapi.client.init({
-      clientId: clientId,
-      scope: ''
-      });
-    };
-    gapi.load('client:auth2', initClient);
+        clientId: clientId,
+        scope: ''
+      })
+    }
+    gapi.load('client:auth2', initClient)
   }
+  
   useEffect(() => {
-    useGapi();
- });
+    useGapi()
+  })
 
- const onSuccess = (res) => {
-    console.log('success:', res);
-  };
+  const onSuccess = (res) => {
+    console.log('success:', res)
+  }
   const onFailure = (err) => {
-    console.log('failed:', err);
-  };
+    console.log('failed:', err)
+  }
 
   const handleSignIn: SubmitHandler<SignInFormData> = async (values) => {
     await api
@@ -59,7 +60,7 @@ export default function SignIn() {
         ...values
       })
       .then((res) => {
-        alert.success('Sign up succesfull')
+        alert.success('Welcome =)')
         localStorage.set('token', res.data?.token)
         router.push('dashboard')
       })
