@@ -2,7 +2,7 @@
 // eslint-disable-next-line no-undef
 module.exports = {
   reactStrictMode: true,
-    typescript: {
+  typescript: {
     ignoreBuildErrors: true
   }
 }
