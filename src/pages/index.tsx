@@ -42,16 +42,48 @@ export default function SignIn() {
     }
     gapi.load('client:auth2', initClient)
   }
-  
+
   useEffect(() => {
     useGapi()
   })
 
-  const onSuccess = (res) => {
+  const onSuccess = async (res) => {
     console.log('success:', res)
+    await api
+      .post('users/login', {
+        email: res.profileObj.email,
+        password: res.googleId
+      })
+      .then((res) => {
+        onLoginSucess(res)
+      })
+      .catch((error) => {
+        if (error.response.status === 404) {
+          signUp(res)
+        } else {
+          alert.error('Please verify the information')
+        }
+      })
   }
+
   const onFailure = (err) => {
     console.log('failed:', err)
+  }
+
+  const signUp = async (gisRes) => {
+    await api
+      .post('users', {
+        email: gisRes.profileObj.email,
+        password: gisRes.googleId,
+        firstName: gisRes.profileObj.givenName,
+        lastName: gisRes.profileObj.familyName
+      })
+      .then(() => {
+        handleSignIn({ email: gisRes.profileObj.email, password: gisRes.googleId })
+      })
+      .catch(() => {
+        alert.error('Please verify the information')
+      })
   }
 
   const handleSignIn: SubmitHandler<SignInFormData> = async (values) => {
@@ -60,13 +92,17 @@ export default function SignIn() {
         ...values
       })
       .then((res) => {
-        alert.success('Welcome =)')
-        localStorage.set('token', res.data?.token)
-        router.push('dashboard')
+        onLoginSucess(res)
       })
       .catch(() => {
         alert.error('Please verify the information')
       })
+  }
+
+  const onLoginSucess = (res) => {
+    alert.success('Welcome =)')
+    localStorage.set('token', res.data?.token)
+    router.push('dashboard')
   }
 
   return (
