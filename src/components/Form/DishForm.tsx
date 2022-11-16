@@ -27,13 +27,15 @@ import { api } from '../../services/api'
 import { useAlert } from 'react-alert'
 import { queryClient } from '../../services/queryClient'
 import { SearchIngredient } from './SearchIngredient'
-import { Grocery } from '../../services/hooks/useGroceries'
+import { Select } from './Select'
+import { GetGroceriesResponse, Grocery, useGroceries } from '../../services/hooks/useGroceries'
 
 export type CreateDishFormData = {
   id?: string
   name: string
   description?: string
   ingredients?: { id: string }[]
+  mainIngredientId?: string
 }
 
 interface DishFormParams {
@@ -46,13 +48,20 @@ interface DishFormParams {
 const createDishFormSchema = yup.object({
   name: yup.string().required('Name is required'),
   description: yup.string(),
-  ingredients: yup.array()
+  ingredients: yup.array(),
+  mainIngredientId: yup.string().required('Main ingredient is required')
 })
 
 export default function DishForm(props: DishFormParams) {
+  const { data: useGroceriesData } = useGroceries(null, {})
+  const groceriesData = useGroceriesData as GetGroceriesResponse
+  const itemsList = groceriesData?.items
   const defaultValues = {
     ...props.initialData,
-    ...{ ingredients: props.initialData?.ingredients.map((e: any) => e.grocery) }
+    ...{
+      ingredients: props.initialData?.ingredients.map((e: any) => e.grocery),
+      mainIngredientId: props.initialData?.mainIngredient?.id
+    }
   }
   const {
     register,
@@ -104,6 +113,20 @@ export default function DishForm(props: DishFormParams) {
               label="Ingredients"
               onAddIngredient={(ingredient: Grocery) => append(ingredient)}
             ></SearchIngredient>
+          </GridItem>
+          <GridItem>
+            <Select
+              name="mainIngredient"
+              label="Main ingredient"
+              error={errors.mainIngredientId}
+              {...register('mainIngredientId')}
+            >
+              {itemsList?.map((grocery) => (
+                <option key={grocery.id} value={grocery.id}>
+                  {grocery.name}
+                </option>
+              ))}
+            </Select>
           </GridItem>
           <GridItem colSpan={2} rowSpan={2}>
             <HStack spacing={2}>
@@ -195,6 +218,7 @@ export function DishFormModal({
           name: newDish,
           description: '',
           ingredients: [],
+          mainIngredient: null,
           createdAt: null
         }}
       />

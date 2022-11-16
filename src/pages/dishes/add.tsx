@@ -1,7 +1,7 @@
 import { SubmitHandler } from 'react-hook-form'
 import { useMutation } from 'react-query'
 
-import { api, HTTPHandler } from '../../services/api'
+import { HTTPHandler } from '../../services/api'
 import { queryClient } from '../../services/queryClient'
 import { useAlert } from 'react-alert'
 import { Grocery } from '../../services/hooks/useGroceries'
@@ -13,12 +13,14 @@ type CreateDishFormData = {
   name: string
   description: string
   ingredients: { id: string }[]
+  mainIngredient: { id: string }
 }
 
 type FormData = {
   name: string
   description: string
   ingredients: Grocery[]
+  mainIngredientId: string
 }
 
 export default function CreateDish() {
@@ -46,11 +48,17 @@ export default function CreateDish() {
 
   // const { errors } = formState;
 
-  const handleCreateDish: SubmitHandler<FormData> = async ({ name, description, ingredients }) => {
+  const handleCreateDish: SubmitHandler<FormData> = async ({
+    name,
+    description,
+    ingredients,
+    mainIngredientId
+  }) => {
     const newDish: CreateDishFormData = {
       name,
       description,
-      ingredients: ingredients.map(({ id }) => ({ id }))
+      ingredients: ingredients.map(({ id }) => ({ id })),
+      mainIngredient: { id: mainIngredientId }
     }
     await createDish.mutateAsync(newDish)
   }

@@ -1,5 +1,5 @@
 import { useQuery, UseQueryOptions } from 'react-query'
-import { api, HTTPHandler } from '../api'
+import { HTTPHandler } from '../api'
 import { Grocery } from './useGroceries'
 
 export type Dish = {
@@ -8,6 +8,7 @@ export type Dish = {
   description: string
   ingredients: Grocery[]
   createdAt: string
+  mainIngredient: Grocery
 }
 
 export type GetDishesResponse = {
