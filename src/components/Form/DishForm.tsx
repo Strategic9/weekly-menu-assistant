@@ -29,6 +29,7 @@ import { queryClient } from '../../services/queryClient'
 import { SearchIngredient } from './SearchIngredient'
 import { Select } from './Select'
 import { GetGroceriesResponse, Grocery, useGroceries } from '../../services/hooks/useGroceries'
+import { useEffect } from 'react'
 
 export type CreateDishFormData = {
   id?: string
@@ -60,7 +61,7 @@ export default function DishForm(props: DishFormParams) {
     ...props.initialData,
     ...{
       ingredients: props.initialData?.ingredients.map((e: any) => e.grocery),
-      mainIngredientId: props.initialData?.mainIngredient?.id
+      mainIngredientId: (props.initialData?.mainIngredient as any)?.grocery?.id
     }
   }
   const {
@@ -115,18 +116,20 @@ export default function DishForm(props: DishFormParams) {
             ></SearchIngredient>
           </GridItem>
           <GridItem>
-            <Select
-              name="mainIngredient"
-              label="Main ingredient"
-              error={errors.mainIngredientId}
-              {...register('mainIngredientId')}
-            >
-              {itemsList?.map((grocery) => (
-                <option key={grocery.id} value={grocery.id}>
-                  {grocery.name}
-                </option>
-              ))}
-            </Select>
+            {useGroceriesData && (
+              <Select
+                name="mainIngredient"
+                label="Main ingredient"
+                error={errors.mainIngredientId}
+                {...register('mainIngredientId')}
+              >
+                {itemsList?.map((grocery) => (
+                  <option key={grocery.id} value={grocery.id}>
+                    {grocery.name}
+                  </option>
+                ))}
+              </Select>
+            )}
           </GridItem>
           <GridItem colSpan={2} rowSpan={2}>
             <HStack spacing={2}>
