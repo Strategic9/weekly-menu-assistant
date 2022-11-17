@@ -6,6 +6,9 @@ import { Input } from '../components/Form/Input'
 import { api } from '../services/api'
 import { localStorage } from '../services/localstorage'
 import { useRouter } from 'next/router'
+import { useAlert } from 'react-alert'
+import { GoogleLogin } from 'react-google-login'
+import { useEffect } from 'react'
 
 type SignInFormData = {
   email: string
@@ -26,11 +29,78 @@ export default function SignIn() {
     resolver: yupResolver(signInFormSchema)
   })
   const router = useRouter()
+  const alert = useAlert()
+  const clientId = process.env.NEXT_PUBLIC_GOOGLE_SIGNIN_CLIENT_ID
+
+  const useGapi = async () => {
+    const gapi = await import('gapi-script').then((pack) => pack.gapi)
+    const initClient = () => {
+      gapi.client.init({
+        clientId: clientId,
+        scope: ''
+      })
+    }
+    gapi.load('client:auth2', initClient)
+  }
+
+  useEffect(() => {
+    useGapi()
+  })
+
+  const onSuccess = async (res) => {
+    console.log('success:', res)
+    await api
+      .post('users/login', {
+        email: res.profileObj.email,
+        password: res.googleId
+      })
+      .then((res) => {
+        onLoginSucess(res)
+      })
+      .catch((error) => {
+        if (error.response.status === 404) {
+          signUp(res)
+        } else {
+          alert.error('Please verify the information')
+        }
+      })
+  }
+
+  const onFailure = (err) => {
+    console.log('failed:', err)
+  }
+
+  const signUp = async (gisRes) => {
+    await api
+      .post('users', {
+        email: gisRes.profileObj.email,
+        password: gisRes.googleId,
+        firstName: gisRes.profileObj.givenName,
+        lastName: gisRes.profileObj.familyName
+      })
+      .then(() => {
+        handleSignIn({ email: gisRes.profileObj.email, password: gisRes.googleId })
+      })
+      .catch(() => {
+        alert.error('Please verify the information')
+      })
+  }
 
   const handleSignIn: SubmitHandler<SignInFormData> = async (values) => {
-    const res = await api.post('users/login', {
-      ...values
-    })
+    await api
+      .post('users/login', {
+        ...values
+      })
+      .then((res) => {
+        onLoginSucess(res)
+      })
+      .catch(() => {
+        alert.error('Please verify the information')
+      })
+  }
+
+  const onLoginSucess = (res) => {
+    alert.success('Welcome =)')
     localStorage.set('token', res.data?.token)
     router.push('dashboard')
   }
@@ -62,6 +132,16 @@ export default function SignIn() {
         <Button type="submit" mt="6" colorScheme="oxblood">
           Sign In
         </Button>
+        <Flex mt="6" w="100%" justifyContent="center">
+          <GoogleLogin
+            clientId={clientId}
+            buttonText="Sign in with Google"
+            onSuccess={onSuccess}
+            onFailure={onFailure}
+            cookiePolicy={'single_host_origin'}
+            isSignedIn={true}
+          />
+        </Flex>
       </Flex>
     </Flex>
   )
