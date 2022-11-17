@@ -41,7 +41,7 @@ export default function SignUp() {
       ...values
     })
       .then(() => {
-        alert.success('Sign up succesful')
+        alert.success('Sign up succesfull')
         router.push('/')
       })
       .catch(() => {
