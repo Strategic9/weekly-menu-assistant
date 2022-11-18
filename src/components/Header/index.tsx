@@ -10,10 +10,15 @@ import { RiMenuLine } from 'react-icons/ri'
 export function Header() {
   const { onOpen } = useSidebarDrawer()
 
-  const isWideVersion = useBreakpointValue({
-    base: false,
-    lg: true
-  })
+  const isWideVersion = useBreakpointValue(
+    {
+      base: false,
+      lg: true
+    },
+    {
+      fallback: 'lg'
+    }
+  )
 
   return (
     <Box w="100%" bg="white">
