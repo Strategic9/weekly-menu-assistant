@@ -30,7 +30,7 @@ export default function SignIn() {
   })
   const router = useRouter()
   const alert = useAlert()
-  const clientId = '344445011201-knrbtue9u5o35rfndovhqjrj7m5627re.apps.googleusercontent.com'
+  const clientId = process.env.NEXT_PUBLIC_GOOGLE_SIGNIN_CLIENT_ID
 
   const useGapi = async () => {
     const gapi = await import('gapi-script').then((pack) => pack.gapi)
