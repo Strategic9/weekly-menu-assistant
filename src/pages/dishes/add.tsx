@@ -57,7 +57,7 @@ export default function CreateDish() {
     const newDish: CreateDishFormData = {
       name,
       description,
-      ingredients: ingredients.map(({ id }) => ({ id })),
+      ingredients: ingredients.filter((i) => i.id !== mainIngredientId).map(({ id }) => ({ id })),
       mainIngredient: { id: mainIngredientId }
     }
     await createDish.mutateAsync(newDish)

@@ -38,7 +38,9 @@ export default function DishPage() {
       const updatedDish = {
         name,
         description,
-        ingredients: dish.ingredients.map(({ id }) => ({ id })),
+        ingredients: dish.ingredients
+          .filter((i) => i.id !== mainIngredientId)
+          .map(({ id }) => ({ id })),
         mainIngredient: { id: mainIngredientId }
       }
       await HTTPHandler.patch(`dishes/${dish.id}`, {

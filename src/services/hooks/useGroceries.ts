@@ -8,6 +8,7 @@ export type Grocery = {
   name: string
   category: Category
   createdAt: string
+  isMain: boolean
 }
 
 export type GetGroceriesResponse = {
