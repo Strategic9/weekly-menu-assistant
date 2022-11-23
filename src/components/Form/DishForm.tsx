@@ -29,7 +29,6 @@ import { queryClient } from '../../services/queryClient'
 import { SearchIngredient } from './SearchIngredient'
 import { Select } from './Select'
 import { GetGroceriesResponse, Grocery, useGroceries } from '../../services/hooks/useGroceries'
-import { useEffect } from 'react'
 
 export type CreateDishFormData = {
   id?: string
