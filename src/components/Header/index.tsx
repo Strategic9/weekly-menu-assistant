@@ -1,7 +1,6 @@
 import { Flex, Icon, IconButton, Box } from '@chakra-ui/react'
 import { useBreakpointValue } from '@chakra-ui/media-query'
 import { Logo } from './Logo'
-import { NotificationNav } from './NotificationNav'
 import { Profile } from './Profile'
 import { SearchBox } from './SearchBox'
 import { useSidebarDrawer } from '../../cotexts/SidebarDrawerContext'
@@ -34,7 +33,6 @@ export function Header() {
         {isWideVersion && <SearchBox />}
 
         <Flex align="center" ml="auto">
-          {isWideVersion && <NotificationNav />}
           <Profile showProfileData={isWideVersion} />
         </Flex>
       </Flex>
