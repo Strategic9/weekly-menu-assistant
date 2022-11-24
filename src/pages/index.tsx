@@ -147,7 +147,7 @@ export default function SignIn() {
           />
         </Flex>
         <Text mt={8} fontSize={14}>
-          Don't have an account?
+          Don&apos;t have an account?
           <Link ml={1} textDecorationLine="underline" color="oxblood.400" href="/signup">
             Create one here
           </Link>
