@@ -57,10 +57,11 @@ export default function DishForm(props: DishFormParams) {
   const groceriesData = useGroceriesData as GetGroceriesResponse
   const itemsList = groceriesData?.items
   const mainIngredient: any = props.initialData?.ingredients.find((i) => i.isMain)
+  const ingredients: any = props.initialData?.ingredients.filter((i) => !i.isMain)
   const defaultValues = {
     ...props.initialData,
     ...{
-      ingredients: props.initialData?.ingredients.map((e: any) => e.grocery),
+      ingredients: ingredients?.map((e: any) => e.grocery),
       mainIngredientId: mainIngredient?.grocery.id
     }
   }
