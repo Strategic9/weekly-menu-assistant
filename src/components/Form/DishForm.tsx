@@ -48,7 +48,7 @@ interface DishFormParams {
 const createDishFormSchema = yup.object({
   name: yup.string().required('Name is required'),
   description: yup.string(),
-  ingredients: yup.array(),
+  ingredients: yup.array().min(1, 'Ingredients is required'),
   mainIngredientId: yup.string().required('Main ingredient is required')
 })
 
@@ -113,6 +113,7 @@ export default function DishForm(props: DishFormParams) {
             <SearchIngredient
               name="ingredients"
               label="Ingredients"
+              error={errors.ingredients}
               onAddIngredient={(ingredient: Grocery) => append(ingredient)}
             ></SearchIngredient>
           </GridItem>
