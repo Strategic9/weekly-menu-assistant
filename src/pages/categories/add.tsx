@@ -7,7 +7,7 @@ import { yupResolver } from '@hookform/resolvers/yup/dist/yup'
 import { useMutation } from 'react-query'
 
 import { Input } from '../../components/Form/Input'
-import { api } from '../../services/api'
+import { HTTPHandler } from '../../services/api'
 import { queryClient } from '../../services/queryClient'
 import { useAlert } from 'react-alert'
 import { useRouter } from 'next/router'
@@ -26,10 +26,9 @@ export default function CreateCategory() {
   const alert = useAlert()
   const createCategory = useMutation(
     async (category: CreateCategoryFormData) => {
-      await api
-        .post('categories', {
-          ...category
-        })
+      await HTTPHandler.post('categories', {
+        ...category
+      })
         .then(() => {
           alert.success('Category added with success')
           router.push('.')

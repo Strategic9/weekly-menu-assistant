@@ -1,8 +1,13 @@
+const isBrowser = () => typeof window !== 'undefined'
+
 export const localStorage = {
   set: (key: string, value: string) => {
-    window.localStorage.setItem(key, value)
+    isBrowser() && window.localStorage.setItem(key, value)
   },
   get: (key: string) => {
-    return window.localStorage.getItem(key)
+    return isBrowser() && window.localStorage.getItem(key)
+  },
+  delete: (key: string) => {
+    return isBrowser() && window.localStorage.removeItem(key)
   }
 }

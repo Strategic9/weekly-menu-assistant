@@ -1,4 +1,4 @@
-import { Flex, Button, Stack } from '@chakra-ui/react'
+import { Flex, Button, Stack, Text, Link } from '@chakra-ui/react'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup'
@@ -6,12 +6,19 @@ import { Input } from '../components/Form/Input'
 import { HTTPHandler } from '../services/api'
 import { useRouter } from 'next/router'
 import { useAlert } from 'react-alert'
+import { localStorage } from '../services/localstorage'
+import { Logo } from '../components/Header/Logo'
 
 type SignUpFormData = {
   email: string
   password: string
   firstName: string
   lastName: string
+}
+
+type SignInFormData = {
+  email: string
+  password: string
 }
 
 const signUpFormSchema = yup.object({
@@ -41,12 +48,23 @@ export default function SignUp() {
       ...values
     })
       .then(() => {
-        alert.success('Sign up succesfull')
-        router.push('/')
+        alert.success('Sign up successful')
+        handleSignIn(values)
       })
-      .catch(() => {
+      .catch((er) => {
         alert.error('Please verify the information')
       })
+  }
+
+  const handleSignIn: SubmitHandler<SignInFormData> = async (values) => {
+    const res = await HTTPHandler.post('users/login', {
+      email: values.email,
+      password: values.password
+    })
+    localStorage.set('token', res.data?.token)
+    localStorage.set('username', res.data?.username)
+    localStorage.set('email', res.data?.email)
+    router.push('dashboard')
   }
 
   return (
@@ -54,7 +72,7 @@ export default function SignUp() {
       <Flex
         as="form"
         w="100%"
-        maxW={360}
+        maxW={400}
         bg="white"
         p="8"
         borderRadius={8}
@@ -63,7 +81,22 @@ export default function SignUp() {
         boxShadow="xl"
         rounded="md"
       >
-        <Stack spacing="4">
+        <Logo linkTo="/" />
+        <Stack mt={8} spacing={2}>
+          <Stack spacing={4} direction="row">
+            <Input
+              type="text"
+              label="First Name"
+              error={errors.firstName}
+              {...register('firstName')}
+            />
+            <Input
+              type="text"
+              label="Last Name"
+              error={errors.lastName}
+              {...register('lastName')}
+            />
+          </Stack>
           <Input type="email" label="Email" error={errors.email} {...register('email')} />
           <Input
             type="password"
@@ -71,18 +104,18 @@ export default function SignUp() {
             error={errors.password}
             {...register('password')}
           />
-          <Input
-            type="text"
-            label="First Name"
-            error={errors.firstName}
-            {...register('firstName')}
-          />
-          <Input type="text" label="Last Name" error={errors.lastName} {...register('lastName')} />
         </Stack>
 
         <Button type="submit" mt="6" colorScheme="oxblood">
           Sign Up
         </Button>
+
+        <Text mt={8} fontSize={14}>
+          Already have an account?
+          <Link ml={1} textDecorationLine="underline" color="oxblood.400" href="/">
+            Sign in here
+          </Link>
+        </Text>
       </Flex>
     </Flex>
   )

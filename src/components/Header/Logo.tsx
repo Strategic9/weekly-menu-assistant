@@ -1,9 +1,15 @@
-import { Image, Container } from '@chakra-ui/react'
+import { Image, Container, Link } from '@chakra-ui/react'
 
-export function Logo() {
+type LogoProps = {
+  linkTo?: string
+}
+
+export const Logo = ({ linkTo }: LogoProps) => {
   return (
-    <Container className="header-logo" ml="0" w="250px" me="0" mr="26px" color="white">
-      <Image src="/assets/logo.svg" alt="Forkify Logo" />
+    <Container alignSelf="center" ml="0" w="250px" me="0" color="white">
+      <Link href={linkTo ? linkTo : '/dashboard'}>
+        <Image src="/assets/logo.svg" alt="Forkify Logo" />
+      </Link>
     </Container>
   )
 }
