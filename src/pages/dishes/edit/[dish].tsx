@@ -23,6 +23,7 @@ type FormData = {
   name: string
   description: string
   ingredients: Grocery[]
+  mainIngredientId: string
 }
 
 export default function DishPage() {
@@ -33,11 +34,14 @@ export default function DishPage() {
 
   const editDish = useMutation(
     async (dish: FormData) => {
-      const { name, description } = dish
+      const { name, description, mainIngredientId } = dish
       const updatedDish = {
         name,
         description,
-        ingredients: dish.ingredients.map(({ id }) => ({ id }))
+        ingredients: dish.ingredients
+          .filter((i) => i.id !== mainIngredientId)
+          .map(({ id }) => ({ id })),
+        mainIngredient: { id: mainIngredientId }
       }
       await HTTPHandler.patch(`dishes/${dish.id}`, {
         ...updatedDish
