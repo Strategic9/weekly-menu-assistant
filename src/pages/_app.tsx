@@ -8,7 +8,7 @@ import { Alert } from '../components/Alert'
 import '../styles/DatePicker.css'
 
 const options: AlertProviderProps = {
-  position: positions.TOP_CENTER,
+  position: positions.BOTTOM_RIGHT,
   timeout: 8000,
   offset: '30px',
   transition: transitions.SCALE,

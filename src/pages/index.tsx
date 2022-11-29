@@ -1,4 +1,4 @@
-import { Flex, Button, Stack } from '@chakra-ui/react'
+import { Flex, Button, Stack, Text, Link } from '@chakra-ui/react'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup'
@@ -9,6 +9,7 @@ import { useRouter } from 'next/router'
 import { useAlert } from 'react-alert'
 import { GoogleLogin } from 'react-google-login'
 import { useEffect } from 'react'
+import { Logo } from '../components/Header/Logo'
 
 type SignInFormData = {
   email: string
@@ -100,8 +101,10 @@ export default function SignIn() {
   }
 
   const onLoginSucess = (res) => {
-    alert.success('Welcome =)')
+    alert.success('Welcome')
     localStorage.set('token', res.data?.token)
+    localStorage.set('username', res.data?.username)
+    localStorage.set('email', res.data?.email)
     router.push('dashboard')
   }
 
@@ -119,7 +122,8 @@ export default function SignIn() {
         boxShadow="xl"
         rounded="md"
       >
-        <Stack spacing="4">
+        <Logo linkTo={'/'} />
+        <Stack mt={10} spacing="4">
           <Input type="email" label="Email" error={errors.email} {...register('email')} />
           <Input
             type="password"
@@ -142,6 +146,12 @@ export default function SignIn() {
             isSignedIn={true}
           />
         </Flex>
+        <Text mt={8} fontSize={14}>
+          Don&apos;t have an account?
+          <Link ml={1} textDecorationLine="underline" color="oxblood.400" href="/signup">
+            Create one here
+          </Link>
+        </Text>
       </Flex>
     </Flex>
   )
