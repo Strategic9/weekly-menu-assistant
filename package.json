@@ -2,7 +2,7 @@
   "name": "weekly-menu-assistant",
   "private": true,
   "scripts": {
-    "test": "jest",
+    "test": "jest --watchAll",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
