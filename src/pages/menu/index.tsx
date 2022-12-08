@@ -12,7 +12,7 @@ import {
   FormErrorMessage
 } from '@chakra-ui/react'
 import { useBoolean } from '@chakra-ui/hooks'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd'
 import { FaExchangeAlt } from 'react-icons/fa'
 import { Controller, useForm } from 'react-hook-form'
@@ -20,20 +20,20 @@ import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup'
 import { DatePicker } from '../../components/Form/DatePicker'
 import { GetMenuResponse, Menu as MenuType, useMenu } from '../../services/hooks/useMenu'
-import { addDays, arrayMove } from '../../services/utils'
+import { addDays, arrayMove, getDayName, getMonthName } from '../../services/utils'
 import PageWrapper from '../page-wrapper'
-import { api } from '../../services/api'
+import { api, HTTPHandler } from '../../services/api'
 import { useAlert } from 'react-alert'
 import { SearchDishModal } from '../../components/Form/SearchDish'
 import { queryClient } from '../../services/queryClient'
 
 const updateMenuFormSchema = yup.object({
-  start_date: yup.date(),
-  end_date: yup
+  startDate: yup.date(),
+  endDate: yup
     .date()
     .required('End date is required')
     .when(
-      'start_date',
+      'startDate',
       (started, yup) => started && yup.min(started, 'End date must be after start date.')
     ),
   dishes: yup.array()
@@ -42,6 +42,7 @@ const updateMenuFormSchema = yup.object({
 export default function Menu() {
   const alert = useAlert()
   const [hasUpdates, setHasUpdates] = useBoolean()
+  const [newData, setNewData] = useState([])
   const { data: useMenuData, isLoading, isFetching } = useMenu({})
   const data = useMenuData as GetMenuResponse
 
@@ -67,8 +68,7 @@ export default function Menu() {
     if (destination.droppableId === source.droppableId && destination.index === source.index) {
       return
     }
-
-    const startDate = new Date(data.menu.start_date)
+    const startDate = new Date(data.menu.startDate)
 
     arrayMove(data.menu.dishes, source.index, destination.index)
 
@@ -76,21 +76,33 @@ export default function Menu() {
       data.menu.dishes[i].date = addDays(startDate, i)
     }
 
+    setValue('dishes', data.menu.dishes)
+
     setHasUpdates.on()
   }
 
   const onFormSubmit = async (values) => {
+    const dishesIds = []
+
+    values.dishes.map((dish) => {
+      dishesIds.push({
+        id: dish.dish.id,
+        date: dish.date
+      })
+    })
+
     if (hasUpdates) {
-      const updatedMenu: MenuType = {
-        id: data.menu.id,
-        start_date: values.start_date,
-        end_date: values.end_date,
-        dishes: values.dishes,
-        created_at: data.menu.created_at
+      const updatedMenu = {
+        startDate: values.startDate,
+        endDate: values.endDate,
+        dishes: dishesIds
       }
 
-      await api
-        .put('menu', updatedMenu)
+      debugger
+
+      await HTTPHandler.patch(`menus/${data.menu.id}`, {
+        ...updatedMenu
+      })
         .then(() => {
           queryClient.invalidateQueries('menu')
           alert.success('Menu saved with success')
@@ -105,8 +117,8 @@ export default function Menu() {
 
   useEffect(() => {
     if (data) {
-      setValue('start_date', data.menu.start_date)
-      setValue('end_date', data.menu.end_date)
+      setValue('startDate', data.menu.startDate)
+      setValue('endDate', data.menu.endDate)
       setValue('dishes', data.menu.dishes)
     }
   }, [data, setValue])
@@ -137,7 +149,7 @@ export default function Menu() {
               <Flex w="96" align="center" ml="auto">
                 <Text mr="4">From</Text>
                 <Controller
-                  name="start_date"
+                  name="startDate"
                   control={control}
                   render={({ field: { onChange, value } }) => (
                     <DatePicker isDisabled selected={value} onChange={(date) => onChange(date)} />
@@ -145,7 +157,7 @@ export default function Menu() {
                 />
                 <Text mx="4">to</Text>
                 <Controller
-                  name="end_date"
+                  name="endDate"
                   control={control}
                   render={({ field: { value, onChange } }) => (
                     <DatePicker
@@ -160,8 +172,8 @@ export default function Menu() {
                 />
               </Flex>
 
-              {errors.end_date && (
-                <FormErrorMessage color="red.600">{errors.end_date.message}</FormErrorMessage>
+              {errors.endDate && (
+                <FormErrorMessage color="red.600">{errors.endDate.message}</FormErrorMessage>
               )}
             </Box>
 
@@ -179,8 +191,10 @@ export default function Menu() {
                         borderLeftRadius={8}
                         justifyContent="center"
                         align="center"
+                        flexDirection="column"
                       >
-                        <Text>{menuDish.date.toDateString()}</Text>
+                        <Text>{getDayName(menuDish.date, 'en')}</Text>
+                        <Text fontSize={14}>{getMonthName(menuDish.date, 'en')}</Text>
                       </Flex>
                     ))}
                 </VStack>
@@ -211,8 +225,11 @@ export default function Menu() {
                                 <Flex direction="column">
                                   <Text fontWeight="bold">{menuDish.dish.name}</Text>
                                   {isWideVersion && (
-                                    <Text overflowWrap="anywhere">
-                                      {menuDish.dish.ingredients.map((i) => i.name).join('/')}
+                                    <Text overflowWrap="anywhere" fontSize={14}>
+                                      {menuDish.dish.id}
+                                      {/*                                       {menuDish.dish.ingredients
+                                        .map((i) => i.grocery.name)
+                                        .join(', ')} */}
                                     </Text>
                                   )}
                                 </Flex>

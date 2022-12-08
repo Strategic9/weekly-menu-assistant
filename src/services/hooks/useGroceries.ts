@@ -58,7 +58,7 @@ export function useGroceries(page: number, options: UseQueryOptions) {
 
 // get one grocery
 export async function getGroceryById(groceryId: string, include: string) {
-  const { data } = await HTTPHandler.get<Grocery>(`groceries/${groceryId}`, {
+  const { data } = await HTTPHandler.get(`groceries/${groceryId}`, {
     params: {
       include: 'category'
     }
