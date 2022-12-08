@@ -20,7 +20,7 @@ import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup'
 import { DatePicker } from '../../components/Form/DatePicker'
 import { GetMenuResponse, Menu as MenuType, useMenu } from '../../services/hooks/useMenu'
-import { addDays, arrayMove, getDayName, getMonthName } from '../../services/utils'
+import { addDays, arrayMove, getDayName, getDays, getMonthName } from '../../services/utils'
 import PageWrapper from '../page-wrapper'
 import { api, HTTPHandler } from '../../services/api'
 import { useAlert } from 'react-alert'
@@ -42,7 +42,6 @@ const updateMenuFormSchema = yup.object({
 export default function Menu() {
   const alert = useAlert()
   const [hasUpdates, setHasUpdates] = useBoolean()
-  const [newData, setNewData] = useState([])
   const { data: useMenuData, isLoading, isFetching } = useMenu({})
   const data = useMenuData as GetMenuResponse
 
@@ -73,7 +72,7 @@ export default function Menu() {
     arrayMove(data.menu.dishes, source.index, destination.index)
 
     for (let i = 0; i < data.menu.dishes.length; i++) {
-      data.menu.dishes[i].date = addDays(startDate, i)
+      data.menu.dishes[i].selectionDate = addDays(startDate, i)
     }
 
     setValue('dishes', data.menu.dishes)
@@ -85,10 +84,11 @@ export default function Menu() {
     const dishesIds = []
 
     values.dishes.map((dish) => {
-      dishesIds.push({
-        id: dish.dish.id,
-        date: dish.date
-      })
+      dish.dish.id !== '0' &&
+        dishesIds.push({
+          id: dish.dish.id,
+          selectionDate: dish.selectionDate
+        })
     })
 
     if (hasUpdates) {
@@ -98,7 +98,7 @@ export default function Menu() {
         dishes: dishesIds
       }
 
-      debugger
+      // debugger
 
       await HTTPHandler.patch(`menus/${data.menu.id}`, {
         ...updatedMenu
@@ -183,32 +183,30 @@ export default function Menu() {
                   {data.menu &&
                     data.menu.dishes.map((menuDish) => (
                       <Flex
-                        key={menuDish.dish.id}
+                        key={menuDish.id.toString()}
                         w="100%"
                         h={16}
                         bg="oxblood.500"
                         color="white"
                         borderLeftRadius={8}
                         justifyContent="center"
-                        align="center"
+                        align="flex-end"
+                        pr={3.5}
                         flexDirection="column"
                       >
-                        <Text>{getDayName(menuDish.date, 'en')}</Text>
-                        <Text fontSize={14}>{getMonthName(menuDish.date, 'en')}</Text>
+                        <Text>{getDayName(menuDish.selectionDate, 'en')}</Text>
+                        <Text fontSize={14} color="oxblood.100">
+                          {getMonthName(menuDish.selectionDate, 'en')}
+                        </Text>
                       </Flex>
                     ))}
                 </VStack>
-
                 <Droppable droppableId={`menu-${data.menu.id}`}>
                   {(provided) => (
                     <VStack flex={1} ref={provided.innerRef} {...provided.droppableProps}>
-                      {data &&
-                        data.menu.dishes.map((menuDish, index) => (
-                          <Draggable
-                            key={menuDish.dish.id}
-                            draggableId={menuDish.dish.id}
-                            index={index}
-                          >
+                      {data.menu.dishes.map((menuDish, index) =>
+                        menuDish.dish.id === '0' ? (
+                          <Draggable key={menuDish.id} draggableId={menuDish.id} index={index}>
                             {(provided) => (
                               <HStack
                                 w="100%"
@@ -223,13 +221,10 @@ export default function Menu() {
                                 justifyContent="space-between"
                               >
                                 <Flex direction="column">
-                                  <Text fontWeight="bold">{menuDish.dish.name}</Text>
+                                  <Text fontWeight="bold">No dish for this day</Text>
                                   {isWideVersion && (
                                     <Text overflowWrap="anywhere" fontSize={14}>
-                                      {menuDish.dish.id}
-                                      {/*                                       {menuDish.dish.ingredients
-                                        .map((i) => i.grocery.name)
-                                        .join(', ')} */}
+                                      You can add a new dish
                                     </Text>
                                   )}
                                 </Flex>
@@ -250,7 +245,50 @@ export default function Menu() {
                               </HStack>
                             )}
                           </Draggable>
-                        ))}
+                        ) : (
+                          <Draggable key={menuDish.id} draggableId={menuDish.id} index={index}>
+                            {(provided) => (
+                              <HStack
+                                w="100%"
+                                h={16}
+                                px={4}
+                                py={2}
+                                bg="gray.100"
+                                borderRightRadius={8}
+                                {...provided.draggableProps}
+                                {...provided.dragHandleProps}
+                                ref={provided.innerRef}
+                                justifyContent="space-between"
+                              >
+                                <Flex direction="column">
+                                  <Text fontWeight="bold">{menuDish.dish.name}</Text>
+                                  {isWideVersion && (
+                                    <Text overflowWrap="anywhere" fontSize={14}>
+                                      {menuDish.dish.ingredients
+                                        .map((i) => i.grocery.name)
+                                        .join(', ')}
+                                    </Text>
+                                  )}
+                                </Flex>
+                                <SearchDishModal
+                                  buttonProps={{
+                                    size: 'sm',
+                                    colorScheme: 'tan',
+                                    leftIcon: <Icon as={FaExchangeAlt} fontSize="16" />,
+                                    iconSpacing: '0'
+                                  }}
+                                  onSelectItem={(dish) => {
+                                    menuDish.dish = dish
+                                    data.menu.dishes.splice(index, 1, menuDish)
+                                    setValue('dishes', data.menu.dishes)
+                                    setHasUpdates.on()
+                                  }}
+                                />
+                              </HStack>
+                            )}
+                          </Draggable>
+                        )
+                      )}
                       {provided.placeholder}
                     </VStack>
                   )}

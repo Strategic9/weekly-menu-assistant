@@ -46,4 +46,4 @@ export const getDayName = (dateStr, locale) =>
 export const getMonthName = (dateStr, locale) =>
   `${dateStr.toLocaleDateString(locale, {
     month: 'long'
-  })}, ${dateStr.getDate()} ${dateStr.getYear() + 1900}`
+  })}, ${dateStr.getDate()} ${dateStr.getFullYear()}`

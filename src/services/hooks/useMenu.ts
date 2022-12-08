@@ -4,7 +4,6 @@ import ShopList from '../../pages/shop-list'
 import { api } from '../api'
 import { Dish } from './useDishes'
 import { HTTPHandler } from '../api'
-import { getGroceryById } from './useGroceries'
 import { getDays } from '../utils'
 
 export type Menu = {
@@ -21,8 +20,8 @@ type User = {
 }
 
 export type MenuDish = {
+  selectionDate: Date
   dish: Dish
-  date: Date
   id: string
 }
 
@@ -47,6 +46,26 @@ export type GetMenuHistoryResponse = {
   totalCount: number
 }
 
+const checkDishesAndDays = (menu) => {
+  const days = getDays(menu.startDate, menu.endDate)
+
+  const filteredArray = days.filter(
+    (day) => !menu.dishes.some((dish) => day.toString() === new Date(dish.selectionDate).toString())
+  )
+
+  filteredArray.forEach((object, i) =>
+    menu.dishes.push({
+      id: i.toString(),
+      selectionDate: object,
+      dish: {
+        id: '0'
+      }
+    })
+  )
+
+  return menu.dishes.sort((a, b) => a.selectionDate.getTime() - b.selectionDate.getTime())
+}
+
 export async function getMenu(): Promise<GetMenuResponse> {
   const { 'menu.shopList': cookieShopList } = parseCookies()
   const { data } = await HTTPHandler.get('menus')
@@ -56,15 +75,15 @@ export async function getMenu(): Promise<GetMenuResponse> {
   menu.startDate = new Date(menu.startDate)
   menu.endDate = new Date(menu.endDate)
 
-  const { startDate, endDate } = menu
-
-  const days = getDays(startDate, endDate)
-
-  menu.dishes.forEach((dish, i) => (dish.date = new Date(days[i])))
+  menu.dishes.forEach((dish) => (dish.selectionDate = new Date(dish.selectionDate)))
 
   let shopList: ShopList = cookieShopList ? JSON.parse(cookieShopList) : {}
 
   shopList = generateShopList(shopList, menu)
+
+  const updatedDishes = checkDishesAndDays(menu)
+
+  menu.dishes = updatedDishes
 
   return {
     menu,
