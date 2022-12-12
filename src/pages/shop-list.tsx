@@ -8,7 +8,8 @@ import {
   ListItem,
   Text,
   Checkbox,
-  Stack
+  Stack,
+  useBreakpointValue
 } from '@chakra-ui/react'
 import { RiCloseLine } from 'react-icons/ri'
 import { setCookie } from 'nookies'
@@ -26,6 +27,12 @@ export default function ShopList() {
   const { data: useMenuData, isLoading, error } = useMenu({})
   const menuData = useMenuData as GetMenuResponse
   const alert = useAlert()
+
+  const isWideVersion = useBreakpointValue({
+    base: false,
+    md: true,
+    lg: true
+  })
 
   const changeItem = useMutation(
     async (data: { name: string; amount: number; bought: boolean; category: string }) => {
@@ -87,7 +94,7 @@ export default function ShopList() {
             buttonProps={{
               colorScheme: 'oxblood'
             }}
-            buttonLabel="Add new item"
+            buttonLabel={isWideVersion ? 'Add new item' : '+'}
             onSelectItem={handleAddGrocery}
           />
         </Flex>

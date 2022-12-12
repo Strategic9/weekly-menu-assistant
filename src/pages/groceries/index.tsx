@@ -56,7 +56,7 @@ export default function GroceryList({ groceries, totalCount }) {
 
   return (
     <PageWrapper>
-      <Box flex="1" borderRadius={8} bg="grain" p="8">
+      <Box flex="1" borderRadius={8} bg="grain" p={[4, 8]}>
         <Flex mb="8" justify="space-between" align="center">
           <Heading size="lg" fontWeight="normal">
             Groceries
@@ -84,13 +84,17 @@ export default function GroceryList({ groceries, totalCount }) {
             <Text>Fail to obtain groceries data.</Text>
           </Flex>
         ) : (
-          <>
-            <Table colorScheme="whiteAlpha" color="gray.700">
+          <Flex direction="column" justify="center" align="center">
+            <Table size={!isWideVersion ? 'sm' : 'lg'} colorScheme="whiteAlpha" color="gray.700">
               <Thead bg="gray.200" color="black">
                 <Tr>
-                  <Th>Grocery</Th>
-                  <Th>Category</Th>
-                  {isWideVersion && <Th width="8">Actions</Th>}
+                  <Th fontSize={[14, 15, 18]}>Grocery</Th>
+                  <Th fontSize={[14, 15, 18]}>Category</Th>
+                  {isWideVersion && (
+                    <Th fontSize={[14, 16, 18]} width="8">
+                      Actions
+                    </Th>
+                  )}
                 </Tr>
               </Thead>
               <Tbody>
@@ -98,14 +102,14 @@ export default function GroceryList({ groceries, totalCount }) {
                   <Tr key={grocery.id}>
                     <Td>
                       <Box>
-                        <Text fontWeight="bold" textTransform="capitalize">
+                        <Text fontSize={[14, 16, 20]} fontWeight="bold" textTransform="capitalize">
                           {grocery.name}
                         </Text>
                       </Box>
                     </Td>
                     <Td>
                       {grocery.category && (
-                        <Text fontSize="sm" textTransform="capitalize">
+                        <Text fontSize={[14, 16, 18]} textTransform="capitalize">
                           {grocery.category.name}
                         </Text>
                       )}
@@ -147,7 +151,7 @@ export default function GroceryList({ groceries, totalCount }) {
               currentPage={page}
               onPageChange={setPage}
             />
-          </>
+          </Flex>
         )}
       </Box>
     </PageWrapper>
