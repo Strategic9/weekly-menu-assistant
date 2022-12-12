@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import ReactDatePicker from 'react-datepicker'
 
 export const WeekPicker = ({ setWeek }) => {
@@ -36,8 +36,13 @@ export const WeekPicker = ({ setWeek }) => {
     return [start, end]
   }
 
+  useEffect(() => {
+    onChange(new Date())
+  }, [])
+
   return (
     <ReactDatePicker
+      selected={startDate}
       onChange={onChange}
       startDate={startDate}
       endDate={endDate}

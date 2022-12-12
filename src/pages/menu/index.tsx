@@ -146,7 +146,9 @@ export default function Menu() {
           </Heading>
         </Flex>
         {isEmpty ? (
-          <WeekPicker setWeek={setWeek} />
+          <Box>
+            <WeekPicker setWeek={setWeek} />
+          </Box>
         ) : isLoading || isFetching || !localData ? (
           <Box w="100%" m="auto">
             <Spinner size="lg" color="gray.500" ml="4" />
