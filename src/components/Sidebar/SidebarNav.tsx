@@ -8,7 +8,7 @@ import { NavSection } from './NavSection'
 export function SidebarNav() {
   return (
     <Stack spacing="6">
-      <NavLink icon={RiDashboardLine} href="/dashboard">
+      <NavLink className="sidebar-text" icon={RiDashboardLine} href="/dashboard">
         Dashboard
       </NavLink>
       <NavSection title="Menu" icon={BiFoodMenu} activePath="/menu">
@@ -28,7 +28,7 @@ export function SidebarNav() {
         <NavLink href="/categories">Category List</NavLink>
         <NavLink href="/categories/add">Add Category</NavLink>
       </NavSection>
-      <NavLink icon={RiListCheck} href="/shop-list">
+      <NavLink className="sidebar-text" icon={RiListCheck} href="/shop-list">
         Shop List
       </NavLink>
     </Stack>
