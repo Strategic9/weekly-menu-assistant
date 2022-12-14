@@ -130,6 +130,24 @@ export default function Menu() {
     }
   }, [data, setValue])
 
+  const generateMenu = async () => {
+    const userId = localStorage.getItem('user-id')
+    const params = {
+      user: {
+        id: userId
+      },
+      startDate: week[0],
+      endDate: week[1]
+    }
+    try {
+      const response = await HTTPHandler.post('/menus/generate', params)
+      const { data } = response
+      console.log(data)
+    } catch (err) {
+      alert.error('Failed to generate menu')
+    }
+  }
+
   return (
     <PageWrapper>
       <Box
@@ -146,9 +164,10 @@ export default function Menu() {
           </Heading>
         </Flex>
         {isEmpty ? (
-          <Box>
+          <Flex>
             <WeekPicker setWeek={setWeek} />
-          </Box>
+            <Button onClick={() => generateMenu()}>Generate Menu</Button>
+          </Flex>
         ) : isLoading || isFetching || !localData ? (
           <Box w="100%" m="auto">
             <Spinner size="lg" color="gray.500" ml="4" />
