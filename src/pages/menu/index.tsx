@@ -17,7 +17,7 @@ import { Controller, useForm } from 'react-hook-form'
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup'
 import { DatePicker } from '../../components/Form/DatePicker'
-import { GetMenuResponse, useMenu } from '../../services/hooks/useMenu'
+import { GetMenuResponse, getMenu, useMenu } from '../../services/hooks/useMenu'
 import { addDays, arrayMove, getDayName, getMonthName } from '../../services/utils'
 import PageWrapper from '../page-wrapper'
 import { HTTPHandler } from '../../services/api'
@@ -48,7 +48,27 @@ export default function Menu() {
   const [week, setWeek] = useState(null)
 
   // should be true when the user doesn't have a menu created
-  const isEmpty = false
+
+  const menuData = {
+    id: '237b12e9-a6bd-4f89-a045-170ac4ab99a6',
+    createdAt: '2022-12-14T13:45:19.182Z',
+    updatedAt: '2022-12-14T13:45:19.182Z',
+    startDate: '2022-12-12T13:45:15.492Z',
+    endDate: '2022-12-18T13:45:15.492Z'
+  }
+
+  const menuDateStart = menuData.startDate.split('T')[0]
+  const menuDateEnd = menuData.endDate.split('T')[0]
+
+  const startDateWeek = week && week[0].toISOString().split('T')[0]
+  const endDateWeek = week && week[1].toISOString().split('T')[0]
+
+  const weekDates = [startDateWeek, endDateWeek]
+  const menuDates = [menuDateStart, menuDateEnd]
+
+  const MenuForChoosenWeekExists = weekDates.every((el) => menuDates.includes(el))
+
+  console.log(MenuForChoosenWeekExists)
 
   const [localData, setLocalData] = useState({ ...data })
 
@@ -141,12 +161,16 @@ export default function Menu() {
     }
     try {
       const response = await HTTPHandler.post('/menus/generate', params)
-      const { data } = response
-      console.log(data)
+
+      const updatedData = await getMenu()
+
+      console.log('updated data', updatedData)
     } catch (err) {
       alert.error('Failed to generate menu')
     }
   }
+
+  console.log(week && week[0].toISOString().split('T')[0], menuData.startDate.split('T')[0])
 
   return (
     <PageWrapper>
@@ -163,9 +187,9 @@ export default function Menu() {
             Week Menu
           </Heading>
         </Flex>
-        {isEmpty ? (
+        <WeekPicker setWeek={setWeek} />
+        {!MenuForChoosenWeekExists ? (
           <Flex>
-            <WeekPicker setWeek={setWeek} />
             <Button onClick={() => generateMenu()}>Generate Menu</Button>
           </Flex>
         ) : isLoading || isFetching || !localData ? (
