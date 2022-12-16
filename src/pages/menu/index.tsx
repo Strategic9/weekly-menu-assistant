@@ -42,35 +42,32 @@ export default function Menu() {
   const alert = useAlert()
   const [hasUpdates, setHasUpdates] = useBoolean()
   const { data: useMenuData, isLoading, isFetching } = useMenu({})
-  const data = useMenuData as GetMenuResponse
+  const data: any = useMenuData
+  const [localData, setLocalData] = useState({ ...data })
+  let menuCurrentWeek
 
   //The week object to send to get a menu
   const [week, setWeek] = useState(null)
-
-  // should be true when the user doesn't have a menu created
-
-  const menuData = {
-    id: '237b12e9-a6bd-4f89-a045-170ac4ab99a6',
-    createdAt: '2022-12-14T13:45:19.182Z',
-    updatedAt: '2022-12-14T13:45:19.182Z',
-    startDate: '2022-12-12T13:45:15.492Z',
-    endDate: '2022-12-18T13:45:15.492Z'
-  }
-
-  const menuDateStart = menuData.startDate.split('T')[0]
-  const menuDateEnd = menuData.endDate.split('T')[0]
-
   const startDateWeek = week && week[0].toISOString().split('T')[0]
   const endDateWeek = week && week[1].toISOString().split('T')[0]
+  let MenuForChoosenWeekExists = false;
 
-  const weekDates = [startDateWeek, endDateWeek]
-  const menuDates = [menuDateStart, menuDateEnd]
+  const setCurrentMenuWeek = (fetchData) => {
+    fetchData.items.forEach(menu => {
+      menu.startDate = new Date(menu.startDate)
+      menu.endDate = new Date(menu.endDate)
+    })
+    const menuWeek = fetchData.items.find(menu => menu.startDate.toISOString().split('T')[0] === startDateWeek && menu.endDate.toISOString().split('T')[0] === endDateWeek)
+    if (menuWeek) {
+      menuCurrentWeek = { menu: menuWeek}
+      MenuForChoosenWeekExists = true
+    }
+  }
 
-  const MenuForChoosenWeekExists = weekDates.every((el) => menuDates.includes(el))
-
-  console.log(MenuForChoosenWeekExists)
-
-  const [localData, setLocalData] = useState({ ...data })
+  if (!!data) {
+    setCurrentMenuWeek(data)
+    console.log(MenuForChoosenWeekExists)
+  }
 
   const {
     control,
@@ -94,16 +91,16 @@ export default function Menu() {
     if (destination.droppableId === source.droppableId && destination.index === source.index) {
       return
     }
-    const startDate = new Date(data.menu.startDate)
+    const startDate = new Date(menuCurrentWeek.menu.startDate)
 
-    arrayMove(data.menu.dishes, source.index, destination.index)
+    arrayMove(menuCurrentWeek.menu.dishes, source.index, destination.index)
 
-    for (let i = 0; i < data.menu.dishes.length; i++) {
-      data.menu.dishes[i].selectionDate = addDays(startDate, i)
+    for (let i = 0; i < menuCurrentWeek.menu.dishes.length; i++) {
+      menuCurrentWeek.menu.dishes[i].selectionDate = addDays(startDate, i)
     }
 
-    setValue('dishes', data.menu.dishes)
-    setLocalData({ ...data })
+    setValue('dishes', menuCurrentWeek.menu.dishes)
+    setLocalData({ ...menuCurrentWeek })
 
     setHasUpdates.on()
   }
@@ -126,7 +123,7 @@ export default function Menu() {
         dishes: dishesIds
       }
 
-      await HTTPHandler.patch(`menus/${data.menu.id}`, {
+      await HTTPHandler.patch(`menus/${menuCurrentWeek.menu.id}`, {
         ...updatedMenu
       })
         .then(() => {
@@ -142,13 +139,13 @@ export default function Menu() {
   }
 
   useEffect(() => {
-    if (data) {
-      setValue('startDate', data.menu.startDate)
-      setValue('endDate', data.menu.endDate)
-      setValue('dishes', data.menu.dishes)
-      setLocalData({ ...data })
+    if (menuCurrentWeek) {
+      setValue('startDate', menuCurrentWeek.menu.startDate)
+      setValue('endDate', menuCurrentWeek.menu.endDate)
+      setValue('dishes', menuCurrentWeek.menu.dishes)
+      setLocalData({ ...menuCurrentWeek })
     }
-  }, [data, setValue])
+  })
 
   const generateMenu = async () => {
     const userId = localStorage.getItem('user-id')
@@ -160,17 +157,22 @@ export default function Menu() {
       endDate: week[1]
     }
     try {
-      const response = await HTTPHandler.post('/menus/generate', params)
+      HTTPHandler.post('/menus/generate', params).then( async(res) => {
+        getMenu().then(updatedData => {
+          setCurrentMenuWeek(updatedData)
+          setLocalData({...menuCurrentWeek})
+          debugger;
+          MenuForChoosenWeekExists = true
+          console.log('updated data', updatedData)
+        })
+      })
 
-      const updatedData = await getMenu()
-
-      console.log('updated data', updatedData)
     } catch (err) {
       alert.error('Failed to generate menu')
     }
   }
 
-  console.log(week && week[0].toISOString().split('T')[0], menuData.startDate.split('T')[0])
+  // console.log(week && week[0].toISOString().split('T')[0], menuData.startDate.split('T')[0])
 
   return (
     <PageWrapper>
@@ -255,7 +257,7 @@ export default function Menu() {
                       </Flex>
                     ))}
                 </VStack>
-                <Droppable droppableId={`menu-${data.menu.id}`}>
+                <Droppable droppableId={`menu-${menuCurrentWeek.menu.id}`}>
                   {(provided) => (
                     <VStack flex={1} ref={provided.innerRef} {...provided.droppableProps}>
                       {localData?.menu &&
@@ -267,7 +269,7 @@ export default function Menu() {
                               setLocalData={setLocalData}
                               index={index}
                               setValue={setValue}
-                              data={data}
+                              data={menuCurrentWeek}
                               setHasUpdates={setHasUpdates}
                               isWideVersion={isWideVersion}
                             />
@@ -278,7 +280,7 @@ export default function Menu() {
                               index={index}
                               setValue={setValue}
                               setLocalData={setLocalData}
-                              data={data}
+                              data={menuCurrentWeek}
                               setHasUpdates={setHasUpdates}
                               isWideVersion={isWideVersion}
                             />

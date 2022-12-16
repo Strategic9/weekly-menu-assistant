@@ -12,8 +12,8 @@ import DishForm from '../../components/Form/DishForm'
 type CreateDishFormData = {
   name: string
   description: string
-  ingredients: { id: string }[]
-  mainIngredient: { id: string }
+  ingredients: { id: string, quantity: number }[]
+  mainIngredient: { id: string, quantity: number }
 }
 
 type FormData = {
@@ -57,8 +57,8 @@ export default function CreateDish() {
     const newDish: CreateDishFormData = {
       name,
       description,
-      ingredients: ingredients.filter((i) => i.id !== mainIngredientId).map(({ id }) => ({ id })),
-      mainIngredient: { id: mainIngredientId }
+      ingredients: ingredients.filter((i) => i.id !== mainIngredientId).map(({ id }) => ({ id })).map(i => ({ id: i.id, quantity: 1})),
+      mainIngredient: { id: mainIngredientId, quantity: 1 }
     }
     await createDish.mutateAsync(newDish)
   }
