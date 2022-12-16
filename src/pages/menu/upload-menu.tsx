@@ -8,7 +8,7 @@ import Link from 'next/link'
 import React from 'react'
 
 type UploadMenuData = {
-  menuFile: FileList
+  menuFile: File
 }
 
 export default function UploadMenu() {
@@ -17,10 +17,9 @@ export default function UploadMenu() {
   const { handleSubmit, control } = useForm()
 
   const handleUploadFile = async (values: UploadMenuData) => {
-    const file = values.menuFile[0]
-    await HTTPHandler.post(`menus/upload`, {
-      file
-    })
+    const formData = new FormData()
+    formData.append('file', values.menuFile)
+    await HTTPHandler.postBlob(`menus/upload`, formData, 'plain/text')
       .then(() => {
         queryClient.invalidateQueries('menu')
         alert.success('Menu saved with success')
@@ -61,7 +60,7 @@ export default function UploadMenu() {
                     multiple={false}
                     {...field}
                     onChange={(event) => {
-                      return field.onChange(event.target.files)
+                      return field.onChange(event.target.files[0])
                     }}
                     value={field.value.filename}
                   />
