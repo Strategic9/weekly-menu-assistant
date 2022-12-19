@@ -1,6 +1,6 @@
 import { Stack } from '@chakra-ui/react'
 import { RiDashboardLine, RiListCheck } from 'react-icons/ri'
-import { BiFoodMenu, BiRestaurant, BiCategory } from 'react-icons/bi'
+import { BiFoodMenu, BiRestaurant, BiCategory, BiFolderOpen } from 'react-icons/bi'
 import { FaShoppingBasket } from 'react-icons/fa'
 import { NavLink } from './NavLink'
 import { NavSection } from './NavSection'
@@ -27,6 +27,9 @@ export function SidebarNav() {
       <NavSection title="Categories" icon={BiCategory} activePath="/categories">
         <NavLink href="/categories">Category List</NavLink>
         <NavLink href="/categories/add">Add Category</NavLink>
+      </NavSection>
+      <NavSection title="FileUpload" icon={BiFolderOpen} activePath="/upload-menu">
+        <NavLink href="/upload-menu">Add File</NavLink>
       </NavSection>
       <NavLink className="sidebar-text" icon={RiListCheck} href="/shop-list">
         Shop List
