@@ -23,9 +23,42 @@ import AlertDialog from '../components/AlertDialog'
 import PageWrapper from './page-wrapper'
 
 export default function ShopList() {
-  const { data: useMenuData, isLoading, error } = useMenu({})
+  const { data: useMenuData } = useMenu({})
+  const error = false
+  const isLoading = false
   const menuData = useMenuData as GetMenuResponse
   const alert = useAlert()
+
+  const mockData = {
+    shopList: {
+      categories: {
+        Dairy: [
+          {
+            name: 'Milk',
+            amount: '1 Liter',
+            bought: false
+          },
+          {
+            name: 'Cheese',
+            amount: '500 gr',
+            bought: false
+          }
+        ],
+        Vegetables: [
+          {
+            name: 'Carrot',
+            amount: '250 gr',
+            bought: false
+          },
+          {
+            name: 'Tomato',
+            amount: '100 gr',
+            bought: true
+          }
+        ]
+      }
+    }
+  }
 
   const changeItem = useMutation(
     async (data: { name: string; amount: number; bought: boolean; category: string }) => {
@@ -104,7 +137,7 @@ export default function ShopList() {
               </Flex>
             ) : (
               <List as={Stack} spacing="2">
-                {Object.entries(menuData.shopList.categories)?.map(([key, groceries]) => (
+                {Object.entries(mockData.shopList.categories)?.map(([key, groceries]) => (
                   <Box key={key}>
                     <Text fontSize="xl" color="gray.500" textTransform="capitalize">
                       {key}
@@ -127,9 +160,18 @@ export default function ShopList() {
                             isChecked={listItem.bought}
                             onChange={(event) => handleChange(event, listItem, key)}
                           />
-                          <Text pl="4" textDecoration={listItem.bought && 'line-through'}>
-                            {listItem.name} x{listItem.amount}
-                          </Text>
+                          <Box display="flex" alignItems="baseline">
+                            <Text
+                              pl="4"
+                              color={listItem.bought && 'gray.500'}
+                              textDecoration={listItem.bought && 'line-through'}
+                            >
+                              {listItem.name}
+                            </Text>
+                            <Text as="span" ml="2" color="gray.500" fontSize="12px">
+                              {listItem.amount}
+                            </Text>
+                          </Box>
                         </Flex>
                         <AlertDialog
                           buttonProps={{
