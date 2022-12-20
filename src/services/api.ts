@@ -17,7 +17,7 @@ export const getHeadersForBlob = (fileType: string) => {
   return {
     headers: {
       ...headers.headers,
-      'Content-Type': 'Multipart/formData',
+      'Content-Type': 'multipart/form-data',
       Accept: fileType
     }
   }

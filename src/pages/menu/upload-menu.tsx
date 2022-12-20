@@ -16,21 +16,9 @@ export default function UploadMenu() {
 
   const { handleSubmit, control } = useForm()
 
-  function getBase64(file): Promise<ArrayBuffer | string> {
-    return new Promise(function (resolve, reject) {
-      const reader = new FileReader()
-      reader.onload = function () {
-        resolve(reader.result)
-      }
-      reader.onerror = reject
-      reader.readAsDataURL(file)
-    })
-  }
-
   const handleUploadFile = async (values: UploadMenuData) => {
-    const file = (await getBase64(values.menuFile)).toString()
     const formData = new FormData()
-    formData.append('file', file)
+    formData.append('file', values.menuFile, values.menuFile.name)
     await HTTPHandler.postBlob(`menus/upload`, formData, 'plain/text')
       .then(() => {
         queryClient.invalidateQueries('menu')
