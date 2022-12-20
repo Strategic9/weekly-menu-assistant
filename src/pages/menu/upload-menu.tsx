@@ -19,6 +19,7 @@ export default function UploadMenu() {
   const handleUploadFile = async (values: UploadMenuData) => {
     const formData = new FormData()
     formData.append('file', values.menuFile, values.menuFile.name)
+    formData.append('user', localStorage.getItem('user-id'))
     await HTTPHandler.postBlob(`menus/upload`, formData, 'plain/text')
       .then(() => {
         queryClient.invalidateQueries('menu')
