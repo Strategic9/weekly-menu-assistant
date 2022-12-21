@@ -68,7 +68,12 @@ const checkDishesAndDays = (menu) => {
 
 export async function getMenu(): Promise<any> {
   const { 'menu.shopList': cookieShopList } = parseCookies()
-  const { data } = await HTTPHandler.get('menus')
+  const { data } = await HTTPHandler.get('menus', {
+    params: {
+      'page[limit]': 1000,
+      'page[offset]': 0
+    }
+  })
   const items = JSON.parse(JSON.stringify(data.items))
   if (items.length) {
     const menu = data.items[0] as Menu

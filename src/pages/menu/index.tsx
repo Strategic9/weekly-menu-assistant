@@ -130,7 +130,7 @@ export default function Menu() {
   }
 
   useEffect(() => {
-    if (!!data && !!data.items) {
+    if (!!data && !!data.items && !!week) {
       const menuWeek = data.items.find(
         (menu) =>
           menu.startDate.split('T')[0] === startDateWeek &&
@@ -143,6 +143,9 @@ export default function Menu() {
       } else {
         setMenuForChoosenWeekExists(false)
       }
+
+      setValue('startDate', week[0])
+      setValue('endDate', week[1])
     }
   }, [data, week])
 
