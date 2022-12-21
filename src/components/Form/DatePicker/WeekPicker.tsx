@@ -23,6 +23,7 @@ export const WeekPicker = ({ setWeek }) => {
     } else {
       start.setDate(date.getDate() - date.getDay() + 1)
     }
+    start.setHours(0)
 
     // Find the end of the week by moving forward to the nearest Sunday
     const end = new Date(date)
@@ -31,6 +32,7 @@ export const WeekPicker = ({ setWeek }) => {
     } else {
       end.setDate(date.getDate() - date.getDay() + 7)
     }
+    end.setHours(0)
 
     // Return the range as an array of two dates
     return [start, end]

@@ -69,27 +69,27 @@ const checkDishesAndDays = (menu) => {
 export async function getMenu(): Promise<any> {
   const { 'menu.shopList': cookieShopList } = parseCookies()
   const { data } = await HTTPHandler.get('menus')
-  const items = JSON.parse(JSON.stringify(data.items));
+  const items = JSON.parse(JSON.stringify(data.items))
   if (items.length) {
     const menu = data.items[0] as Menu
     menu.startDate = new Date(menu.startDate)
     menu.endDate = new Date(menu.endDate)
-  
+
     menu.dishes.forEach((dish) => (dish.selectionDate = new Date(dish.selectionDate)))
-  
+
     let shopList: ShopList = cookieShopList ? JSON.parse(cookieShopList) : {}
-  
+
     shopList = generateShopList(shopList, menu)
-  
+
     const updatedDishes = checkDishesAndDays(menu)
-  
+
     menu.dishes = updatedDishes
     return {
       items,
       shopList
     }
   } else {
-    return null;
+    return null
   }
 }
 

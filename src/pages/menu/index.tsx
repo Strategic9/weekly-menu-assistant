@@ -17,7 +17,7 @@ import { Controller, useForm } from 'react-hook-form'
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup'
 import { DatePicker } from '../../components/Form/DatePicker'
-import { GetMenuResponse, getMenu, useMenu } from '../../services/hooks/useMenu'
+import { useMenu } from '../../services/hooks/useMenu'
 import { addDays, arrayMove, getDayName, getMonthName } from '../../services/utils'
 import PageWrapper from '../page-wrapper'
 import { HTTPHandler } from '../../services/api'
@@ -25,6 +25,14 @@ import { useAlert } from 'react-alert'
 import { queryClient } from '../../services/queryClient'
 import { EmptyMenuItem, MenuItem } from '../../components/MenuItems'
 import WeekPicker from '../../components/Form/DatePicker/WeekPicker'
+
+type GenerateMenuInput = {
+  user: {
+    id: string
+  }
+  startDate: string
+  endDate: string
+}
 
 const updateMenuFormSchema = yup.object({
   startDate: yup.date(),
@@ -50,24 +58,7 @@ export default function Menu() {
   const [week, setWeek] = useState(null)
   const startDateWeek = week && week[0].toISOString().split('T')[0]
   const endDateWeek = week && week[1].toISOString().split('T')[0]
-  let MenuForChoosenWeekExists = false;
-
-  const setCurrentMenuWeek = (fetchData) => {
-    fetchData.items.forEach(menu => {
-      menu.startDate = new Date(menu.startDate)
-      menu.endDate = new Date(menu.endDate)
-    })
-    const menuWeek = fetchData.items.find(menu => menu.startDate.toISOString().split('T')[0] === startDateWeek && menu.endDate.toISOString().split('T')[0] === endDateWeek)
-    if (menuWeek) {
-      menuCurrentWeek = { menu: menuWeek}
-      MenuForChoosenWeekExists = true
-    }
-  }
-
-  if (!!data) {
-    setCurrentMenuWeek(data)
-    console.log(MenuForChoosenWeekExists)
-  }
+  const [menuForChoosenWeekExists, setMenuForChoosenWeekExists] = useState(false)
 
   const {
     control,
@@ -139,40 +130,43 @@ export default function Menu() {
   }
 
   useEffect(() => {
-    if (menuCurrentWeek) {
-      setValue('startDate', menuCurrentWeek.menu.startDate)
-      setValue('endDate', menuCurrentWeek.menu.endDate)
-      setValue('dishes', menuCurrentWeek.menu.dishes)
-      setLocalData({ ...menuCurrentWeek })
+    if (!!data && !!data.items) {
+      const menuWeek = data.items.find(
+        (menu) =>
+          menu.startDate.split('T')[0] === startDateWeek &&
+          menu.endDate.split('T')[0] === endDateWeek
+      )
+      if (menuWeek) {
+        menuCurrentWeek = { menu: menuWeek }
+        setMenuForChoosenWeekExists(true)
+        setLocalData({ ...menuCurrentWeek })
+      } else {
+        setMenuForChoosenWeekExists(false)
+      }
     }
-  })
+  }, [data, week])
 
   const generateMenu = async () => {
     const userId = localStorage.getItem('user-id')
-    const params = {
+    const params: GenerateMenuInput = {
       user: {
         id: userId
       },
       startDate: week[0],
       endDate: week[1]
     }
-    try {
-      HTTPHandler.post('/menus/generate', params).then( async(res) => {
-        getMenu().then(updatedData => {
-          setCurrentMenuWeek(updatedData)
-          setLocalData({...menuCurrentWeek})
-          debugger;
-          MenuForChoosenWeekExists = true
-          console.log('updated data', updatedData)
-        })
+
+    await HTTPHandler.post('/menus/generate', params)
+      .then((response) => {
+        menuCurrentWeek = { menu: response.data }
+        setLocalData({ ...menuCurrentWeek })
+        setMenuForChoosenWeekExists(true)
+        queryClient.invalidateQueries('menu')
       })
-
-    } catch (err) {
-      alert.error('Failed to generate menu')
-    }
+      .catch(() => {
+        alert.error('Failed to generate menu')
+      })
   }
-
-  // console.log(week && week[0].toISOString().split('T')[0], menuData.startDate.split('T')[0])
 
   return (
     <PageWrapper>
@@ -190,7 +184,7 @@ export default function Menu() {
           </Heading>
         </Flex>
         <WeekPicker setWeek={setWeek} />
-        {!MenuForChoosenWeekExists ? (
+        {!menuForChoosenWeekExists ? (
           <Flex>
             <Button onClick={() => generateMenu()}>Generate Menu</Button>
           </Flex>
@@ -257,7 +251,7 @@ export default function Menu() {
                       </Flex>
                     ))}
                 </VStack>
-                <Droppable droppableId={`menu-${menuCurrentWeek.menu.id}`}>
+                <Droppable droppableId={`menu-${menuCurrentWeek?.menu.id}`}>
                   {(provided) => (
                     <VStack flex={1} ref={provided.innerRef} {...provided.droppableProps}>
                       {localData?.menu &&
