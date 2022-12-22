@@ -15,13 +15,28 @@ import {
 import {} from 'nookies'
 import { Pagination } from '../../components/Pagination'
 import { useState } from 'react'
-import { GetMenuHistoryResponse, useMenuHistory } from '../../services/hooks/useMenu'
+import { useMenu } from '../../services/hooks/useMenu'
+import { convertDateToString } from '../../services/utils'
+
 import PageWrapper from '../page-wrapper'
 
-export default function MenuHistory({ menus, totalCount }) {
-  const [page, setPage] = useState(1)
-  const { data: useMenuHistoryData, isLoading, isFetching, error } = useMenuHistory(page, {})
-  const data = useMenuHistoryData as GetMenuHistoryResponse
+export default function MenuHistory() {
+  const [page, setPage] = useState(10)
+  const { data: useMenuData, isLoading, isFetching, error } = useMenu({})
+  const data: any = useMenuData
+
+  // sort menus on descending order
+  const sortedMenusHistory =
+    data &&
+    data.items.sort((m1, m2) => new Date(m2.startDate).getTime() - new Date(m1.endDate).getTime())
+
+  //show only current and past menus
+  const menusHistory =
+    sortedMenusHistory &&
+    sortedMenusHistory.filter((date) => {
+      console.log(new Date(date.startDate) > new Date())
+      return new Date(date.startDate) < new Date()
+    })
 
   return (
     <PageWrapper>
@@ -50,13 +65,14 @@ export default function MenuHistory({ menus, totalCount }) {
                   <Th>Menu</Th>
                 </Tr>
               </Thead>
+
               <Tbody>
-                {data.menuHistory
-                  .sort((m1, m2) => m2.start_date.getTime() - m1.start_date.getTime())
-                  .map((menu) => (
+                {menusHistory.map((menu) => {
+                  return (
                     <Tr key={menu.id}>
-                      <Td>{menu.start_date.toDateString()}</Td>
-                      <Td>{menu.end_date.toDateString()}</Td>
+                      {menu.id}
+                      <Td>{convertDateToString(menu.startDate)}</Td>
+                      <Td>{convertDateToString(menu.endDate)}</Td>
                       <Td>
                         {menu.dishes.map((menuDish) => (
                           <HStack key={menuDish.dish?.id}>
@@ -65,10 +81,10 @@ export default function MenuHistory({ menus, totalCount }) {
                         ))}
                       </Td>
                     </Tr>
-                  ))}
+                  )
+                })}
               </Tbody>
             </Table>
-
             <Pagination
               totalCountOfRegisters={data.totalCount}
               currentPage={page}
