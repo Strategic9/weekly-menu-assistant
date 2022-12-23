@@ -7,26 +7,25 @@ import PageWrapper from '../page-wrapper'
 import Link from 'next/link'
 import React from 'react'
 
-type UploadMenuData = {
-  menuFile: File
+type UploadDishData = {
+  dishFile: File
 }
 
-export default function UploadMenu() {
+export default function UploadDish() {
   const alert = useAlert()
 
   const { handleSubmit, control } = useForm()
 
-  const handleUploadFile = async (values: UploadMenuData) => {
+  const handleUploadFile = async (values: UploadDishData) => {
     const formData = new FormData()
-    formData.append('file', values.menuFile, values.menuFile.name)
-    formData.append('user', localStorage.getItem('user-id'))
-    await HTTPHandler.postBlob(`menus/upload`, formData, 'plain/text')
+    formData.append('file', values.dishFile, values.dishFile.name)
+    await HTTPHandler.postBlob(`dishes/upload`, formData, 'plain/text')
       .then(() => {
-        queryClient.invalidateQueries('menu')
-        alert.success('Menu saved with success')
+        queryClient.invalidateQueries('dishes')
+        alert.success('Dishes saved with success')
       })
       .catch(() => {
-        alert.error('Fail to upload menu')
+        alert.error('Fail to upload dishes')
       })
   }
 
@@ -41,7 +40,7 @@ export default function UploadMenu() {
         onSubmit={handleSubmit(handleUploadFile)}
       >
         <Heading size="lg" fontWeight="normal">
-          Upload Menu
+          Upload Dish
         </Heading>
 
         <Divider my="6" borderColor="gray.700" />
@@ -49,7 +48,7 @@ export default function UploadMenu() {
         <VStack spacing="8">
           <SimpleGrid minChildWidth="240px" spacing={['6', '8']} w="100%">
             <Controller
-              name="menuFile"
+              name="dishFile"
               control={control}
               defaultValue={[]}
               render={({ field }) => {
@@ -73,7 +72,7 @@ export default function UploadMenu() {
 
         <Flex mt="8" justify="flex-end">
           <HStack spacing="4">
-            <Link href="/menu" passHref>
+            <Link href="/dishes" passHref>
               <Button colorScheme="gray">Cancel</Button>
             </Link>
             <Button type="submit" colorScheme="oxblood">
