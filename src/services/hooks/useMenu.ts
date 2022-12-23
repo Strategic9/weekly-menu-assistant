@@ -1,7 +1,6 @@
 import { setCookie, parseCookies } from 'nookies'
 import { useQuery, UseQueryOptions } from 'react-query'
 import ShopList from '../../pages/shop-list'
-import { api } from '../api'
 import { Dish } from './useDishes'
 import { HTTPHandler } from '../api'
 import { getDays } from '../utils'
@@ -134,35 +133,8 @@ function generateShopList(shopList: ShopList, menu: Menu) {
   return shopList
 }
 
-export async function getMenuHistory(page: number): Promise<GetMenuHistoryResponse> {
-  const { data, headers } = await api.get<GetMenuHistoryResponse>('menu/history', {
-    params: {
-      page
-    }
-  })
-  const menuHistory = data.menuHistory
-  menuHistory.forEach((menu) => {
-    menu.start_date = new Date(menu.start_date)
-    menu.end_date = new Date(menu.end_date)
-  })
-
-  const totalCount = Number(headers['x-total-count'])
-
-  return {
-    menuHistory,
-    totalCount
-  }
-}
-
 export function useMenu(options: UseQueryOptions) {
   return useQuery(['menu'], () => getMenu(), {
-    staleTime: 1000 * 60 * 10, // 10 minutes
-    ...options
-  })
-}
-
-export function useMenuHistory(page: number, options: UseQueryOptions) {
-  return useQuery(['menus', page], () => getMenuHistory(page), {
     staleTime: 1000 * 60 * 10, // 10 minutes
     ...options
   })

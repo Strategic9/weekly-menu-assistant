@@ -1,109 +1,140 @@
 import {
-  Box,
-  Text,
   Flex,
-  Heading,
-  Table,
-  Thead,
-  Tr,
-  Th,
+  Box,
   HStack,
-  Tbody,
-  Td,
-  Spinner
+  VStack,
+  Text,
+  Heading,
+  Spinner,
+  useBreakpointValue
 } from '@chakra-ui/react'
-import {} from 'nookies'
-import { Pagination } from '../../components/Pagination'
-import { useState } from 'react'
 import { useMenu } from '../../services/hooks/useMenu'
-import { convertDateToString } from '../../services/utils'
-
+import { getDayName, getMonthName } from '../../services/utils'
 import PageWrapper from '../page-wrapper'
+import { Input } from '../../components/Form/Input'
 
-export default function MenuHistory() {
-  const [page, setPage] = useState(10)
+export default function Menu() {
   const { data: useMenuData, isLoading, isFetching, error } = useMenu({})
   const data: any = useMenuData
+
+  const isWideVersion = useBreakpointValue({
+    base: false,
+    lg: true
+  })
+
+  const formatDate = (menuDate) => {
+    const date = new Date(menuDate)
+    const newDate = date.getMonth() + 1 + '/' + date.getDate() + '/' + date.getFullYear()
+    return newDate
+  }
 
   // sort menus on descending order
   const sortedMenusHistory =
     data &&
-    data.items.sort((m1, m2) => new Date(m2.startDate).getTime() - new Date(m1.endDate).getTime())
+    data.items.sort(
+      (menu1, menu2) => new Date(menu2.startDate).getTime() - new Date(menu1.endDate).getTime()
+    )
 
-  //show only current and past menus
+  //show only current menu and past menus
   const menusHistory =
     sortedMenusHistory &&
     sortedMenusHistory.filter((date) => {
-      console.log(new Date(date.startDate) > new Date())
       return new Date(date.startDate) < new Date()
     })
 
   return (
     <PageWrapper>
-      <Box flex="1" borderRadius={8} bg="grain" p="8">
-        <Flex mb="8" justify="space-between" align="center">
+      <Box as="form" flex="1" borderRadius={8} bg="grain" p="8">
+        <Flex align="center">
           <Heading size="lg" fontWeight="normal">
-            Menu History
-            {!isLoading && isFetching && <Spinner size="sm" color="gray.500" ml="4" />}
+            Menu history
           </Heading>
         </Flex>
-        {isLoading ? (
-          <Flex justify="center">
-            <Spinner />
-          </Flex>
+
+        {isLoading || isFetching || !data ? (
+          <Box w="100%" m="auto">
+            <Spinner mt="8" size="lg" color="gray.500" ml="4" />
+          </Box>
         ) : error ? (
           <Flex justify="center">
             <Text>Fail to obtain menu history.</Text>
           </Flex>
         ) : (
-          <>
-            <Table colorScheme="whiteAlpha" color="gray.700">
-              <Thead bg="gray.200" color="black">
-                <Tr>
-                  <Th>Start Date</Th>
-                  <Th>End Date</Th>
-                  <Th>Menu</Th>
-                </Tr>
-              </Thead>
+          <div>
+            {menusHistory &&
+              menusHistory.map((menu) => (
+                <>
+                  <Box mt="10" mb="6">
+                    <Flex w="96" align="center">
+                      <Text mr="4">From</Text>
+                      <Input
+                        fontSize="md"
+                        isDisabled
+                        textAlign="center"
+                        name="startDate"
+                        defaultValue={formatDate(menu.startDate)}
+                      />
+                      <Text mx="4">to</Text>
+                      <Input
+                        fontSize="md"
+                        isDisabled
+                        textAlign="center"
+                        name="endDate"
+                        defaultValue={formatDate(menu.endDate)}
+                      />
+                    </Flex>
+                  </Box>
 
-              <Tbody>
-                {menusHistory.map((menu) => {
-                  return (
-                    <Tr key={menu.id}>
-                      {menu.id}
-                      <Td>{convertDateToString(menu.startDate)}</Td>
-                      <Td>{convertDateToString(menu.endDate)}</Td>
-                      <Td>
-                        {menu.dishes.map((menuDish) => (
-                          <HStack key={menuDish.dish?.id}>
-                            <Text>{menuDish.dish?.name}</Text>
-                          </HStack>
-                        ))}
-                      </Td>
-                    </Tr>
-                  )
-                })}
-              </Tbody>
-            </Table>
-            <Pagination
-              totalCountOfRegisters={data.totalCount}
-              currentPage={page}
-              onPageChange={setPage}
-            />
-          </>
+                  {menu.dishes.map((menuDish) => (
+                    <Flex key={menuDish.dish.id} mb="10px">
+                      <VStack key={menuDish.dish.id} w={40}>
+                        <Flex
+                          key={menuDish?.id?.toString()}
+                          w="100%"
+                          h={16}
+                          bg="oxblood.500"
+                          color="white"
+                          borderLeftRadius={8}
+                          justifyContent="center"
+                          align="flex-end"
+                          pr={3.5}
+                          flexDirection="column"
+                        >
+                          <Text>{getDayName(menuDish.selectionDate, 'en')}</Text>
+                          <Text fontSize={14} color="oxblood.100">
+                            {getMonthName(menuDish.selectionDate, 'en')}
+                          </Text>
+                        </Flex>
+                      </VStack>
+
+                      <VStack flex={1}>
+                        <HStack
+                          key={menuDish.dish.id}
+                          w="100%"
+                          h={16}
+                          px={4}
+                          py={2}
+                          bg="gray.100"
+                          borderRightRadius={8}
+                          justifyContent="space-between"
+                        >
+                          <Flex direction="column">
+                            <Text fontWeight="bold">{menuDish.dish.name}</Text>
+                            {isWideVersion && (
+                              <Text overflowWrap="anywhere" fontSize={14}>
+                                {menuDish.dish.ingredients.map((i) => i.grocery.name).join(', ')}
+                              </Text>
+                            )}
+                          </Flex>
+                        </HStack>
+                      </VStack>
+                    </Flex>
+                  ))}
+                </>
+              ))}
+          </div>
         )}
       </Box>
     </PageWrapper>
   )
 }
-
-// export const getServerSideProps: GetServerSideProps = async () => {
-//     const { users, totalCount } = await getUsers(1);
-
-//     return {
-//         props: {
-//             users,
-//             totalCount
-//         }
-//     }
-// }
