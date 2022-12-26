@@ -67,11 +67,13 @@ export default function Menu() {
                   <Box mt="10" mb="6">
                     <Flex maxW="100%">
                       <Box mr="16px">
-                        <Text fontSize={['sm', 'md']}>From</Text>
+                        <Text mb="5px" fontSize={['sm', 'md']}>
+                          From
+                        </Text>
                         <Input
-                          width="133px"
+                          width={['133px', '100%']}
                           h="40px"
-                          p={[0, 20]}
+                          p={[0, 5]}
                           fontSize={['sm', 'md']}
                           isDisabled
                           textAlign="center"
@@ -80,11 +82,13 @@ export default function Menu() {
                         />
                       </Box>
                       <Box>
-                        <Text fontSize={['sm', 'md']}>to</Text>
+                        <Text mb="5px" fontSize={['sm', 'md']}>
+                          to
+                        </Text>
                         <Input
-                          width="133px"
+                          width={['133px', '100%']}
                           h="40px"
-                          p={[0, 20]}
+                          p={[0, 5]}
                           fontSize={['sm', 'md']}
                           isDisabled
                           textAlign="center"
