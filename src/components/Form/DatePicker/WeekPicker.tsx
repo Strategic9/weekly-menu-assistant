@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import ReactDatePicker from 'react-datepicker'
+import DatePicker from 'react-datepicker'
 
 export const WeekPicker = ({ setWeek }) => {
   const [startDate, setStartDate] = useState(null)
@@ -43,14 +43,14 @@ export const WeekPicker = ({ setWeek }) => {
   }, [])
 
   return (
-    <ReactDatePicker
+    <DatePicker
+      id="weekly-date-picker"
       selected={startDate}
       onChange={onChange}
       startDate={startDate}
       endDate={endDate}
       minDate={new Date()}
       calendarStartDay={1}
-      inline
     />
   )
 }

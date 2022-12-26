@@ -184,7 +184,7 @@ export default function Menu() {
         flex="1"
         borderRadius={8}
         bg="grain"
-        p="8"
+        p="4"
         onSubmit={handleSubmit(onFormSubmit)}
       >
         <Flex mb="8" align="center">
@@ -203,32 +203,41 @@ export default function Menu() {
           </Box>
         ) : (
           <>
-            <Box mb="6">
-              <Flex w="96" align="center" ml="auto">
-                <Text mr="4">From</Text>
-                <Controller
-                  name="startDate"
-                  control={control}
-                  render={({ field: { onChange, value } }) => (
-                    <DatePicker isDisabled selected={value} onChange={(date) => onChange(date)} />
-                  )}
-                />
-                <Text mx="4">to</Text>
-                <Controller
-                  name="endDate"
-                  control={control}
-                  render={({ field: { value, onChange } }) => (
-                    <DatePicker
-                      isDisabled
-                      showPopperArrow={true}
-                      selected={value}
-                      onChange={(date) => {
-                        onChange(date)
-                        setHasUpdates.on()
-                      }}
-                    />
-                  )}
-                />
+            <Box mt="6" mb="6">
+              <Flex maxW="100%">
+                <Box>
+                  <Text mb="5px" fontSize={['sm', 'md']}>
+                    From
+                  </Text>
+                  <Controller
+                    name="startDate"
+                    control={control}
+                    render={({ field: { onChange, value } }) => (
+                      <DatePicker isDisabled selected={value} onChange={(date) => onChange(date)} />
+                    )}
+                  />
+                </Box>
+
+                <Box>
+                  <Text mb="5px" fontSize={['sm', 'md']}>
+                    to
+                  </Text>
+                  <Controller
+                    name="endDate"
+                    control={control}
+                    render={({ field: { value, onChange } }) => (
+                      <DatePicker
+                        isDisabled
+                        showPopperArrow={true}
+                        selected={value}
+                        onChange={(date) => {
+                          onChange(date)
+                          setHasUpdates.on()
+                        }}
+                      />
+                    )}
+                  />
+                </Box>
               </Flex>
 
               {errors.endDate && (
