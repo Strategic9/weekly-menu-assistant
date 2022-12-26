@@ -18,7 +18,13 @@ import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup'
 import { DatePicker } from '../../components/Form/DatePicker'
 import { useMenu } from '../../services/hooks/useMenu'
-import { addDays, arrayMove, getDayName, getMonthName } from '../../services/utils'
+import {
+  addDays,
+  arrayMove,
+  getDayName,
+  getMonthName,
+  convertDateToString
+} from '../../services/utils'
 import PageWrapper from '../page-wrapper'
 import { HTTPHandler } from '../../services/api'
 import { useAlert } from 'react-alert'
@@ -56,8 +62,8 @@ export default function Menu() {
 
   //The week object to send to get a menu
   const [week, setWeek] = useState(null)
-  const startDateWeek = week && week[0].toISOString().split('T')[0]
-  const endDateWeek = week && week[1].toISOString().split('T')[0]
+  const startDateWeek = week && convertDateToString(week[0])
+  const endDateWeek = week && convertDateToString(week[1])
   const [menuForChoosenWeekExists, setMenuForChoosenWeekExists] = useState(false)
 
   const {

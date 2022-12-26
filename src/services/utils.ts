@@ -47,3 +47,7 @@ export const getMonthName = (dateStr, locale) =>
   `${new Date(dateStr).toLocaleDateString(locale, {
     month: 'long'
   })}, ${new Date(dateStr).getDate()} ${new Date(dateStr).getFullYear()}`
+
+export const convertDateToString = (date) => {
+  return new Date(date).toISOString().split('T')[0]
+}
