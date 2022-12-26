@@ -5,12 +5,19 @@ import { FaEllipsisV, FaTrash } from 'react-icons/fa'
 export const MenuDishOptions = ({ replace, deleteDish }) => {
   return (
     <Menu>
-      <MenuButton as={IconButton} aria-label="Options" icon={<FaEllipsisV />} variant="outline" />
+      <MenuButton
+        size={['xs', 'sm']}
+        fontSize={[14, 16]}
+        as={IconButton}
+        aria-label="Options"
+        icon={<FaEllipsisV />}
+        variant="outline"
+      />
       <MenuList>
         {replace}
         <MenuItem
           onClick={() => deleteDish()}
-          fontSize={14}
+          fontSize="16"
           color="red.100"
           icon={<FaTrash size={16} />}
         >

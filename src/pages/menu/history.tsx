@@ -44,7 +44,7 @@ export default function Menu() {
 
   return (
     <PageWrapper>
-      <Box as="form" flex="1" borderRadius={8} bg="grain" p="8">
+      <Box as="form" flex="1" borderRadius={8} bg="grain" p={['4', '8']}>
         <Flex align="center">
           <Heading size="lg" fontWeight="normal">
             Menu history
@@ -65,43 +65,56 @@ export default function Menu() {
               menusHistory.map((menu) => (
                 <>
                   <Box mt="10" mb="6">
-                    <Flex w="96" align="center">
-                      <Text mr="4">From</Text>
-                      <Input
-                        fontSize="md"
-                        isDisabled
-                        textAlign="center"
-                        name="startDate"
-                        defaultValue={formatDate(menu.startDate)}
-                      />
-                      <Text mx="4">to</Text>
-                      <Input
-                        fontSize="md"
-                        isDisabled
-                        textAlign="center"
-                        name="endDate"
-                        defaultValue={formatDate(menu.endDate)}
-                      />
+                    <Flex maxW="100%">
+                      <Box mr="16px">
+                        <Text fontSize={['sm', 'md']}>From</Text>
+                        <Input
+                          width="133px"
+                          h="40px"
+                          p={[0, 20]}
+                          fontSize={['sm', 'md']}
+                          isDisabled
+                          textAlign="center"
+                          name="startDate"
+                          defaultValue={formatDate(menu.startDate)}
+                        />
+                      </Box>
+                      <Box>
+                        <Text fontSize={['sm', 'md']}>to</Text>
+                        <Input
+                          width="133px"
+                          h="40px"
+                          p={[0, 20]}
+                          fontSize={['sm', 'md']}
+                          isDisabled
+                          textAlign="center"
+                          name="endDate"
+                          defaultValue={formatDate(menu.endDate)}
+                        />
+                      </Box>
                     </Flex>
                   </Box>
 
                   {menu.dishes.map((menuDish) => (
                     <Flex key={menuDish.dish.id} mb="10px">
-                      <VStack key={menuDish.dish.id} w={40}>
+                      <VStack key={menuDish.dish.id} w={['90px', '170px']}>
                         <Flex
-                          key={menuDish?.id?.toString()}
+                          key={menuDish.id.toString()}
                           w="100%"
                           h={16}
+                          p={['10px']}
+                          pr={['9px', '20px']}
                           bg="oxblood.500"
                           color="white"
                           borderLeftRadius={8}
                           justifyContent="center"
                           align="flex-end"
-                          pr={3.5}
                           flexDirection="column"
                         >
-                          <Text>{getDayName(menuDish.selectionDate, 'en')}</Text>
-                          <Text fontSize={14} color="oxblood.100">
+                          <Text fontSize={[14, 18]}>
+                            {getDayName(menuDish.selectionDate, 'en')}
+                          </Text>
+                          <Text fontSize={[10, 14]} color="oxblood.100">
                             {getMonthName(menuDish.selectionDate, 'en')}
                           </Text>
                         </Flex>
@@ -119,7 +132,9 @@ export default function Menu() {
                           justifyContent="space-between"
                         >
                           <Flex direction="column">
-                            <Text fontWeight="bold">{menuDish.dish.name}</Text>
+                            <Text fontSize={[14, 18]} fontWeight="bold">
+                              {menuDish.dish.name}
+                            </Text>
                             {isWideVersion && (
                               <Text overflowWrap="anywhere" fontSize={14}>
                                 {menuDish.dish.ingredients.map((i) => i.grocery.name).join(', ')}

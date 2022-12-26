@@ -41,14 +41,6 @@ type GenerateMenuInput = {
 }
 
 const updateMenuFormSchema = yup.object({
-  startDate: yup.date(),
-  endDate: yup
-    .date()
-    .required('End date is required')
-    .when(
-      'startDate',
-      (started, yup) => started && yup.min(started, 'End date must be after start date.')
-    ),
   dishes: yup.array()
 })
 
@@ -77,7 +69,13 @@ export default function Menu() {
 
   const isWideVersion = useBreakpointValue({
     base: false,
+    md: true,
     lg: true
+  })
+
+  const mobileOnly = useBreakpointValue({
+    xs: true,
+    base: true
   })
 
   const handleChangeOrder = (result: DropResult) => {
@@ -184,7 +182,7 @@ export default function Menu() {
         flex="1"
         borderRadius={8}
         bg="grain"
-        p="4"
+        p={['4', '8']}
         onSubmit={handleSubmit(onFormSubmit)}
       >
         <Flex mb="8" align="center">
@@ -195,7 +193,9 @@ export default function Menu() {
         <WeekPicker setWeek={setWeek} />
         {!menuForChoosenWeekExists ? (
           <Flex>
-            <Button onClick={() => generateMenu()}>Generate Menu</Button>
+            <Button mt="20px" onClick={() => generateMenu()}>
+              Generate Menu
+            </Button>
           </Flex>
         ) : isLoading || isFetching || !localData ? (
           <Box w="100%" m="auto">
@@ -245,25 +245,28 @@ export default function Menu() {
               )}
             </Box>
 
+            {/* here goes something in the place of the calendar */}
+
             <DragDropContext onDragEnd={handleChangeOrder}>
               <HStack spacing={0}>
-                <VStack w={40}>
+                <VStack w={['90px', '170px']}>
                   {localData?.menu &&
                     localData.menu.dishes.map((menuDish) => (
                       <Flex
                         key={menuDish.id.toString()}
                         w="100%"
                         h={16}
+                        p={['10px']}
+                        pr={mobileOnly ? '9px' : '20px'}
                         bg="oxblood.500"
                         color="white"
                         borderLeftRadius={8}
                         justifyContent="center"
                         align="flex-end"
-                        pr={3.5}
                         flexDirection="column"
                       >
-                        <Text>{getDayName(menuDish.selectionDate, 'en')}</Text>
-                        <Text fontSize={14} color="oxblood.100">
+                        <Text fontSize={[14, 18]}>{getDayName(menuDish.selectionDate, 'en')}</Text>
+                        <Text fontSize={[10, 14]} color="oxblood.100">
                           {getMonthName(menuDish.selectionDate, 'en')}
                         </Text>
                       </Flex>

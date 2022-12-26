@@ -48,7 +48,9 @@ export const MenuItem = ({
           justifyContent="space-between"
         >
           <Flex direction="column">
-            <Text fontWeight="bold">{menuDish.dish.name}</Text>
+            <Text fontWeight="bold" fontSize={[14, 18]}>
+              {menuDish.dish.name}
+            </Text>
             {isWideVersion && (
               <Text overflowWrap="anywhere" fontSize={14}>
                 {menuDish.dish.ingredients.map((i) => i.grocery.name).join(', ')}
@@ -59,10 +61,11 @@ export const MenuItem = ({
             replace={
               <SearchDishModal
                 buttonProps={{
-                  size: 'sm',
+                  fontSize: '16',
                   leftIcon: <Icon mr={2.5} as={FaExchangeAlt} fontSize="16" />,
                   iconSpacing: '0',
                   borderRadius: '0',
+                  fontWeight: 'normal',
                   w: '100%',
                   justifyContent: 'flex-start',
                   bgColor: 'white',
@@ -115,7 +118,9 @@ export const EmptyMenuItem = ({
           justifyContent="space-between"
         >
           <Flex direction="column">
-            <Text fontWeight="bold">No dish for this day</Text>
+            <Text fontWeight="bold" fontSize={[14, 18]}>
+              No dish for this day
+            </Text>
             {isWideVersion && (
               <Text overflowWrap="anywhere" fontSize={14}>
                 You can add a new dish
@@ -124,9 +129,9 @@ export const EmptyMenuItem = ({
           </Flex>
           <SearchDishModal
             buttonProps={{
-              size: 'sm',
+              size: isWideVersion ? 'sm' : 'xs',
               colorScheme: 'tan',
-              leftIcon: <Icon as={FaPlus} fontSize="16" />,
+              leftIcon: <Icon as={FaPlus} fontSize={['14', '16']} />,
               iconSpacing: '0'
             }}
             onSelectItem={(dish) => {

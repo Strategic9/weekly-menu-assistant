@@ -41,12 +41,12 @@ export const setDate = (data) =>
   })
 
 export const getDayName = (dateStr, locale) =>
-  new Date(dateStr).toLocaleDateString(locale, { weekday: 'long' })
+  new Date(dateStr).toLocaleDateString(locale, { weekday: 'long' }).slice(0, -3)
 
 export const getMonthName = (dateStr, locale) =>
   `${new Date(dateStr).toLocaleDateString(locale, {
     month: 'long'
-  })}, ${new Date(dateStr).getDate()} ${new Date(dateStr).getFullYear()}`
+  })}, ${new Date(dateStr).getDate()}`
 
 export const convertDateToString = (date) => {
   return new Date(date).toISOString().split('T')[0]
