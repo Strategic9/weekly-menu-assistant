@@ -71,7 +71,7 @@ const SearchIngredientBase: ForwardRefRenderFunction<HTMLInputElement, SearchIng
             onChange={(e) => filterResults(e)}
           />
         </PopoverTrigger>
-        <PopoverContent borderRadius="none">
+        <PopoverContent maxW={['160px', '100%']} borderRadius="none">
           {!!newIngredient && (
             <GroceryFormModal
               buttonProps={{
@@ -94,6 +94,7 @@ const SearchIngredientBase: ForwardRefRenderFunction<HTMLInputElement, SearchIng
                   justifyContent="left"
                   borderRadius="none"
                   size="sm"
+                  fontSize={['sm', 'md']}
                   onClick={() => onAddIngredient(el)}
                 >
                   {el.name}

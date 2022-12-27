@@ -68,7 +68,6 @@ export default function DishForm(props: DishFormParams) {
   const {
     register,
     control,
-    reset,
     handleSubmit,
     formState: { errors }
   } = useForm({
@@ -87,17 +86,17 @@ export default function DishForm(props: DishFormParams) {
       flex="1"
       borderRadius={8}
       bg="grain"
-      p={['6', '8']}
+      p={['4', '8']}
       onSubmit={handleSubmit(props.handleSubmit)}
     >
-      <Heading size="lg" fontWeight="normal">
+      <Heading size={['md', 'lg']} fontWeight="normal">
         {props.title} Dish
       </Heading>
 
-      <Divider my="6" borderColor="gray.700" />
+      <Divider my={[4, 6]} borderColor="gray.700" />
 
       <VStack spacing="8">
-        <Grid w="100%" columns={[1, 2]} gap={['4', '6']}>
+        <Grid w="100%" templateColumns={['repeat(1, 1fr)', 'repeat(2, 2fr)']} gap={['4', '6']}>
           <GridItem>
             <Input name="name" label="Name" error={errors.name} {...register('name')} />
           </GridItem>
@@ -133,7 +132,7 @@ export default function DishForm(props: DishFormParams) {
               </Select>
             )}
           </GridItem>
-          <GridItem colSpan={2} rowSpan={2}>
+          <GridItem>
             <HStack spacing={2}>
               {fields.map((ingredient: Grocery, index: number) => (
                 <Tag
@@ -158,9 +157,6 @@ export default function DishForm(props: DishFormParams) {
           <Link href="/dishes" passHref>
             <Button colorScheme="gray">Cancel</Button>
           </Link>
-          <Button colorScheme="gray" onClick={() => reset()}>
-            Reset
-          </Button>
           <Button type="submit" colorScheme="oxblood">
             Save
           </Button>
