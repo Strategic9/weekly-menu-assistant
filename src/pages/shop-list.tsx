@@ -92,7 +92,8 @@ export default function ShopList() {
           </Heading>
           <SearchIngredientModal
             buttonProps={{
-              colorScheme: 'oxblood'
+              colorScheme: 'oxblood',
+              size: isWideVersion ? 'xs' : 'md'
             }}
             buttonLabel={isWideVersion ? 'Add new item' : '+'}
             onSelectItem={handleAddGrocery}
@@ -113,7 +114,7 @@ export default function ShopList() {
               <List as={Stack} spacing="2">
                 {Object.entries(menuData.shopList.categories)?.map(([key, groceries]) => (
                   <Box key={key}>
-                    <Text fontSize="xl" color="gray.500" textTransform="capitalize">
+                    <Text fontSize={['l', 'xl']} color="gray.500" textTransform="capitalize">
                       {key}
                     </Text>
                     {groceries.map((listItem, index) => (
@@ -121,7 +122,7 @@ export default function ShopList() {
                         as={Flex}
                         key={listItem.name}
                         h="12"
-                        my="1"
+                        my="3"
                         bg="gray.100"
                         borderRadius="4"
                         align="center"
@@ -134,7 +135,11 @@ export default function ShopList() {
                             isChecked={listItem.bought}
                             onChange={(event) => handleChange(event, listItem, key)}
                           />
-                          <Text pl="4" textDecoration={listItem.bought && 'line-through'}>
+                          <Text
+                            fontSize={[15, 16]}
+                            pl="4"
+                            textDecoration={listItem.bought && 'line-through'}
+                          >
                             {listItem.name} x{listItem.amount}
                           </Text>
                         </Flex>

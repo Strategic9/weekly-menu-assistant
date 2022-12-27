@@ -30,7 +30,7 @@ export function Profile({ showProfileData = true }: ProfileProps) {
           )}
           <Avatar
             className="avatar-img"
-            size="md"
+            size={['sm', 'md']}
             bg="transparent"
             bgGradient="linear(to-b, tan.400, tan.500)"
             icon={<Image src="/assets/profile.svg" />}
