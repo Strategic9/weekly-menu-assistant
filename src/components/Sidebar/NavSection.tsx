@@ -28,7 +28,7 @@ export function NavSection({ title, icon, activePath, children }: NavSectionProp
         <ChakraLink onClick={() => setToggle(!toggle)}>
           <Flex>
             <Icon as={icon} fontSize="20" />
-            <Text ml="4" fontWeight="medium">
+            <Text className="sidebar-text" ml="4" fontWeight="medium">
               {title}
             </Text>
             <Icon

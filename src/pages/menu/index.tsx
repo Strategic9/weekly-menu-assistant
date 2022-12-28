@@ -49,14 +49,16 @@ export default function Menu() {
   const [hasUpdates, setHasUpdates] = useBoolean()
   const { data: useMenuData, isLoading, isFetching } = useMenu({})
   const data: any = useMenuData
-  const [localData, setLocalData] = useState({ ...data })
   let menuCurrentWeek
 
-  //The week object to send to get a menu
   const [week, setWeek] = useState(null)
+
   const startDateWeek = week && convertDateToString(week[0])
   const endDateWeek = week && convertDateToString(week[1])
+
   const [menuForChoosenWeekExists, setMenuForChoosenWeekExists] = useState(false)
+
+  const [localData, setLocalData] = useState({ ...data })
 
   const {
     control,

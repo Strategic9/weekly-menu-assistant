@@ -92,8 +92,7 @@ export default function ShopList() {
           </Heading>
           <SearchIngredientModal
             buttonProps={{
-              colorScheme: 'oxblood',
-              size: isWideVersion ? 'xs' : 'md'
+              colorScheme: 'oxblood'
             }}
             buttonLabel={isWideVersion ? 'Add new item' : '+'}
             onSelectItem={handleAddGrocery}
