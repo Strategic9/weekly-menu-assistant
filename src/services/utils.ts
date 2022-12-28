@@ -21,7 +21,7 @@ export function getDays(from: Date, to: Date) {
   const diffTime = to.getTime() - from.getTime()
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
   const daysList: Date[] = []
-  for (let i = 0; i < diffDays; i++) {
+  for (let i = 0; i <= diffDays; i++) {
     const day = addDays(from, i)
     daysList.push(day)
   }
@@ -39,3 +39,11 @@ export const setDate = (data) =>
     month: 'long',
     year: 'numeric'
   })
+
+export const getDayName = (dateStr, locale) =>
+  dateStr.toLocaleDateString(locale, { weekday: 'long' })
+
+export const getMonthName = (dateStr, locale) =>
+  `${dateStr.toLocaleDateString(locale, {
+    month: 'long'
+  })}, ${dateStr.getDate()} ${dateStr.getFullYear()}`

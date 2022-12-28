@@ -3,7 +3,7 @@ import { SubmitHandler, useForm } from 'react-hook-form'
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup'
 import { Input } from '../components/Form/Input'
-import { api } from '../services/api'
+import { api, HTTPHandler } from '../services/api'
 import { localStorage } from '../services/localstorage'
 import { useRouter } from 'next/router'
 import { useAlert } from 'react-alert'
@@ -42,6 +42,14 @@ export default function SignIn() {
       })
     }
     gapi.load('client:auth2', initClient)
+  }
+
+  const getUserId = async (email, token) => {
+    const users = await HTTPHandler.get('/users', token)
+
+    users.data.items.map((user) => {
+      user.email === email && localStorage.set('user-id', user.id)
+    })
   }
 
   useEffect(() => {
@@ -105,6 +113,7 @@ export default function SignIn() {
     localStorage.set('token', res.data?.token)
     localStorage.set('username', res.data?.username)
     localStorage.set('email', res.data?.email)
+    getUserId(res.data?.email, res.data?.token)
     router.push('dashboard')
   }
 
@@ -143,7 +152,7 @@ export default function SignIn() {
             onSuccess={onSuccess}
             onFailure={onFailure}
             cookiePolicy={'single_host_origin'}
-            isSignedIn={true}
+            isSignedIn={false}
           />
         </Flex>
         <Text mt={8} fontSize={14}>

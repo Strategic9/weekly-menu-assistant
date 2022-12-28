@@ -12,6 +12,17 @@ export const getHeaders = () => {
     : {}
 }
 
+export const getHeadersForBlob = (fileType: string) => {
+  const headers = getHeaders()
+  return {
+    headers: {
+      ...headers.headers,
+      'Content-Type': 'multipart/form-data',
+      Accept: fileType
+    }
+  }
+}
+
 export const api = axios.create({
   baseURL: 'http://localhost:3001/'
 })
@@ -32,7 +43,7 @@ api.interceptors.response.use(
 export const HTTPHandler = {
   api,
   post: (url: string, values) => {
-    return api.post(url, { ...values }, { ...getHeaders() })
+    return api.post(url, values, { ...getHeaders() })
   },
   patch: (url: string, values) => {
     return api.patch(url, { ...values }, { ...getHeaders() })
@@ -42,5 +53,8 @@ export const HTTPHandler = {
   },
   delete: (url: string, params?) => {
     return api.delete(url, { ...getHeaders(), ...params })
+  },
+  postBlob: (url: string, values, fileType: string) => {
+    return api.post(url, values, { ...getHeadersForBlob(fileType) })
   }
 }

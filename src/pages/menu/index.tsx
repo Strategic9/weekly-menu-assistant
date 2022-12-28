@@ -8,32 +8,31 @@ import {
   Spinner,
   useBreakpointValue,
   Button,
-  Icon,
   FormErrorMessage
 } from '@chakra-ui/react'
 import { useBoolean } from '@chakra-ui/hooks'
-import { useEffect } from 'react'
-import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd'
-import { FaExchangeAlt } from 'react-icons/fa'
+import { useEffect, useState } from 'react'
+import { DragDropContext, Droppable, DropResult } from 'react-beautiful-dnd'
 import { Controller, useForm } from 'react-hook-form'
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup'
 import { DatePicker } from '../../components/Form/DatePicker'
-import { GetMenuResponse, Menu as MenuType, useMenu } from '../../services/hooks/useMenu'
-import { addDays, arrayMove } from '../../services/utils'
+import { GetMenuResponse, useMenu } from '../../services/hooks/useMenu'
+import { addDays, arrayMove, getDayName, getMonthName } from '../../services/utils'
 import PageWrapper from '../page-wrapper'
-import { api } from '../../services/api'
+import { HTTPHandler } from '../../services/api'
 import { useAlert } from 'react-alert'
-import { SearchDishModal } from '../../components/Form/SearchDish'
 import { queryClient } from '../../services/queryClient'
+import { EmptyMenuItem, MenuItem } from '../../components/MenuItems'
+import WeekPicker from '../../components/Form/DatePicker/WeekPicker'
 
 const updateMenuFormSchema = yup.object({
-  start_date: yup.date(),
-  end_date: yup
+  startDate: yup.date(),
+  endDate: yup
     .date()
     .required('End date is required')
     .when(
-      'start_date',
+      'startDate',
       (started, yup) => started && yup.min(started, 'End date must be after start date.')
     ),
   dishes: yup.array()
@@ -44,6 +43,14 @@ export default function Menu() {
   const [hasUpdates, setHasUpdates] = useBoolean()
   const { data: useMenuData, isLoading, isFetching } = useMenu({})
   const data = useMenuData as GetMenuResponse
+
+  //The week object to send to get a menu
+  const [week, setWeek] = useState(null)
+
+  // should be true when the user doesn't have a menu created
+  const isEmpty = false
+
+  const [localData, setLocalData] = useState({ ...data })
 
   const {
     control,
@@ -67,30 +74,41 @@ export default function Menu() {
     if (destination.droppableId === source.droppableId && destination.index === source.index) {
       return
     }
-
-    const startDate = new Date(data.menu.start_date)
+    const startDate = new Date(data.menu.startDate)
 
     arrayMove(data.menu.dishes, source.index, destination.index)
 
     for (let i = 0; i < data.menu.dishes.length; i++) {
-      data.menu.dishes[i].date = addDays(startDate, i)
+      data.menu.dishes[i].selectionDate = addDays(startDate, i)
     }
+
+    setValue('dishes', data.menu.dishes)
+    setLocalData({ ...data })
 
     setHasUpdates.on()
   }
 
   const onFormSubmit = async (values) => {
+    const dishesIds = []
+
+    values.dishes.map((dish) => {
+      dish.dish.id !== '0' &&
+        dishesIds.push({
+          id: dish.dish.id,
+          selectionDate: dish.selectionDate
+        })
+    })
+
     if (hasUpdates) {
-      const updatedMenu: MenuType = {
-        id: data.menu.id,
-        start_date: values.start_date,
-        end_date: values.end_date,
-        dishes: values.dishes,
-        created_at: data.menu.created_at
+      const updatedMenu = {
+        startDate: values.startDate,
+        endDate: values.endDate,
+        dishes: dishesIds
       }
 
-      await api
-        .put('menu', updatedMenu)
+      await HTTPHandler.patch(`menus/${data.menu.id}`, {
+        ...updatedMenu
+      })
         .then(() => {
           queryClient.invalidateQueries('menu')
           alert.success('Menu saved with success')
@@ -105,9 +123,10 @@ export default function Menu() {
 
   useEffect(() => {
     if (data) {
-      setValue('start_date', data.menu.start_date)
-      setValue('end_date', data.menu.end_date)
+      setValue('startDate', data.menu.startDate)
+      setValue('endDate', data.menu.endDate)
       setValue('dishes', data.menu.dishes)
+      setLocalData({ ...data })
     }
   }, [data, setValue])
 
@@ -126,8 +145,11 @@ export default function Menu() {
             Week Menu
           </Heading>
         </Flex>
-
-        {isLoading || isFetching ? (
+        {isEmpty ? (
+          <Box>
+            <WeekPicker setWeek={setWeek} />
+          </Box>
+        ) : isLoading || isFetching || !localData ? (
           <Box w="100%" m="auto">
             <Spinner size="lg" color="gray.500" ml="4" />
           </Box>
@@ -137,7 +159,7 @@ export default function Menu() {
               <Flex w="96" align="center" ml="auto">
                 <Text mr="4">From</Text>
                 <Controller
-                  name="start_date"
+                  name="startDate"
                   control={control}
                   render={({ field: { onChange, value } }) => (
                     <DatePicker isDisabled selected={value} onChange={(date) => onChange(date)} />
@@ -145,10 +167,11 @@ export default function Menu() {
                 />
                 <Text mx="4">to</Text>
                 <Controller
-                  name="end_date"
+                  name="endDate"
                   control={control}
                   render={({ field: { value, onChange } }) => (
                     <DatePicker
+                      isDisabled
                       showPopperArrow={true}
                       selected={value}
                       onChange={(date) => {
@@ -160,80 +183,64 @@ export default function Menu() {
                 />
               </Flex>
 
-              {errors.end_date && (
-                <FormErrorMessage color="red.600">{errors.end_date.message}</FormErrorMessage>
+              {errors.endDate && (
+                <FormErrorMessage color="red.600">{errors.endDate.message}</FormErrorMessage>
               )}
             </Box>
 
             <DragDropContext onDragEnd={handleChangeOrder}>
               <HStack spacing={0}>
                 <VStack w={40}>
-                  {data.menu &&
-                    data.menu.dishes.map((menuDish) => (
+                  {localData?.menu &&
+                    localData.menu.dishes.map((menuDish) => (
                       <Flex
-                        key={menuDish.dish.id}
+                        key={menuDish.id.toString()}
                         w="100%"
                         h={16}
                         bg="oxblood.500"
                         color="white"
                         borderLeftRadius={8}
                         justifyContent="center"
-                        align="center"
+                        align="flex-end"
+                        pr={3.5}
+                        flexDirection="column"
                       >
-                        <Text>{menuDish.date.toDateString()}</Text>
+                        <Text>{getDayName(menuDish.selectionDate, 'en')}</Text>
+                        <Text fontSize={14} color="oxblood.100">
+                          {getMonthName(menuDish.selectionDate, 'en')}
+                        </Text>
                       </Flex>
                     ))}
                 </VStack>
-
                 <Droppable droppableId={`menu-${data.menu.id}`}>
                   {(provided) => (
                     <VStack flex={1} ref={provided.innerRef} {...provided.droppableProps}>
-                      {data &&
-                        data.menu.dishes.map((menuDish, index) => (
-                          <Draggable
-                            key={menuDish.dish.id}
-                            draggableId={menuDish.dish.id}
-                            index={index}
-                          >
-                            {(provided) => (
-                              <HStack
-                                w="100%"
-                                h={16}
-                                px={4}
-                                py={2}
-                                bg="gray.100"
-                                borderRightRadius={8}
-                                {...provided.draggableProps}
-                                {...provided.dragHandleProps}
-                                ref={provided.innerRef}
-                                justifyContent="space-between"
-                              >
-                                <Flex direction="column">
-                                  <Text fontWeight="bold">{menuDish.dish.name}</Text>
-                                  {isWideVersion && (
-                                    <Text overflowWrap="anywhere">
-                                      {menuDish.dish.ingredients.map((i) => i.name).join('/')}
-                                    </Text>
-                                  )}
-                                </Flex>
-                                <SearchDishModal
-                                  buttonProps={{
-                                    size: 'sm',
-                                    colorScheme: 'tan',
-                                    leftIcon: <Icon as={FaExchangeAlt} fontSize="16" />,
-                                    iconSpacing: '0'
-                                  }}
-                                  onSelectItem={(dish) => {
-                                    menuDish.dish = dish
-                                    data.menu.dishes.splice(index, 1, menuDish)
-                                    setValue('dishes', data.menu.dishes)
-                                    setHasUpdates.on()
-                                  }}
-                                />
-                              </HStack>
-                            )}
-                          </Draggable>
-                        ))}
+                      {localData?.menu &&
+                        localData.menu.dishes.map((menuDish, index) =>
+                          menuDish.dish.id === '0' ? (
+                            <EmptyMenuItem
+                              key={menuDish.id}
+                              menuDish={menuDish}
+                              setLocalData={setLocalData}
+                              index={index}
+                              setValue={setValue}
+                              data={data}
+                              setHasUpdates={setHasUpdates}
+                              isWideVersion={isWideVersion}
+                            />
+                          ) : (
+                            <MenuItem
+                              key={menuDish.id}
+                              menuDish={menuDish}
+                              index={index}
+                              setValue={setValue}
+                              setLocalData={setLocalData}
+                              data={data}
+                              setHasUpdates={setHasUpdates}
+                              isWideVersion={isWideVersion}
+                            />
+                          )
+                        )}
                       {provided.placeholder}
                     </VStack>
                   )}

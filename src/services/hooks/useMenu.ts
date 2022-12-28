@@ -3,18 +3,26 @@ import { useQuery, UseQueryOptions } from 'react-query'
 import ShopList from '../../pages/shop-list'
 import { api } from '../api'
 import { Dish } from './useDishes'
+import { HTTPHandler } from '../api'
+import { getDays } from '../utils'
 
 export type Menu = {
+  user: User
   id: string
-  start_date: Date
-  end_date: Date
+  startDate: Date
+  endDate: Date
   dishes: MenuDish[]
-  created_at: Date
+  createdAt: Date
+}
+
+type User = {
+  id: string
 }
 
 export type MenuDish = {
+  selectionDate: Date
   dish: Dish
-  date: Date
+  id: string
 }
 
 export type ShopList = {
@@ -38,17 +46,44 @@ export type GetMenuHistoryResponse = {
   totalCount: number
 }
 
+const checkDishesAndDays = (menu) => {
+  const days = getDays(menu.startDate, menu.endDate)
+
+  const filteredArray = days.filter(
+    (day) => !menu.dishes.some((dish) => day.toString() === new Date(dish.selectionDate).toString())
+  )
+
+  filteredArray.forEach((object, i) =>
+    menu.dishes.push({
+      id: i.toString(),
+      selectionDate: object,
+      dish: {
+        id: '0'
+      }
+    })
+  )
+
+  return menu.dishes.sort((a, b) => a.selectionDate.getTime() - b.selectionDate.getTime())
+}
+
 export async function getMenu(): Promise<GetMenuResponse> {
   const { 'menu.shopList': cookieShopList } = parseCookies()
-  const { data } = await api.get<GetMenuResponse>('menu')
-  const menu = data.menu as Menu
+  const { data } = await HTTPHandler.get('menus')
+
+  const menu = data.items[0] as Menu
+
+  menu.startDate = new Date(menu.startDate)
+  menu.endDate = new Date(menu.endDate)
+
+  menu.dishes.forEach((dish) => (dish.selectionDate = new Date(dish.selectionDate)))
+
   let shopList: ShopList = cookieShopList ? JSON.parse(cookieShopList) : {}
 
   shopList = generateShopList(shopList, menu)
 
-  menu.start_date = new Date(menu.start_date)
-  menu.end_date = new Date(menu.end_date)
-  menu.dishes.forEach((dish) => (dish.date = new Date(dish.date)))
+  const updatedDishes = checkDishesAndDays(menu)
+
+  menu.dishes = updatedDishes
 
   return {
     menu,
@@ -66,18 +101,18 @@ export function setShopListCookie(shopList: ShopList) {
 function generateShopList(shopList: ShopList, menu: Menu) {
   shopList = menu.dishes.reduce<ShopList>(
     (shopList, menuDish) => {
-      menuDish.dish.ingredients.forEach((ingredient) => {
-        const category = ingredient.category ? ingredient.category.name : 'övrigt'
+      menuDish.dish.ingredients.map((ingredient) => {
+        const category = ingredient.grocery.category ? ingredient.grocery.category.name : 'övrigt'
         const hasEntry = !!shopList.categories[category]
         if (!hasEntry) {
           shopList.categories[category] = []
         }
         const grocery = shopList.categories[category].find(
-          (grocery) => grocery.name === ingredient.name
+          (grocery) => grocery.name === ingredient.grocery.name
         )
         if (!grocery) {
           shopList.categories[category].push({
-            name: ingredient.name,
+            name: ingredient.grocery.name,
             amount: 1,
             bought: false
           })

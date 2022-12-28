@@ -22,6 +22,7 @@ export const ProfileDropdown = ({ children }) => {
       localStorage.delete('token')
       localStorage.delete('username')
       localStorage.delete('email')
+      localStorage.delete('user-id')
       router.push('/')
     } catch (err) {
       console.error(err)
