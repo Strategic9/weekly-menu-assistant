@@ -29,7 +29,7 @@ const DatePickerBase: ForwardRefRenderFunction<HTMLInputElement, DatePickerProps
       as={ReactDatePicker}
       fontSize={['sm', 'md']}
       size={['sm', 'md']}
-      w={['95%',]}
+      w={['95%']}
       textAlign="center"
       selected={selected}
       isClearable={isClearable}
