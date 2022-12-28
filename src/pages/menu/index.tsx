@@ -133,21 +133,24 @@ export default function Menu() {
     }
   }
 
+  const menuWeek =
+    data &&
+    data?.items.find(
+      (menu) =>
+        menu.startDate.split('T')[0] === startDateWeek && menu.endDate.split('T')[0] === endDateWeek
+    )
+  if (menuWeek) {
+    menuCurrentWeek = { menu: menuWeek }
+  }
+
   useEffect(() => {
     if (!!data && !!data.items && !!week) {
-      const menuWeek = data.items.find(
-        (menu) =>
-          menu.startDate.split('T')[0] === startDateWeek &&
-          menu.endDate.split('T')[0] === endDateWeek
-      )
       if (menuWeek) {
-        menuCurrentWeek = { menu: menuWeek }
         setMenuForChoosenWeekExists(true)
         setLocalData({ ...menuCurrentWeek })
       } else {
         setMenuForChoosenWeekExists(false)
       }
-
       setValue('startDate', week[0])
       setValue('endDate', week[1])
     }
@@ -244,8 +247,6 @@ export default function Menu() {
                 <FormErrorMessage color="red.600">{errors.endDate.message}</FormErrorMessage>
               )}
             </Box>
-
-            {/* here goes something in the place of the calendar */}
 
             <DragDropContext onDragEnd={handleChangeOrder}>
               <HStack spacing={0}>
