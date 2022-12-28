@@ -51,8 +51,8 @@ describe('Render on desktop mode', () => {
 
   it('should render logo', () => {
     const { container } = render(<Header />, { wrapper: ThemeWrapper })
-    const logo = container.getElementsByClassName('header-logo')
-    expect(logo.length === 1).toBeTruthy()
+    const logo = container.querySelector('#header-logo') as HTMLInputElement
+    expect(logo).toBeTruthy()
   })
 
   it('Should render the search input', () => {
@@ -102,8 +102,8 @@ describe('Render on mobile mode', () => {
 
   it('should render logo', () => {
     const { container } = render(<Header />, { wrapper: ThemeWrapper })
-    const logo = container.getElementsByClassName('header-logo')
-    expect(logo.length === 1).toBeTruthy()
+    const logo = container.querySelector('#header-logo') as HTMLInputElement
+    expect(logo).toBeTruthy()
   })
 
   it('Should not render the search input', () => {
