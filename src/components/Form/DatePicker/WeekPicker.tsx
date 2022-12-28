@@ -51,6 +51,9 @@ export const WeekPicker = ({ setWeek }) => {
       endDate={endDate}
       minDate={new Date()}
       calendarStartDay={1}
+      onKeyDown={(e) => {
+        e.preventDefault()
+      }}
     />
   )
 }

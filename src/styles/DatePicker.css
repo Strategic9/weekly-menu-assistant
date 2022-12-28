@@ -4,9 +4,14 @@
 
 .react-datepicker__input-container #weekly-date-picker {
   padding: 8px;
-  padding-left:15px;
-  border: 1px solid gray;
-  border-radius:6px;
+  padding-left: 15px;
+  border: 1px solid rgba(128, 128, 128, 0.273);
+  border-radius: 6px;
+}
+
+.react-datepicker-popper[data-placement^='bottom'] .react-datepicker__triangle::after,
+.react-datepicker-popper[data-placement^='bottom'] .react-datepicker__triangle::before {
+  display: none !important;
 }
 
 .react-datepicker__day--selected,
@@ -21,7 +26,7 @@
   .react-datepicker__time-box
   ul.react-datepicker__time-list
   li.react-datepicker__time-list-item--selected {
-  background: #afd889 !important;
+  background: #042319 !important;
   font-weight: normal !important;
 }
 .react-datepicker__day-name,
@@ -40,5 +45,5 @@
   .react-datepicker__time-box
   ul.react-datepicker__time-list
   li.react-datepicker__time-list-item--selected:hover {
-  background: #afd889 !important;
+  background: #042319 !important;
 }
