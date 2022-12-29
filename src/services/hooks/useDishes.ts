@@ -5,6 +5,7 @@ import { Grocery } from './useGroceries'
 export type Dish = {
   id: string
   name: string
+  image: string
   description: string
   ingredients: {
     grocery: Grocery

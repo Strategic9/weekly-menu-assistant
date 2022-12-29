@@ -10,6 +10,8 @@ import {
   Button,
   ButtonProps,
   Tag,
+  Text,
+  Textarea,
   TagLabel,
   TagCloseButton
 } from '@chakra-ui/react'
@@ -137,9 +139,6 @@ export default function DishForm(props: DishFormParams) {
             )}
           </GridItem>
           <GridItem>
-            <Input name="recipe" label="Recipe" error={errors.recipe} {...register('recipe')} />
-          </GridItem>
-          <GridItem colSpan={2} rowSpan={2}>
             <HStack spacing={2}>
               {fields.map((ingredient: Grocery, index: number) => (
                 <Tag
@@ -155,6 +154,17 @@ export default function DishForm(props: DishFormParams) {
                 </Tag>
               ))}
             </HStack>
+            <GridItem>
+              <Text mb="2">Recipe</Text>
+              <Textarea
+                border="1px solid"
+                borderColor="gray.200"
+                name="recipe"
+                error={errors.recipe}
+                variant="filled"
+                {...register('recipe')}
+              />
+            </GridItem>
           </GridItem>
         </Grid>
       </VStack>

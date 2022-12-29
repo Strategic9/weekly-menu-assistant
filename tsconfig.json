@@ -2,11 +2,7 @@
   "compilerOptions": {
     "target": "es5",
     "types": ["node", "jest"],
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": false,
@@ -20,15 +16,6 @@
     "jsx": "preserve",
     "incremental": true
   },
-  "include": [
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx"
-, "src/components/Dish/dish.tsx"  ],
-  "exclude": [
-    "node_modules",
-    "**/*.test.*",
-    "**/__mocks__/*",
-    "**/__tests__/*"
-  ]
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "exclude": ["node_modules", "**/*.test.*", "**/__mocks__/*", "**/__tests__/*"]
 }

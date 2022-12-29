@@ -1,33 +1,14 @@
-import {
-  Box,
-  Text,
-  Flex,
-  Heading,
-  Button,
-  Icon,
-  Table,
-  Thead,
-  Tr,
-  Th,
-  Tooltip,
-  Tbody,
-  Td,
-  useBreakpointValue,
-  HStack,
-  Spinner
-} from '@chakra-ui/react'
-import { RiEditLine, RiDeleteBinLine } from 'react-icons/ri'
-import Link from 'next/link'
+import { Box, Text, Flex, Heading, useBreakpointValue, Spinner } from '@chakra-ui/react'
+
 import { Pagination } from '../../components/Pagination'
 import { useState } from 'react'
 import { queryClient } from '../../services/queryClient'
 import { HTTPHandler } from '../../services/api'
 import { useDishes } from '../../services/hooks/useDishes'
-import TooltipButton from '../../components/TooltipButton'
 import { useAlert } from 'react-alert'
 import PageWrapper from '../page-wrapper'
 import { Grocery } from '../../services/hooks/useGroceries'
-import Dish from '../../components/Dish/dish'
+import Dish from '../../components/Dish'
 
 type Dish = {
   id: string
@@ -63,11 +44,6 @@ export default function DishList({ users, totalCount }) {
 
   const data = useDishesData as UseDishData
 
-  const isWideVersion = useBreakpointValue({
-    base: false,
-    lg: true
-  })
-
   async function handlePrefetchDish() {
     await queryClient.prefetchQuery(
       'dishes',
@@ -81,8 +57,6 @@ export default function DishList({ users, totalCount }) {
       }
     )
   }
-
-  console.log(data && data)
 
   async function handleDelete(id: string) {
     await HTTPHandler.delete(`dishes/${id}`)
@@ -101,7 +75,7 @@ export default function DishList({ users, totalCount }) {
 
   return (
     <PageWrapper>
-      <Box flex="1" borderRadius={8} bg="grain" p="8">
+      <Box flex="1" borderRadius={8} bg="grain" p={['4', '8']}>
         <Flex mb="8" justify="space-between" align="center">
           <Heading size="lg" fontWeight="normal">
             Dishes
@@ -118,27 +92,16 @@ export default function DishList({ users, totalCount }) {
           </Flex>
         ) : (
           <>
-            <Table colorScheme="whiteAlpha" color="gray.700">
-              <Thead bg="gray.200" color="black">
-                <Tr>
-                  <Th>Dish</Th>
-                  {isWideVersion && <Th>Ingredients</Th>}
-                  {isWideVersion && <Th width="8"></Th>}
-                </Tr>
-              </Thead>
-              <Tbody>
-                {data.dishes.map((dish) => (
-                  <Dish
-                    key={dish.id}
-                    dish={dish}
-                    isWideVersion={isWideVersion}
-                    onMouseEnter={() => handlePrefetchDish()}
-                    dishIngredient={getDishIngredients(dish)}
-                    handleDeleteDish={() => handleDelete(dish.id)}
-                  />
-                ))}
-              </Tbody>
-            </Table>
+            {data.dishes.map((dish) => (
+              <Box key={dish.id} mt="20px">
+                <Dish
+                  dish={dish}
+                  onMouseEnter={() => handlePrefetchDish()}
+                  dishIngredient={getDishIngredients(dish)}
+                  handleDeleteDish={() => handleDelete(dish.id)}
+                />
+              </Box>
+            ))}
 
             <Pagination
               totalCountOfRegisters={data.totalCount}
