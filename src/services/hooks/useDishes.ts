@@ -11,6 +11,7 @@ export type Dish = {
   }[]
   createdAt: string
   mainIngredient: Grocery
+  recipe: string
 }
 
 export type GetDishesResponse = {
@@ -32,6 +33,8 @@ export async function getDishes(page: number): Promise<GetDishesResponse> {
       name: dish.name,
       description: dish.description,
       ingredients: dish.ingredients,
+      image: dish.image,
+      recipe: dish.recipe,
       createdAt: new Date(dish.createdAt).toLocaleDateString('se', {
         day: '2-digit',
         month: 'long',

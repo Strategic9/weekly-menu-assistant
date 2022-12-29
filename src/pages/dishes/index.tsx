@@ -27,11 +27,14 @@ import TooltipButton from '../../components/TooltipButton'
 import { useAlert } from 'react-alert'
 import PageWrapper from '../page-wrapper'
 import { Grocery } from '../../services/hooks/useGroceries'
+import Dish from '../../components/Dish/dish'
 
 type Dish = {
   id: string
   name: string
   description: string
+  image: string
+  recipe: string
   created_at: string
   ingredients: Array<{ grocery: Grocery }>
 }
@@ -79,6 +82,8 @@ export default function DishList({ users, totalCount }) {
     )
   }
 
+  console.log(data && data)
+
   async function handleDelete(id: string) {
     await HTTPHandler.delete(`dishes/${id}`)
       .then(async () => {
@@ -123,43 +128,14 @@ export default function DishList({ users, totalCount }) {
               </Thead>
               <Tbody>
                 {data.dishes.map((dish) => (
-                  <Tr key={dish.id}>
-                    <Td>
-                      <Box onMouseEnter={() => handlePrefetchDish()}>
-                        <Text fontWeight="bold" fontSize={[15, 18]} textTransform="capitalize">
-                          {dish.name}
-                        </Text>
-                      </Box>
-                    </Td>
-                    {isWideVersion && <Td>{getDishIngredients(dish)}</Td>}
-                    {isWideVersion && (
-                      <Td>
-                        <HStack>
-                          <Tooltip label="Remove" bg="red.200" color="white" placement="top-start">
-                            <Button
-                              size="sm"
-                              bg="red.100"
-                              color="white"
-                              justifyContent="center"
-                              leftIcon={<Icon as={RiDeleteBinLine} fontSize="16" />}
-                              iconSpacing="0"
-                              _hover={{ bg: 'red.200' }}
-                              onClick={() => handleDelete(dish.id)}
-                            />
-                          </Tooltip>
-                          <Link href={`/dishes/edit/${dish.id}`} passHref>
-                            <TooltipButton
-                              tooltipLabel="Edit"
-                              size="sm"
-                              bg="gray.200"
-                              leftIcon={<Icon as={RiEditLine} fontSize="16" />}
-                              iconSpacing="0"
-                            />
-                          </Link>
-                        </HStack>
-                      </Td>
-                    )}
-                  </Tr>
+                  <Dish
+                    key={dish.id}
+                    dish={dish}
+                    isWideVersion={isWideVersion}
+                    onMouseEnter={() => handlePrefetchDish()}
+                    dishIngredient={getDishIngredients(dish)}
+                    handleDeleteDish={() => handleDelete(dish.id)}
+                  />
                 ))}
               </Tbody>
             </Table>

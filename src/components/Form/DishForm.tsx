@@ -34,8 +34,9 @@ export type CreateDishFormData = {
   id?: string
   name: string
   description?: string
-  ingredients?: { id: string }[]
+  ingredients?: { id: string; quantity: number }[]
   mainIngredientId?: string
+  recipe?: string
 }
 
 interface DishFormParams {
@@ -49,7 +50,8 @@ const createDishFormSchema = yup.object({
   name: yup.string().required('Name is required'),
   description: yup.string(),
   ingredients: yup.array().min(1, 'Ingredients is required'),
-  mainIngredientId: yup.string().required('Main ingredient is required')
+  mainIngredientId: yup.string().required('Main ingredient is required'),
+  recipe: yup.string()
 })
 
 export default function DishForm(props: DishFormParams) {
@@ -58,13 +60,15 @@ export default function DishForm(props: DishFormParams) {
   const itemsList = groceriesData?.items
   const mainIngredient: any = props.initialData?.ingredients.find((i) => i.isMain)
   const ingredients: any = props.initialData?.ingredients.filter((i) => !i.isMain)
+
   const defaultValues = {
     ...props.initialData,
     ...{
-      ingredients: ingredients?.map((e: any) => e.grocery),
+      ingredients: { ...ingredients?.map((e: any) => e.grocery), quantity: 2 },
       mainIngredientId: mainIngredient?.grocery.id
     }
   }
+  console.log(ingredients && ingredients)
   const {
     register,
     control,
@@ -133,6 +137,9 @@ export default function DishForm(props: DishFormParams) {
             )}
           </GridItem>
           <GridItem>
+            <Input name="recipe" label="Recipe" error={errors.recipe} {...register('recipe')} />
+          </GridItem>
+          <GridItem colSpan={2} rowSpan={2}>
             <HStack spacing={2}>
               {fields.map((ingredient: Grocery, index: number) => (
                 <Tag
@@ -220,6 +227,7 @@ export function DishFormModal({
           description: '',
           ingredients: [],
           mainIngredient: null,
+          recipe: '',
           createdAt: null
         }}
       />
