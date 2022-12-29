@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import ReactDatePicker from 'react-datepicker'
+import DatePicker from 'react-datepicker'
 
 export const WeekPicker = ({ setWeek }) => {
   const [startDate, setStartDate] = useState(null)
@@ -23,6 +23,7 @@ export const WeekPicker = ({ setWeek }) => {
     } else {
       start.setDate(date.getDate() - date.getDay() + 1)
     }
+    start.setHours(0)
 
     // Find the end of the week by moving forward to the nearest Sunday
     const end = new Date(date)
@@ -31,6 +32,7 @@ export const WeekPicker = ({ setWeek }) => {
     } else {
       end.setDate(date.getDate() - date.getDay() + 7)
     }
+    end.setHours(0)
 
     // Return the range as an array of two dates
     return [start, end]
@@ -41,14 +43,17 @@ export const WeekPicker = ({ setWeek }) => {
   }, [])
 
   return (
-    <ReactDatePicker
+    <DatePicker
+      id="weekly-date-picker"
       selected={startDate}
       onChange={onChange}
       startDate={startDate}
       endDate={endDate}
       minDate={new Date()}
       calendarStartDay={1}
-      inline
+      onKeyDown={(e) => {
+        e.preventDefault()
+      }}
     />
   )
 }

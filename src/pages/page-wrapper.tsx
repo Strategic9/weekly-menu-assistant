@@ -28,9 +28,11 @@ export default function PageWrapper({ children }: PageWrapperProps) {
         <Box>
           <Header />
 
-          <Flex w="100%" my="6" maxW={1400} mx="auto" px="6">
+          <Flex w="100%" my="6" justify="center" maxW={1400} mx="auto" px={[4, 6]}>
             <Sidebar />
-            {children}
+            <Box width="100%" maxWidth="100%">
+              {children}
+            </Box>
           </Flex>
         </Box>
       )}

@@ -17,8 +17,14 @@ import { Controller, useForm } from 'react-hook-form'
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup'
 import { DatePicker } from '../../components/Form/DatePicker'
-import { GetMenuResponse, useMenu } from '../../services/hooks/useMenu'
-import { addDays, arrayMove, getDayName, getMonthName } from '../../services/utils'
+import { useMenu } from '../../services/hooks/useMenu'
+import {
+  addDays,
+  arrayMove,
+  getDayName,
+  getMonthName,
+  convertDateToString
+} from '../../services/utils'
 import PageWrapper from '../page-wrapper'
 import { HTTPHandler } from '../../services/api'
 import { useAlert } from 'react-alert'
@@ -26,15 +32,15 @@ import { queryClient } from '../../services/queryClient'
 import { EmptyMenuItem, MenuItem } from '../../components/MenuItems'
 import WeekPicker from '../../components/Form/DatePicker/WeekPicker'
 
+type GenerateMenuInput = {
+  user: {
+    id: string
+  }
+  startDate: string
+  endDate: string
+}
+
 const updateMenuFormSchema = yup.object({
-  startDate: yup.date(),
-  endDate: yup
-    .date()
-    .required('End date is required')
-    .when(
-      'startDate',
-      (started, yup) => started && yup.min(started, 'End date must be after start date.')
-    ),
   dishes: yup.array()
 })
 
@@ -42,13 +48,15 @@ export default function Menu() {
   const alert = useAlert()
   const [hasUpdates, setHasUpdates] = useBoolean()
   const { data: useMenuData, isLoading, isFetching } = useMenu({})
-  const data = useMenuData as GetMenuResponse
+  const data: any = useMenuData
+  let menuCurrentWeek
 
-  //The week object to send to get a menu
   const [week, setWeek] = useState(null)
 
-  // should be true when the user doesn't have a menu created
-  const isEmpty = false
+  const startDateWeek = week && convertDateToString(week[0])
+  const endDateWeek = week && convertDateToString(week[1])
+
+  const [menuForChoosenWeekExists, setMenuForChoosenWeekExists] = useState(false)
 
   const [localData, setLocalData] = useState({ ...data })
 
@@ -63,7 +71,13 @@ export default function Menu() {
 
   const isWideVersion = useBreakpointValue({
     base: false,
+    md: true,
     lg: true
+  })
+
+  const mobileOnly = useBreakpointValue({
+    xs: true,
+    base: true
   })
 
   const handleChangeOrder = (result: DropResult) => {
@@ -74,16 +88,16 @@ export default function Menu() {
     if (destination.droppableId === source.droppableId && destination.index === source.index) {
       return
     }
-    const startDate = new Date(data.menu.startDate)
+    const startDate = new Date(menuCurrentWeek.menu.startDate)
 
-    arrayMove(data.menu.dishes, source.index, destination.index)
+    arrayMove(menuCurrentWeek.menu.dishes, source.index, destination.index)
 
-    for (let i = 0; i < data.menu.dishes.length; i++) {
-      data.menu.dishes[i].selectionDate = addDays(startDate, i)
+    for (let i = 0; i < menuCurrentWeek.menu.dishes.length; i++) {
+      menuCurrentWeek.menu.dishes[i].selectionDate = addDays(startDate, i)
     }
 
-    setValue('dishes', data.menu.dishes)
-    setLocalData({ ...data })
+    setValue('dishes', menuCurrentWeek.menu.dishes)
+    setLocalData({ ...menuCurrentWeek })
 
     setHasUpdates.on()
   }
@@ -106,7 +120,7 @@ export default function Menu() {
         dishes: dishesIds
       }
 
-      await HTTPHandler.patch(`menus/${data.menu.id}`, {
+      await HTTPHandler.patch(`menus/${menuCurrentWeek.menu.id}`, {
         ...updatedMenu
       })
         .then(() => {
@@ -121,14 +135,50 @@ export default function Menu() {
     }
   }
 
+  const menuWeek =
+    data &&
+    data?.items.find(
+      (menu) =>
+        menu.startDate.split('T')[0] === startDateWeek && menu.endDate.split('T')[0] === endDateWeek
+    )
+  if (menuWeek) {
+    menuCurrentWeek = { menu: menuWeek }
+  }
+
   useEffect(() => {
-    if (data) {
-      setValue('startDate', data.menu.startDate)
-      setValue('endDate', data.menu.endDate)
-      setValue('dishes', data.menu.dishes)
-      setLocalData({ ...data })
+    if (!!data && !!data.items && !!week) {
+      if (menuWeek) {
+        setMenuForChoosenWeekExists(true)
+        setLocalData({ ...menuCurrentWeek })
+      } else {
+        setMenuForChoosenWeekExists(false)
+      }
+      setValue('startDate', week[0])
+      setValue('endDate', week[1])
     }
-  }, [data, setValue])
+  }, [data, week])
+
+  const generateMenu = async () => {
+    const userId = localStorage.getItem('user-id')
+    const params: GenerateMenuInput = {
+      user: {
+        id: userId
+      },
+      startDate: week[0],
+      endDate: week[1]
+    }
+
+    await HTTPHandler.post('/menus/generate', params)
+      .then((response) => {
+        menuCurrentWeek = { menu: response.data }
+        setLocalData({ ...menuCurrentWeek })
+        setMenuForChoosenWeekExists(true)
+        queryClient.invalidateQueries('menu')
+      })
+      .catch(() => {
+        alert.error('Failed to generate menu')
+      })
+  }
 
   return (
     <PageWrapper>
@@ -137,7 +187,7 @@ export default function Menu() {
         flex="1"
         borderRadius={8}
         bg="grain"
-        p="8"
+        p={['4', '8']}
         onSubmit={handleSubmit(onFormSubmit)}
       >
         <Flex mb="8" align="center">
@@ -145,42 +195,54 @@ export default function Menu() {
             Week Menu
           </Heading>
         </Flex>
-        {isEmpty ? (
-          <Box>
-            <WeekPicker setWeek={setWeek} />
-          </Box>
+        <WeekPicker setWeek={setWeek} />
+        {!menuForChoosenWeekExists ? (
+          <Flex>
+            <Button mt="20px" onClick={() => generateMenu()}>
+              Generate Menu
+            </Button>
+          </Flex>
         ) : isLoading || isFetching || !localData ? (
           <Box w="100%" m="auto">
             <Spinner size="lg" color="gray.500" ml="4" />
           </Box>
         ) : (
           <>
-            <Box mb="6">
-              <Flex w="96" align="center" ml="auto">
-                <Text mr="4">From</Text>
-                <Controller
-                  name="startDate"
-                  control={control}
-                  render={({ field: { onChange, value } }) => (
-                    <DatePicker isDisabled selected={value} onChange={(date) => onChange(date)} />
-                  )}
-                />
-                <Text mx="4">to</Text>
-                <Controller
-                  name="endDate"
-                  control={control}
-                  render={({ field: { value, onChange } }) => (
-                    <DatePicker
-                      isDisabled
-                      showPopperArrow={true}
-                      selected={value}
-                      onChange={(date) => {
-                        onChange(date)
-                        setHasUpdates.on()
-                      }}
-                    />
-                  )}
-                />
+            <Box mt="6" mb="6">
+              <Flex maxW="100%">
+                <Box>
+                  <Text mb="5px" fontSize={['sm', 'md']}>
+                    From
+                  </Text>
+                  <Controller
+                    name="startDate"
+                    control={control}
+                    render={({ field: { onChange, value } }) => (
+                      <DatePicker isDisabled selected={value} onChange={(date) => onChange(date)} />
+                    )}
+                  />
+                </Box>
+
+                <Box>
+                  <Text mb="5px" fontSize={['sm', 'md']}>
+                    to
+                  </Text>
+                  <Controller
+                    name="endDate"
+                    control={control}
+                    render={({ field: { value, onChange } }) => (
+                      <DatePicker
+                        isDisabled
+                        showPopperArrow={true}
+                        selected={value}
+                        onChange={(date) => {
+                          onChange(date)
+                          setHasUpdates.on()
+                        }}
+                      />
+                    )}
+                  />
+                </Box>
               </Flex>
 
               {errors.endDate && (
@@ -190,29 +252,30 @@ export default function Menu() {
 
             <DragDropContext onDragEnd={handleChangeOrder}>
               <HStack spacing={0}>
-                <VStack w={40}>
+                <VStack w={['90px', '170px']}>
                   {localData?.menu &&
                     localData.menu.dishes.map((menuDish) => (
                       <Flex
                         key={menuDish.id.toString()}
                         w="100%"
                         h={16}
+                        p={['10px']}
+                        pr={mobileOnly ? '9px' : '20px'}
                         bg="oxblood.500"
                         color="white"
                         borderLeftRadius={8}
                         justifyContent="center"
                         align="flex-end"
-                        pr={3.5}
                         flexDirection="column"
                       >
-                        <Text>{getDayName(menuDish.selectionDate, 'en')}</Text>
-                        <Text fontSize={14} color="oxblood.100">
+                        <Text fontSize={[14, 18]}>{getDayName(menuDish.selectionDate, 'en')}</Text>
+                        <Text fontSize={[10, 14]} color="oxblood.100">
                           {getMonthName(menuDish.selectionDate, 'en')}
                         </Text>
                       </Flex>
                     ))}
                 </VStack>
-                <Droppable droppableId={`menu-${data.menu.id}`}>
+                <Droppable droppableId={`menu-${menuCurrentWeek?.menu.id}`}>
                   {(provided) => (
                     <VStack flex={1} ref={provided.innerRef} {...provided.droppableProps}>
                       {localData?.menu &&
@@ -224,7 +287,7 @@ export default function Menu() {
                               setLocalData={setLocalData}
                               index={index}
                               setValue={setValue}
-                              data={data}
+                              data={menuCurrentWeek}
                               setHasUpdates={setHasUpdates}
                               isWideVersion={isWideVersion}
                             />
@@ -235,7 +298,7 @@ export default function Menu() {
                               index={index}
                               setValue={setValue}
                               setLocalData={setLocalData}
-                              data={data}
+                              data={menuCurrentWeek}
                               setHasUpdates={setHasUpdates}
                               isWideVersion={isWideVersion}
                             />

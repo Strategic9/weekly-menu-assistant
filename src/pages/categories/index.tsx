@@ -63,7 +63,7 @@ export default function CategoryList({ categories, totalCount }) {
 
   return (
     <PageWrapper>
-      <Box flex="1" borderRadius={8} bg="grain" p="8">
+      <Box flex="1" borderRadius={8} bg="grain" p={[4, 8]}>
         <Flex mb="8" justify="space-between" align="center">
           <Heading size="lg" fontWeight="normal">
             Categories
@@ -79,12 +79,14 @@ export default function CategoryList({ categories, totalCount }) {
             <Text>Fail to obtain categories data.</Text>
           </Flex>
         ) : (
-          <>
-            <Table colorScheme="whiteAlpha" color="gray.700">
-              <Thead bg="gray.200" color="black">
-                <Tr>
-                  <Th>Category</Th>
-                  <Th width="8">Actions</Th>
+          <Flex direction="column" justify="center" align="center">
+            <Table size={!isWideVersion ? 'sm' : 'lg'} colorScheme="whiteAlpha" color="gray.700">
+              <Thead bg="gray.200" fontSize="14px" color="black">
+                <Tr fontSize="14px">
+                  <Th fontSize={[14, 15, 18]}>Category</Th>
+                  <Th fontSize={[14, 15, 18]} width="8">
+                    Actions
+                  </Th>
                 </Tr>
               </Thead>
               <Tbody>
@@ -92,7 +94,7 @@ export default function CategoryList({ categories, totalCount }) {
                   <Tr key={category.id}>
                     <Td>
                       <Box>
-                        <Text fontWeight="bold" textTransform="capitalize">
+                        <Text fontSize={[14, 16, 20]} fontWeight="bold" textTransform="capitalize">
                           {category.name}
                         </Text>
                       </Box>
@@ -101,7 +103,7 @@ export default function CategoryList({ categories, totalCount }) {
                       <HStack>
                         <Tooltip label="Remove" bg="red.100" color="white" placement="top-start">
                           <Button
-                            size="sm"
+                            size={['xs', 'sm']}
                             bg="red.100"
                             color="white"
                             justifyContent="center"
@@ -114,7 +116,7 @@ export default function CategoryList({ categories, totalCount }) {
                         <Link href={`/categories/edit/${category.id}`} passHref>
                           <TooltipButton
                             tooltipLabel="Edit"
-                            size="sm"
+                            size={['xs', 'sm']}
                             bg="gray.200"
                             leftIcon={<Icon as={RiEditLine} fontSize="16" />}
                             iconSpacing="0"
@@ -132,7 +134,7 @@ export default function CategoryList({ categories, totalCount }) {
               currentPage={page}
               onPageChange={setPage}
             />
-          </>
+          </Flex>
         )}
       </Box>
     </PageWrapper>

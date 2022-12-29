@@ -126,7 +126,7 @@ export default function DishList({ users, totalCount }) {
                   <Tr key={dish.id}>
                     <Td>
                       <Box onMouseEnter={() => handlePrefetchDish()}>
-                        <Text fontWeight="bold" textTransform="capitalize">
+                        <Text fontWeight="bold" fontSize={[15, 18]} textTransform="capitalize">
                           {dish.name}
                         </Text>
                       </Box>

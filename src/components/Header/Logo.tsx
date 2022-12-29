@@ -6,7 +6,14 @@ type LogoProps = {
 
 export const Logo = ({ linkTo }: LogoProps) => {
   return (
-    <Container className="header-logo" alignSelf="center" ml="0" w="250px" me="0" color="white">
+    <Container
+      id="header-logo"
+      alignSelf="center"
+      ml="0"
+      w={['190px', '250px']}
+      me="0"
+      color="white"
+    >
       <Link href={linkTo ? linkTo : '/dashboard'}>
         <Image src="/assets/logo.svg" alt="Forkify Logo" />
       </Link>

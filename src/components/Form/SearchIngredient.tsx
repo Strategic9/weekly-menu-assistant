@@ -24,7 +24,7 @@ interface SearchIngredientProps extends ChakraInputProps {
 }
 
 const SearchIngredientBase: ForwardRefRenderFunction<HTMLInputElement, SearchIngredientProps> = (
-  { name, label, error = null, onAddIngredient, ...rest },
+  { name, label, w, minW, error = null, onAddIngredient, ...rest },
   ref
 ) => {
   const { onOpen, onClose, isOpen } = useDisclosure()
@@ -61,6 +61,9 @@ const SearchIngredientBase: ForwardRefRenderFunction<HTMLInputElement, SearchIng
       >
         <PopoverTrigger>
           <Input
+            h="53"
+            w={w}
+            minW={minW}
             name={name}
             label={label}
             error={error}
@@ -68,7 +71,7 @@ const SearchIngredientBase: ForwardRefRenderFunction<HTMLInputElement, SearchIng
             onChange={(e) => filterResults(e)}
           />
         </PopoverTrigger>
-        <PopoverContent borderRadius="none">
+        <PopoverContent maxW={['160px', '100%']} borderRadius="none">
           {!!newIngredient && (
             <GroceryFormModal
               buttonProps={{
@@ -91,6 +94,7 @@ const SearchIngredientBase: ForwardRefRenderFunction<HTMLInputElement, SearchIng
                   justifyContent="left"
                   borderRadius="none"
                   size="sm"
+                  fontSize={['sm', 'md']}
                   onClick={() => onAddIngredient(el)}
                 >
                   {el.name}
@@ -128,7 +132,6 @@ export function SearchIngredientModal({
       <Box flex="1" borderRadius={8} bg="grain" p={['6', '8']}>
         <SearchIngredient
           name="ingredients"
-          label="Ingredients"
           onAddIngredient={(ingredient: Grocery) => {
             onSelectItem(ingredient)
             modalDisclosure.onClose()

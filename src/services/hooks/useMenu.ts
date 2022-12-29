@@ -1,7 +1,6 @@
 import { setCookie, parseCookies } from 'nookies'
 import { useQuery, UseQueryOptions } from 'react-query'
 import ShopList from '../../pages/shop-list'
-import { api } from '../api'
 import { Dish } from './useDishes'
 import { HTTPHandler } from '../api'
 import { getDays } from '../utils'
@@ -37,7 +36,7 @@ export type ShopList = {
 }
 
 export type GetMenuResponse = {
-  menu: Menu
+  menu: Menu[]
   shopList: ShopList
 }
 
@@ -66,28 +65,35 @@ const checkDishesAndDays = (menu) => {
   return menu.dishes.sort((a, b) => a.selectionDate.getTime() - b.selectionDate.getTime())
 }
 
-export async function getMenu(): Promise<GetMenuResponse> {
+export async function getMenu(): Promise<any> {
   const { 'menu.shopList': cookieShopList } = parseCookies()
-  const { data } = await HTTPHandler.get('menus')
+  const { data } = await HTTPHandler.get('menus', {
+    params: {
+      'page[limit]': 1000,
+      'page[offset]': 0
+    }
+  })
+  const items = JSON.parse(JSON.stringify(data.items))
+  if (items.length) {
+    const menu = data.items[0] as Menu
+    menu.startDate = new Date(menu.startDate)
+    menu.endDate = new Date(menu.endDate)
 
-  const menu = data.items[0] as Menu
+    menu.dishes.forEach((dish) => (dish.selectionDate = new Date(dish.selectionDate)))
 
-  menu.startDate = new Date(menu.startDate)
-  menu.endDate = new Date(menu.endDate)
+    let shopList: ShopList = cookieShopList ? JSON.parse(cookieShopList) : {}
 
-  menu.dishes.forEach((dish) => (dish.selectionDate = new Date(dish.selectionDate)))
+    shopList = generateShopList(shopList, menu)
 
-  let shopList: ShopList = cookieShopList ? JSON.parse(cookieShopList) : {}
+    const updatedDishes = checkDishesAndDays(menu)
 
-  shopList = generateShopList(shopList, menu)
-
-  const updatedDishes = checkDishesAndDays(menu)
-
-  menu.dishes = updatedDishes
-
-  return {
-    menu,
-    shopList
+    menu.dishes = updatedDishes
+    return {
+      items,
+      shopList
+    }
+  } else {
+    return null
   }
 }
 
@@ -127,35 +133,8 @@ function generateShopList(shopList: ShopList, menu: Menu) {
   return shopList
 }
 
-export async function getMenuHistory(page: number): Promise<GetMenuHistoryResponse> {
-  const { data, headers } = await api.get<GetMenuHistoryResponse>('menu/history', {
-    params: {
-      page
-    }
-  })
-  const menuHistory = data.menuHistory
-  menuHistory.forEach((menu) => {
-    menu.start_date = new Date(menu.start_date)
-    menu.end_date = new Date(menu.end_date)
-  })
-
-  const totalCount = Number(headers['x-total-count'])
-
-  return {
-    menuHistory,
-    totalCount
-  }
-}
-
 export function useMenu(options: UseQueryOptions) {
   return useQuery(['menu'], () => getMenu(), {
-    staleTime: 1000 * 60 * 10, // 10 minutes
-    ...options
-  })
-}
-
-export function useMenuHistory(page: number, options: UseQueryOptions) {
-  return useQuery(['menus', page], () => getMenuHistory(page), {
     staleTime: 1000 * 60 * 10, // 10 minutes
     ...options
   })

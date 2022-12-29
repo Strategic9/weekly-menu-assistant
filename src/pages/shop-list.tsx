@@ -8,7 +8,8 @@ import {
   ListItem,
   Text,
   Checkbox,
-  Stack
+  Stack,
+  useBreakpointValue
 } from '@chakra-ui/react'
 import { RiCloseLine } from 'react-icons/ri'
 import { setCookie } from 'nookies'
@@ -26,6 +27,12 @@ export default function ShopList() {
   const { data: useMenuData, isLoading, error } = useMenu({})
   const menuData = useMenuData as GetMenuResponse
   const alert = useAlert()
+
+  const isWideVersion = useBreakpointValue({
+    base: false,
+    md: true,
+    lg: true
+  })
 
   const changeItem = useMutation(
     async (data: { name: string; amount: number; bought: boolean; category: string }) => {
@@ -87,7 +94,7 @@ export default function ShopList() {
             buttonProps={{
               colorScheme: 'oxblood'
             }}
-            buttonLabel="Add new item"
+            buttonLabel={isWideVersion ? 'Add new item' : '+'}
             onSelectItem={handleAddGrocery}
           />
         </Flex>
@@ -106,7 +113,7 @@ export default function ShopList() {
               <List as={Stack} spacing="2">
                 {Object.entries(menuData.shopList.categories)?.map(([key, groceries]) => (
                   <Box key={key}>
-                    <Text fontSize="xl" color="gray.500" textTransform="capitalize">
+                    <Text fontSize={['l', 'xl']} color="gray.500" textTransform="capitalize">
                       {key}
                     </Text>
                     {groceries.map((listItem, index) => (
@@ -114,7 +121,7 @@ export default function ShopList() {
                         as={Flex}
                         key={listItem.name}
                         h="12"
-                        my="1"
+                        my="3"
                         bg="gray.100"
                         borderRadius="4"
                         align="center"
@@ -127,7 +134,11 @@ export default function ShopList() {
                             isChecked={listItem.bought}
                             onChange={(event) => handleChange(event, listItem, key)}
                           />
-                          <Text pl="4" textDecoration={listItem.bought && 'line-through'}>
+                          <Text
+                            fontSize={[15, 16]}
+                            pl="4"
+                            textDecoration={listItem.bought && 'line-through'}
+                          >
                             {listItem.name} x{listItem.amount}
                           </Text>
                         </Flex>
