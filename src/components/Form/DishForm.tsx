@@ -1,3 +1,4 @@
+import React, { useState } from 'react'
 import {
   Box,
   Flex,
@@ -70,7 +71,7 @@ export default function DishForm(props: DishFormParams) {
   const defaultValues = {
     ...props.initialData,
     ...{
-      ingredients: { ...ingredients?.map((e: any) => e.grocery), quantity: 2 },
+      ingredients: ingredients?.map((e: any) => e.grocery),
       mainIngredientId: mainIngredient?.grocery.id
     }
   }
@@ -80,7 +81,8 @@ export default function DishForm(props: DishFormParams) {
     control,
     handleSubmit,
     formState: { errors },
-    getValues
+    getValues,
+    resetField
   } = useForm({
     resolver: yupResolver(createDishFormSchema),
     defaultValues
@@ -96,6 +98,9 @@ export default function DishForm(props: DishFormParams) {
     if (!!quantity && quantity > 0) {
       append({ groceryId: getValues('ingredientId'), quantity: quantity })
     }
+
+    resetField('ingredientId')
+    resetField('ingredientQuantity')
   }
 
   return (
@@ -193,7 +198,7 @@ export default function DishForm(props: DishFormParams) {
             <HStack spacing={2}>
               {fields.map(
                 (
-                  ingredient: { id: string; groceryId: string; quantity: number },
+                  ingredient: { id: string; groceryId: string; name: string; quantity: number },
                   index: number
                 ) => (
                   <Tag
@@ -204,7 +209,9 @@ export default function DishForm(props: DishFormParams) {
                     variant="solid"
                     colorScheme="gray"
                   >
+                    <TagLabel>{ingredient.name}</TagLabel>
                     <TagLabel>
+                      {' '}
                       {itemsList?.find((i) => i.id === ingredient.groceryId)?.name}
                     </TagLabel>
                     <TagCloseButton onClick={() => remove(index)} />

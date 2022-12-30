@@ -4,9 +4,10 @@ import {
   useDisclosure,
   Box,
   Spinner,
-  Button,
   ButtonProps,
-  Icon
+  Text,
+  Image,
+  HStack
 } from '@chakra-ui/react'
 import { Popover, PopoverTrigger, PopoverContent } from '@chakra-ui/react'
 import { FieldError } from 'react-hook-form'
@@ -65,17 +66,17 @@ const SearchDishBase: ForwardRefRenderFunction<HTMLInputElement, SearchDishProps
       <PopoverContent borderRadius="none">
         {results ? (
           results.map((el) => (
-            <Box key={el.id}>
-              <Button
-                width="100%"
-                justifyContent="left"
-                borderRadius="none"
-                size="sm"
-                onClick={() => onSelectDish(el)}
-              >
-                {el.name}
-              </Button>
-            </Box>
+            <HStack
+              width="100%"
+              justifyContent="left"
+              borderRadius="none"
+              onClick={() => onSelectDish(el)}
+              key={el.id}
+            >
+              <Image maxW="90" mb="5px" src={el.image} alt="dish" />
+
+              <Text>{el.name}</Text>
+            </HStack>
           ))
         ) : (
           <Box py="4" mx="auto">
