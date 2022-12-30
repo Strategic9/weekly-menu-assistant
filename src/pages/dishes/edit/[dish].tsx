@@ -1,15 +1,14 @@
-import { Spinner, Flex } from '@chakra-ui/react'
+import { Spinner, Flex, Image, Container } from '@chakra-ui/react'
 import { SubmitHandler } from 'react-hook-form'
 import { useMutation } from 'react-query'
-
-import { api, HTTPHandler } from '../../../services/api'
+import { HTTPHandler } from '../../../services/api'
 import { queryClient } from '../../../services/queryClient'
 import { useAlert } from 'react-alert'
 import { useRouter } from 'next/router'
 import { useDish } from '../../../services/hooks/useDishes'
-import { Grocery } from '../../../services/hooks/useGroceries'
 import PageWrapper from '../../page-wrapper'
 import DishForm from '../../../components/Form/DishForm'
+import React from 'react'
 
 type UpdateDishFormData = {
   id?: string
@@ -23,8 +22,9 @@ type FormData = {
   id?: string
   name: string
   description: string
-  ingredients: Grocery[]
+  ingredients: any[]
   mainIngredientId: string
+  mainIngredientQuantity: number
 }
 
 export default function DishPage() {
@@ -35,16 +35,16 @@ export default function DishPage() {
 
   const editDish = useMutation(
     async (dish: FormData) => {
-      const { name, description, mainIngredientId } = dish
+      const { name, description, mainIngredientId, mainIngredientQuantity } = dish
       const updatedDish = {
         name,
         description,
         image:
           'https://images.unsplash.com/photo-1584255014406-2a68ea38e48c?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTZ8fGZvcmt8ZW58MHx8MHx8&auto=format&fit=crop&w=500&q=60',
         ingredients: dish.ingredients
-          .filter((i) => i.id !== mainIngredientId)
-          .map(({ id }) => ({ id, quantity: 1 })),
-        mainIngredient: { id: mainIngredientId, quantity: 1 }
+          .filter((i) => i.groceryId !== mainIngredientId)
+          .map(({ groceryId, quantity }) => ({ id: groceryId, quantity: quantity })),
+        mainIngredient: { id: mainIngredientId, quantity: mainIngredientQuantity }
       }
       await HTTPHandler.patch(`dishes/${dish.id}`, {
         ...updatedDish
@@ -75,7 +75,24 @@ export default function DishPage() {
           <Spinner />
         </Flex>
       ) : (
-        <DishForm title={'Edit'} handleSubmit={handleEditDish} initialData={data.dish} />
+        <>
+          <Container
+            id="header-logo"
+            alignSelf="center"
+            ml="0"
+            w={['190px', '250px']}
+            me="0"
+            color="white"
+          >
+            <Image src="/assets/dish-placeholder.png" alt="Dish Image Placeholder" />
+          </Container>
+          <DishForm
+            title={data.dish?.name}
+            isEdit={true}
+            handleSubmit={handleEditDish}
+            initialData={data.dish}
+          />
+        </>
       )}
     </PageWrapper>
   )

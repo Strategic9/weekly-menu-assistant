@@ -28,9 +28,8 @@ import { useMutation } from 'react-query'
 import { api } from '../../services/api'
 import { useAlert } from 'react-alert'
 import { queryClient } from '../../services/queryClient'
-import { SearchIngredient } from './SearchIngredient'
 import { Select } from './Select'
-import { GetGroceriesResponse, Grocery, useGroceries } from '../../services/hooks/useGroceries'
+import { GetGroceriesResponse, useGroceries } from '../../services/hooks/useGroceries'
 
 export type CreateDishFormData = {
   id?: string
@@ -39,29 +38,34 @@ export type CreateDishFormData = {
   ingredients?: { id: string; quantity: number }[]
   mainIngredientId?: string
   recipe?: string
+  mainIngredientQuantity?: string
 }
 
 interface DishFormParams {
   title: string
   handleSubmit: SubmitHandler<CreateDishFormData>
   handleCancel?: () => void
-  initialData?: Dish
+  initialData?: any
+  isEdit: boolean
 }
 
 const createDishFormSchema = yup.object({
   name: yup.string().required('Name is required'),
   description: yup.string(),
   ingredients: yup.array().min(1, 'Ingredients is required'),
+  ingredientId: yup.string(),
   mainIngredientId: yup.string().required('Main ingredient is required'),
-  recipe: yup.string()
+  recipe: yup.string(),
+  mainIngredientQuantity: yup.number().required('Quantity is required'),
+  ingredientQuantity: yup.number().required('Quantity is required')
 })
 
 export default function DishForm(props: DishFormParams) {
   const { data: useGroceriesData } = useGroceries(null, {})
   const groceriesData = useGroceriesData as GetGroceriesResponse
   const itemsList = groceriesData?.items
-  const mainIngredient: any = props.initialData?.ingredients.find((i) => i.isMain)
-  const ingredients: any = props.initialData?.ingredients.filter((i) => !i.isMain)
+  const mainIngredient: any = props.initialData?.ingredients.find((i: any) => i.isMain)
+  const ingredients: any = props.initialData?.ingredients.filter((i: any) => !i.isMain)
 
   const defaultValues = {
     ...props.initialData,
@@ -70,12 +74,13 @@ export default function DishForm(props: DishFormParams) {
       mainIngredientId: mainIngredient?.grocery.id
     }
   }
-  console.log(ingredients && ingredients)
+
   const {
     register,
     control,
     handleSubmit,
-    formState: { errors }
+    formState: { errors },
+    getValues
   } = useForm({
     resolver: yupResolver(createDishFormSchema),
     defaultValues
@@ -85,6 +90,13 @@ export default function DishForm(props: DishFormParams) {
     control,
     name: 'ingredients'
   })
+
+  const addIngredient = () => {
+    const quantity = getValues('ingredientQuantity')
+    if (!!quantity && quantity > 0) {
+      append({ groceryId: getValues('ingredientId'), quantity: quantity })
+    }
+  }
 
   return (
     <Box
@@ -96,17 +108,21 @@ export default function DishForm(props: DishFormParams) {
       onSubmit={handleSubmit(props.handleSubmit)}
     >
       <Heading size={['md', 'lg']} fontWeight="normal">
-        {props.title} Dish
+        {props.title}
       </Heading>
 
       <Divider my={[4, 6]} borderColor="gray.700" />
 
       <VStack spacing="8">
-        <Grid w="100%" templateColumns={['repeat(1, 1fr)', 'repeat(2, 2fr)']} gap={['4', '6']}>
-          <GridItem>
-            <Input name="name" label="Name" error={errors.name} {...register('name')} />
-          </GridItem>
-          <GridItem>
+        <Grid w="100%" gap={['4', '6']} alignContent={'start'} alignItems={'start'}>
+          {!props.isEdit ? (
+            <GridItem w="50%">
+              <Input name="name" label="Name" error={errors.name} {...register('name')} />
+            </GridItem>
+          ) : (
+            <></>
+          )}
+          <GridItem w="50%">
             <Input
               name="description"
               label="Description"
@@ -114,57 +130,99 @@ export default function DishForm(props: DishFormParams) {
               {...register('description')}
             />
           </GridItem>
-          <GridItem>
-            <SearchIngredient
-              name="ingredients"
-              label="Ingredients"
-              error={errors.ingredients}
-              onAddIngredient={(ingredient: Grocery) => append(ingredient)}
-            ></SearchIngredient>
-          </GridItem>
-          <GridItem>
-            {useGroceriesData && (
-              <Select
-                name="mainIngredient"
-                label="Main ingredient"
-                error={errors.mainIngredientId}
-                {...register('mainIngredientId')}
-              >
-                {itemsList?.map((grocery) => (
-                  <option key={grocery.id} value={grocery.id}>
-                    {grocery.name}
-                  </option>
-                ))}
-              </Select>
-            )}
-          </GridItem>
-          <GridItem>
+          {useGroceriesData && (
+            <>
+              <GridItem w="60%">
+                <HStack spacing="4">
+                  <Select
+                    name="mainIngredientId"
+                    label="Main ingredient"
+                    error={errors.mainIngredientId}
+                    {...register('mainIngredientId')}
+                  >
+                    {itemsList?.map((grocery) => (
+                      <option key={grocery.id} value={grocery.id}>
+                        {grocery.name}
+                      </option>
+                    ))}
+                  </Select>
+                  <Input
+                    w="25%"
+                    name={'mainIngredientQuantity'}
+                    label={'Qty'}
+                    type={'number'}
+                    error={errors.mainIngredientQuantity}
+                    {...register('mainIngredientQuantity')}
+                  />
+                </HStack>
+              </GridItem>
+
+              <GridItem w="60%">
+                <HStack spacing="4">
+                  <Select
+                    name="ingredientId"
+                    label="Ingredients"
+                    error={errors.ingredientId}
+                    {...register('ingredientId')}
+                  >
+                    {itemsList?.map((grocery) => (
+                      <option key={grocery.id} value={grocery.id}>
+                        {grocery.name}
+                      </option>
+                    ))}
+                  </Select>
+                  <Input
+                    w="25%"
+                    name={'ingredientQuantity'}
+                    label={'Qty'}
+                    type={'number'}
+                    error={errors.ingredientQuantity}
+                    {...register('ingredientQuantity')}
+                  />
+                </HStack>
+              </GridItem>
+              <HStack className="mt-1">
+                <Button colorScheme="oxblood" onClick={addIngredient} className="mt-1">
+                  + Add
+                </Button>
+              </HStack>
+            </>
+          )}
+
+          <GridItem w="100%">
             <HStack spacing={2}>
-              {fields.map((ingredient: Grocery, index: number) => (
-                <Tag
-                  key={ingredient.id}
-                  index={index}
-                  size="lg"
-                  borderRadius="4"
-                  variant="solid"
-                  colorScheme="gray"
-                >
-                  <TagLabel>{ingredient.name}</TagLabel>
-                  <TagCloseButton onClick={() => remove(index)} />
-                </Tag>
-              ))}
+              {fields.map(
+                (
+                  ingredient: { id: string; groceryId: string; quantity: number },
+                  index: number
+                ) => (
+                  <Tag
+                    key={ingredient.groceryId}
+                    index={index}
+                    size="lg"
+                    borderRadius="4"
+                    variant="solid"
+                    colorScheme="gray"
+                  >
+                    <TagLabel>
+                      {itemsList?.find((i) => i.id === ingredient.groceryId)?.name}
+                    </TagLabel>
+                    <TagCloseButton onClick={() => remove(index)} />
+                  </Tag>
+                )
+              )}
             </HStack>
-            <GridItem>
-              <Text mb="2">Recipe</Text>
-              <Textarea
-                border="1px solid"
-                borderColor="gray.200"
-                name="recipe"
-                error={errors.recipe}
-                variant="filled"
-                {...register('recipe')}
-              />
-            </GridItem>
+          </GridItem>
+          <GridItem w="50%">
+            <Text mb="2">Recipe</Text>
+            <Textarea
+              border="1px solid"
+              borderColor="gray.200"
+              name="recipe"
+              error={errors.recipe}
+              variant="filled"
+              {...register('recipe')}
+            />
           </GridItem>
         </Grid>
       </VStack>
@@ -238,8 +296,11 @@ export function DishFormModal({
           ingredients: [],
           mainIngredient: null,
           recipe: '',
-          createdAt: null
+          createdAt: null,
+          image: null
         }}
+        title={''}
+        isEdit={false}
       />
     </Modal>
   )

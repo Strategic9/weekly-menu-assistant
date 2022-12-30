@@ -20,8 +20,9 @@ type CreateDishFormData = {
 type FormData = {
   name: string
   description: string
-  ingredients: Grocery[]
+  ingredients: any[]
   mainIngredientId: string
+  mainIngredientQuantity: number
 }
 
 export default function CreateDish() {
@@ -47,13 +48,12 @@ export default function CreateDish() {
     }
   )
 
-  // const { errors } = formState;
-
   const handleCreateDish: SubmitHandler<FormData> = async ({
     name,
     description,
     ingredients,
-    mainIngredientId
+    mainIngredientId,
+    mainIngredientQuantity
   }) => {
     const newDish: CreateDishFormData = {
       name,
@@ -61,17 +61,16 @@ export default function CreateDish() {
       image:
         'https://images.unsplash.com/photo-1584255014406-2a68ea38e48c?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTZ8fGZvcmt8ZW58MHx8MHx8&auto=format&fit=crop&w=500&q=60',
       ingredients: ingredients
-        .filter((i) => i.id !== mainIngredientId)
-        .map(({ id }) => ({ id, quantity: 1 })),
-
-      mainIngredient: { id: mainIngredientId, quantity: 1 }
+        .filter((i) => i.groceryId !== mainIngredientId)
+        .map(({ groceryId, quantity }) => ({ id: groceryId, quantity: quantity })),
+      mainIngredient: { id: mainIngredientId, quantity: mainIngredientQuantity }
     }
     await createDish.mutateAsync(newDish)
   }
 
   return (
     <PageWrapper>
-      <DishForm title={'Edit'} handleSubmit={handleCreateDish} />
+      <DishForm title={'Edit Dish'} isEdit={false} handleSubmit={handleCreateDish} />
     </PageWrapper>
   )
 }
