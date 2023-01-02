@@ -21,6 +21,7 @@ import Link from 'next/link'
 import { Input } from './Input'
 
 import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form'
+import { useBreakpointValue } from '@chakra-ui/media-query'
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup'
 import { Dish } from '../../services/hooks/useDishes'
@@ -103,6 +104,16 @@ export default function DishForm(props: DishFormParams) {
     resetField('ingredientQuantity')
   }
 
+  const isWideVersion = useBreakpointValue(
+    {
+      base: false,
+      lg: true
+    },
+    {
+      fallback: 'lg'
+    }
+  )
+
   return (
     <Box
       as="form"
@@ -121,13 +132,13 @@ export default function DishForm(props: DishFormParams) {
       <VStack spacing="8">
         <Grid w="100%" gap={['4', '6']} alignContent={'start'} alignItems={'start'}>
           {!props.isEdit ? (
-            <GridItem w="50%">
+            <GridItem w={['100%', '50%']}>
               <Input name="name" label="Name" error={errors.name} {...register('name')} />
             </GridItem>
           ) : (
             <></>
           )}
-          <GridItem w="50%">
+          <GridItem w={['100%', '50%']}>
             <Input
               name="description"
               label="Description"
@@ -137,11 +148,12 @@ export default function DishForm(props: DishFormParams) {
           </GridItem>
           {useGroceriesData && (
             <>
-              <GridItem w="60%">
+              <GridItem w={['100%', ' 60%']}>
                 <HStack spacing="4">
                   <Select
+                    w={['9em', '100%']}
                     name="mainIngredientId"
-                    label="Main ingredient"
+                    label={isWideVersion ? 'Main ingredient' : 'Main ingr.'}
                     error={errors.mainIngredientId}
                     {...register('mainIngredientId')}
                   >
@@ -152,7 +164,8 @@ export default function DishForm(props: DishFormParams) {
                     ))}
                   </Select>
                   <Input
-                    w="25%"
+                    w={['100%', '25%']}
+                    minW={['30%', '50%']}
                     name={'mainIngredientQuantity'}
                     label={'Qty'}
                     type={'number'}
@@ -162,9 +175,10 @@ export default function DishForm(props: DishFormParams) {
                 </HStack>
               </GridItem>
 
-              <GridItem w="60%">
+              <GridItem w={['100%', ' 60%']}>
                 <HStack spacing="4">
                   <Select
+                    w={['9em', '100%']}
                     name="ingredientId"
                     label="Ingredients"
                     error={errors.ingredientId}
@@ -177,7 +191,8 @@ export default function DishForm(props: DishFormParams) {
                     ))}
                   </Select>
                   <Input
-                    w="25%"
+                    w={['100%', '25%']}
+                    minW={['30%', '50%']}
                     name={'ingredientQuantity'}
                     label={'Qty'}
                     type={'number'}
@@ -220,7 +235,7 @@ export default function DishForm(props: DishFormParams) {
               )}
             </HStack>
           </GridItem>
-          <GridItem w="50%">
+          <GridItem w={['100%', '50%']}>
             <Text mb="2">Recipe</Text>
             <Textarea
               border="1px solid"
