@@ -59,7 +59,6 @@ export default function DishPage() {
     {
       onSuccess: () => {
         queryClient.invalidateQueries('dishes')
-        queryClient.invalidateQueries('dish')
       }
     }
   )
