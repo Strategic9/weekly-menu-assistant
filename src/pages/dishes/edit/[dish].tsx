@@ -23,7 +23,8 @@ type FormData = {
   description: string
   ingredients: any[]
   mainIngredientId: string
-  mainIngredientQuantity: number
+  mainIngredientQuantity: string
+  recipe: string
 }
 
 export default function DishPage() {
@@ -34,14 +35,15 @@ export default function DishPage() {
 
   const editDish = useMutation(
     async (dish: FormData) => {
-      const { name, description, mainIngredientId, mainIngredientQuantity } = dish
+      const { name, description, mainIngredientId, mainIngredientQuantity, recipe } = dish
       const updatedDish = {
         name,
         description,
         ingredients: dish.ingredients
           .filter((i) => i.groceryId !== mainIngredientId)
           .map(({ groceryId, quantity }) => ({ id: groceryId, quantity: quantity })),
-        mainIngredient: { id: mainIngredientId, quantity: mainIngredientQuantity }
+        mainIngredient: { id: mainIngredientId, quantity: mainIngredientQuantity },
+        recipe
       }
       await HTTPHandler.patch(`dishes/${dish.id}`, {
         ...updatedDish
@@ -57,6 +59,7 @@ export default function DishPage() {
     {
       onSuccess: () => {
         queryClient.invalidateQueries('dishes')
+        queryClient.invalidateQueries('dish')
       }
     }
   )
@@ -76,10 +79,9 @@ export default function DishPage() {
           <Container
             id="header-logo"
             alignSelf="center"
-            ml="0"
             w={['190px', '250px']}
-            me="0"
             color="white"
+            alignItems="center"
           >
             <Image src="/assets/dish-placeholder.png" alt="Dish Image Placeholder" />
           </Container>

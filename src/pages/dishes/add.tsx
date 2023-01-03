@@ -4,7 +4,6 @@ import { useMutation } from 'react-query'
 import { HTTPHandler } from '../../services/api'
 import { queryClient } from '../../services/queryClient'
 import { useAlert } from 'react-alert'
-import { Grocery } from '../../services/hooks/useGroceries'
 import { useRouter } from 'next/router'
 import PageWrapper from '../page-wrapper'
 import DishForm from '../../components/Form/DishForm'
@@ -13,8 +12,9 @@ type CreateDishFormData = {
   name: string
   description: string
   image: string
-  ingredients: { id: string; quantity: number }[]
-  mainIngredient: { id: string; quantity: number }
+  ingredients: { id: string; quantity: string }[]
+  mainIngredient: { id: string; quantity: string }
+  recipe: string
 }
 
 type FormData = {
@@ -22,7 +22,8 @@ type FormData = {
   description: string
   ingredients: any[]
   mainIngredientId: string
-  mainIngredientQuantity: number
+  mainIngredientQuantity: string
+  recipe: string
 }
 
 export default function CreateDish() {
@@ -53,7 +54,8 @@ export default function CreateDish() {
     description,
     ingredients,
     mainIngredientId,
-    mainIngredientQuantity
+    mainIngredientQuantity,
+    recipe
   }) => {
     const newDish: CreateDishFormData = {
       name,
@@ -63,7 +65,8 @@ export default function CreateDish() {
       ingredients: ingredients
         .filter((i) => i.groceryId !== mainIngredientId)
         .map(({ groceryId, quantity }) => ({ id: groceryId, quantity: quantity })),
-      mainIngredient: { id: mainIngredientId, quantity: mainIngredientQuantity }
+      mainIngredient: { id: mainIngredientId, quantity: mainIngredientQuantity },
+      recipe
     }
     await createDish.mutateAsync(newDish)
   }

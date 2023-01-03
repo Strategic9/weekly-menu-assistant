@@ -53,17 +53,24 @@ interface DishFormParams {
 
 const createDishFormSchema = yup.object({
   name: yup.string().required('Name is required'),
-  description: yup.string(),
+  description: yup.string().required('Description is required'),
   ingredients: yup.array().min(1, 'Ingredients is required'),
   ingredientId: yup.string(),
   mainIngredientId: yup.string().required('Main ingredient is required'),
   recipe: yup.string(),
-  mainIngredientQuantity: yup.number().required('Quantity is required'),
-  ingredientQuantity: yup.number().required('Quantity is required')
+  mainIngredientQuantity: yup.string().required('Quantity is required'),
+  ingredientQuantity: yup.string()
 })
 
 export default function DishForm(props: DishFormParams) {
-  const { data: useGroceriesData } = useGroceries(null, {})
+  const { data: useGroceriesData } = useGroceries(
+    null,
+    {},
+    {
+      'page[limit]': 1000,
+      'page[offset]': 0
+    }
+  )
   const groceriesData = useGroceriesData as GetGroceriesResponse
   const itemsList = groceriesData?.items
   const mainIngredient: any = props.initialData?.ingredients.find((i: any) => i.isMain)
@@ -72,8 +79,11 @@ export default function DishForm(props: DishFormParams) {
   const defaultValues = {
     ...props.initialData,
     ...{
-      ingredients: ingredients?.map((e: any) => e.grocery),
-      mainIngredientId: mainIngredient?.grocery.id
+      ingredients: ingredients?.map((e: any) => {
+        return { groceryId: e.grocery.id, quantity: e.quantity }
+      }),
+      mainIngredientId: mainIngredient?.grocery?.id,
+      mainIngredientQuantity: mainIngredient?.quantity
     }
   }
 
@@ -224,9 +234,7 @@ export default function DishForm(props: DishFormParams) {
                     variant="solid"
                     colorScheme="gray"
                   >
-                    <TagLabel>{ingredient.name}</TagLabel>
                     <TagLabel>
-                      {' '}
                       {itemsList?.find((i) => i.id === ingredient.groceryId)?.name}
                     </TagLabel>
                     <TagCloseButton onClick={() => remove(index)} />

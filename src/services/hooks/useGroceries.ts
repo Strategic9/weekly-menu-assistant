@@ -1,5 +1,5 @@
 import { useQuery, UseQueryOptions } from 'react-query'
-import { api, HTTPHandler } from '../api'
+import { HTTPHandler } from '../api'
 import { setDate } from '../utils'
 import { Category } from './useCategories'
 
@@ -16,10 +16,11 @@ export type GetGroceriesResponse = {
   count: number
 }
 
-export async function getGroceries(page: number): Promise<GetGroceriesResponse> {
+export async function getGroceries(page: number, extraParams?: any): Promise<GetGroceriesResponse> {
   const { data } = await HTTPHandler.get('groceries', {
     params: {
-      include: 'category'
+      include: 'category',
+      ...extraParams
     }
   })
 
@@ -48,12 +49,16 @@ export async function getGroceries(page: number): Promise<GetGroceriesResponse> 
 
 let currentPage: number
 
-export function useGroceries(page: number, options: UseQueryOptions) {
+export function useGroceries(page: number, options: UseQueryOptions, extraParams?: any) {
   currentPage = page
-  return useQuery(page ? ['groceries', page] : ['groceries'], () => getGroceries(page), {
-    staleTime: 1000 * 60 * 10, // 10 minutes
-    ...options
-  })
+  return useQuery(
+    page ? ['groceries', page] : ['groceries'],
+    () => getGroceries(page, extraParams),
+    {
+      staleTime: 1000 * 60 * 10, // 10 minutes
+      ...options
+    }
+  )
 }
 
 // get one grocery
