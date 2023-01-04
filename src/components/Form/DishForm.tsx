@@ -32,12 +32,13 @@ import { useAlert } from 'react-alert'
 import { queryClient } from '../../services/queryClient'
 import { Select } from './Select'
 import { GetGroceriesResponse, useGroceries } from '../../services/hooks/useGroceries'
+import { SearchIngredient } from './SearchIngredient'
 
 export type CreateDishFormData = {
   id?: string
   name: string
   description?: string
-  ingredients?: { id: string; quantity: number }[]
+  ingredients?: { id: string; name: string; quantity: number }[]
   mainIngredientId?: string
   recipe?: string
   mainIngredientQuantity?: string
@@ -55,11 +56,10 @@ const createDishFormSchema = yup.object({
   name: yup.string().required('Name is required'),
   description: yup.string().required('Description is required'),
   ingredients: yup.array().min(1, 'Ingredients is required'),
-  ingredientId: yup.string(),
+  ingredientQuantity: yup.string(),
   mainIngredientId: yup.string().required('Main ingredient is required'),
-  recipe: yup.string(),
   mainIngredientQuantity: yup.string().required('Quantity is required'),
-  ingredientQuantity: yup.string()
+  recipe: yup.string()
 })
 
 export default function DishForm(props: DishFormParams) {
@@ -76,11 +76,14 @@ export default function DishForm(props: DishFormParams) {
   const mainIngredient: any = props.initialData?.ingredients.find((i: any) => i.isMain)
   const ingredients: any = props.initialData?.ingredients.filter((i: any) => !i.isMain)
 
+  const [ingredientId, setIngredientId] = useState()
+  const [showRow, setShowRow] = useState(false)
+
   const defaultValues = {
     ...props.initialData,
     ...{
       ingredients: ingredients?.map((e: any) => {
-        return { groceryId: e.grocery.id, quantity: e.quantity }
+        return { id: e.grocery.id, name: e.grocery.name, quantity: e.quantity }
       }),
       mainIngredientId: mainIngredient?.grocery?.id,
       mainIngredientQuantity: mainIngredient?.quantity
@@ -93,7 +96,8 @@ export default function DishForm(props: DishFormParams) {
     handleSubmit,
     formState: { errors },
     getValues,
-    resetField
+    resetField,
+    setValue
   } = useForm({
     resolver: yupResolver(createDishFormSchema),
     defaultValues
@@ -104,14 +108,21 @@ export default function DishForm(props: DishFormParams) {
     name: 'ingredients'
   })
 
+  const addIngredientName = (el) => {
+    setValue('ingredientName', el.name)
+    setIngredientId(el.id)
+    setShowRow(true)
+  }
+
   const addIngredient = () => {
     const quantity = getValues('ingredientQuantity')
-    if (!!quantity && quantity > 0) {
-      append({ groceryId: getValues('ingredientId'), quantity: quantity })
-    }
+    const quantityExists = !!quantity && quantity > 0
+    if (quantityExists) {
+      append({ id: ingredientId, name: getValues('ingredientName'), quantity: quantity })
 
-    resetField('ingredientId')
-    resetField('ingredientQuantity')
+      setShowRow(false)
+      resetField('ingredientQuantity')
+    }
   }
 
   const isWideVersion = useBreakpointValue(
@@ -185,57 +196,63 @@ export default function DishForm(props: DishFormParams) {
                 </HStack>
               </GridItem>
 
-              <GridItem w={['100%', ' 60%']}>
-                <HStack spacing="4">
-                  <Select
-                    w={['9em', '100%']}
-                    name="ingredientId"
-                    label="Ingredients"
-                    error={errors.ingredientId}
-                    {...register('ingredientId')}
-                  >
-                    {itemsList?.map((grocery) => (
-                      <option key={grocery.id} value={grocery.id}>
-                        {grocery.name}
-                      </option>
-                    ))}
-                  </Select>
-                  <Input
-                    w={['100%', '25%']}
-                    minW={['30%', '50%']}
-                    name={'ingredientQuantity'}
-                    label={'Qty'}
-                    type={'number'}
-                    error={errors.ingredientQuantity}
-                    {...register('ingredientQuantity')}
-                  />
-                </HStack>
+              <GridItem w={['100%', ' 50%']}>
+                <SearchIngredient
+                  name="ingredients"
+                  label="Ingredients"
+                  onAddIngredient={addIngredientName}
+                ></SearchIngredient>
               </GridItem>
-              <HStack className="mt-1">
-                <Button colorScheme="oxblood" onClick={addIngredient} className="mt-1">
-                  + Add
-                </Button>
-              </HStack>
             </>
+          )}
+
+          {showRow && (
+            <GridItem w={['65%']}>
+              <Flex alignItems="flex-end" alignContent="baseline">
+                <Input
+                  w={['9em', '180px']}
+                  name={'ingredientName'}
+                  label={'Ingredient'}
+                  readOnly
+                  {...register('ingredientName')}
+                  border="1px solid red"
+                  mr="10px"
+                />
+                <br />
+                <Input
+                  w={['100%', '25%']}
+                  minW={['30%', '90px']}
+                  name={'ingredientQuantity'}
+                  label={'Qty'}
+                  {...register('ingredientQuantity')}
+                  type={'number'}
+                  error={errors.ingredientQuantity}
+                />
+                <HStack>
+                  <Button onClick={() => setShowRow(false)} mr="2" px="35px">
+                    Cancel
+                  </Button>
+                  <Button onClick={addIngredient} colorScheme="oxblood" px="35px">
+                    Save
+                  </Button>
+                </HStack>
+              </Flex>
+            </GridItem>
           )}
 
           <GridItem w="100%">
             <HStack spacing={2}>
               {fields.map(
-                (
-                  ingredient: { id: string; groceryId: string; name: string; quantity: number },
-                  index: number
-                ) => (
+                (ingredient: { id: string; name: string; quantity: string }, index: number) => (
                   <Tag
-                    key={ingredient.groceryId}
-                    index={index}
+                    key={ingredient.id}
                     size="lg"
                     borderRadius="4"
                     variant="solid"
                     colorScheme="gray"
                   >
                     <TagLabel>
-                      {itemsList?.find((i) => i.id === ingredient.groceryId)?.name}
+                      {ingredient.name} x {ingredient.quantity}
                     </TagLabel>
                     <TagCloseButton onClick={() => remove(index)} />
                   </Tag>

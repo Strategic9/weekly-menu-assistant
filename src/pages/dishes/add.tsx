@@ -63,8 +63,8 @@ export default function CreateDish() {
       image:
         'https://images.unsplash.com/photo-1584255014406-2a68ea38e48c?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTZ8fGZvcmt8ZW58MHx8MHx8&auto=format&fit=crop&w=500&q=60',
       ingredients: ingredients
-        .filter((i) => i.groceryId !== mainIngredientId)
-        .map(({ groceryId, quantity }) => ({ id: groceryId, quantity: quantity })),
+        .filter((i) => i.id !== mainIngredientId)
+        .map(({ id, quantity }) => ({ id: id, quantity: quantity })),
       mainIngredient: { id: mainIngredientId, quantity: mainIngredientQuantity },
       recipe
     }

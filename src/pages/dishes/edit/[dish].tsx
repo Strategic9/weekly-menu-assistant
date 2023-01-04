@@ -40,8 +40,8 @@ export default function DishPage() {
         name,
         description,
         ingredients: dish.ingredients
-          .filter((i) => i.groceryId !== mainIngredientId)
-          .map(({ groceryId, quantity }) => ({ id: groceryId, quantity: quantity })),
+          .filter((i) => i.id !== mainIngredientId)
+          .map(({ id, quantity }) => ({ id: id, quantity: quantity })),
         mainIngredient: { id: mainIngredientId, quantity: mainIngredientQuantity },
         recipe
       }
