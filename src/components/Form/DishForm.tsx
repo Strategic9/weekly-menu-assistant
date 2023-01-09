@@ -33,6 +33,7 @@ import { queryClient } from '../../services/queryClient'
 import { Select } from './Select'
 import { GetGroceriesResponse, useGroceries } from '../../services/hooks/useGroceries'
 import { SearchIngredient } from './SearchIngredient'
+import EditIngredient from './EditIngredient'
 
 export type CreateDishFormData = {
   id?: string
@@ -76,8 +77,11 @@ export default function DishForm(props: DishFormParams) {
   const mainIngredient: any = props.initialData?.ingredients.find((i: any) => i.isMain)
   const ingredients: any = props.initialData?.ingredients.filter((i: any) => !i.isMain)
 
-  const [ingredientId, setIngredientId] = useState()
-  const [showRow, setShowRow] = useState(false)
+  const [ingredientId, setIngredientId] = useState('')
+  const [indexIngredient, setIndexIngredient] = useState<number>()
+
+  const [addIngredient, setAddIngredient] = useState<boolean>()
+  const [showEditIngredient, setShowEditIngredient] = useState<boolean>()
 
   const defaultValues = {
     ...props.initialData,
@@ -94,35 +98,68 @@ export default function DishForm(props: DishFormParams) {
     register,
     control,
     handleSubmit,
+    watch,
     formState: { errors },
     getValues,
-    resetField,
     setValue
   } = useForm({
     resolver: yupResolver(createDishFormSchema),
     defaultValues
   })
 
-  const { fields, append, remove } = useFieldArray({
+  const { fields, append, update, remove } = useFieldArray({
     control,
     name: 'ingredients'
   })
 
-  const addIngredientName = (el) => {
-    setValue('ingredientName', el.name)
-    setIngredientId(el.id)
-    setShowRow(true)
+  console.log('watchhhhh', watch())
+
+  const ingredientGroceryId = ingredients?.map((item) => item.grocery.id)
+
+  const openIngredientTag = (ingredient, index) => {
+    setShowEditIngredient(true)
+    setIngredientId(ingredientGroceryId[index] ? ingredientGroceryId[index] : ingredientId)
+    setValue('ingredientName', ingredient.name)
+    setValue('ingredientQuantity', ingredient.quantity)
+
+    setIndexIngredient(index)
   }
 
-  const addIngredient = () => {
-    const quantity = getValues('ingredientQuantity')
-    const quantityExists = !!quantity && quantity > 0
-    if (quantityExists) {
-      append({ id: ingredientId, name: getValues('ingredientName'), quantity: quantity })
+  const addIngredientName = (el) => {
+    setValue('ingredientName', el.name)
+    setValue('ingredientQuantity', el.quantity)
+    setIngredientId(el.id)
+    setAddIngredient(true)
+    setShowEditIngredient(true)
+  }
 
-      setShowRow(false)
-      resetField('ingredientQuantity')
+  const addNewIngredient = () => {
+    const quantity = getValues('ingredientQuantity')
+    const name = getValues('ingredientName')
+    const quantityExists = !!quantity && quantity > 0
+
+    if (quantityExists) {
+      append({ id: ingredientId, name: name, quantity: quantity })
+
+      setAddIngredient(false)
+      setShowEditIngredient(false)
     }
+  }
+
+  const updateIngredient = () => {
+    const quantity = getValues('ingredientQuantity')
+    const name = getValues('ingredientName')
+    const quantityExists = !!quantity && quantity > 0
+
+    if (quantityExists) {
+      update(indexIngredient, {
+        id: ingredientId,
+        name: name,
+        quantity: quantity
+      })
+    }
+
+    setShowEditIngredient(false)
   }
 
   const isWideVersion = useBreakpointValue(
@@ -206,38 +243,13 @@ export default function DishForm(props: DishFormParams) {
             </>
           )}
 
-          {showRow && (
-            <GridItem w={['65%']}>
-              <Flex alignItems="flex-end" alignContent="baseline">
-                <Input
-                  w={['9em', '180px']}
-                  name={'ingredientName'}
-                  label={'Ingredient'}
-                  readOnly
-                  {...register('ingredientName')}
-                  border="1px solid red"
-                  mr="10px"
-                />
-                <br />
-                <Input
-                  w={['100%', '25%']}
-                  minW={['30%', '90px']}
-                  name={'ingredientQuantity'}
-                  label={'Qty'}
-                  {...register('ingredientQuantity')}
-                  type={'number'}
-                  error={errors.ingredientQuantity}
-                />
-                <HStack>
-                  <Button onClick={() => setShowRow(false)} mr="2" px="35px">
-                    Cancel
-                  </Button>
-                  <Button onClick={addIngredient} colorScheme="oxblood" px="35px">
-                    Save
-                  </Button>
-                </HStack>
-              </Flex>
-            </GridItem>
+          {showEditIngredient && (
+            <EditIngredient
+              register={register}
+              setShowEditIngredient={setShowEditIngredient}
+              addIngredient={addIngredient ? addNewIngredient : updateIngredient}
+              errors={errors}
+            />
           )}
 
           <GridItem w="100%">
@@ -251,7 +263,7 @@ export default function DishForm(props: DishFormParams) {
                     variant="solid"
                     colorScheme="gray"
                   >
-                    <TagLabel>
+                    <TagLabel onClick={() => openIngredientTag(ingredient, index)}>
                       {ingredient.name} x {ingredient.quantity}
                     </TagLabel>
                     <TagCloseButton onClick={() => remove(index)} />
