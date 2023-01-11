@@ -196,7 +196,7 @@ export default function DishForm(props: DishFormParams) {
         alignItems={'start'}
       >
         {!props.isEdit ? (
-          <GridItem w={['100%', '50%']}>
+          <GridItem colSpan={[1, 1, 2]}>
             <Input name="name" label="Name" error={errors.name} {...register('name')} />
           </GridItem>
         ) : (
