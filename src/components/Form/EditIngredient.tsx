@@ -1,4 +1,4 @@
-import { Wrap, Flex, Box, GridItem, Button, Icon } from '@chakra-ui/react'
+import { Wrap, Flex, Box, Button, Icon } from '@chakra-ui/react'
 import { RiDeleteBinLine } from 'react-icons/ri'
 import { Input } from './Input'
 
@@ -10,7 +10,7 @@ const EditIngredient = ({
   handleDeleteDish
 }) => {
   return (
-    <GridItem
+    <Box
       mb="8px"
       mt="15px"
       borderRadius="8px"
@@ -64,7 +64,7 @@ const EditIngredient = ({
           </Box>
         </Flex>
       </Wrap>
-    </GridItem>
+    </Box>
   )
 }
 

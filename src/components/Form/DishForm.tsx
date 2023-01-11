@@ -7,15 +7,12 @@ import {
   Divider,
   Wrap,
   HStack,
-  Grid,
-  GridItem,
   Button,
   ButtonProps,
   Tag,
   Text,
   Textarea,
   TagLabel,
-  TagCloseButton,
   Icon
 } from '@chakra-ui/react'
 import { useDisclosure } from '@chakra-ui/hooks'
@@ -189,22 +186,12 @@ export default function DishForm(props: DishFormParams) {
 
       <Divider my={[4, 6]} borderColor="gray.700" />
 
-      <Grid
-        templateColumns={['repeat(1, 1fr)', 'repeat(1, 1fr)', 'repeat(2, 2fr)']}
-        gap="4"
-        alignContent={'start'}
-        alignItems={'start'}
-      >
-        {!props.isEdit ? (
-          <GridItem colSpan={[1, 1, 2]}>
+      <Flex flexDirection={['column', 'column', 'row']} gap="4">
+        <Flex flexDirection="column" gap="15px" flex={['50%']}>
+          <Box>
             <Input name="name" label="Name" error={errors.name} {...register('name')} />
-          </GridItem>
-        ) : (
-          <></>
-        )}
-
-        {useGroceriesData && (
-          <GridItem>
+          </Box>
+          {useGroceriesData && (
             <HStack spacing="2">
               <Select
                 w={['9em', '14em']}
@@ -220,7 +207,7 @@ export default function DishForm(props: DishFormParams) {
                 ))}
               </Select>
               <Input
-                w={['100%', '5em']}
+                w={['100%']}
                 name={'mainIngredientQuantity'}
                 label={'Qty'}
                 type={'number'}
@@ -228,76 +215,80 @@ export default function DishForm(props: DishFormParams) {
                 {...register('mainIngredientQuantity')}
               />
             </HStack>
-          </GridItem>
-        )}
-
-        <GridItem>
-          <Text mb="2">Description</Text>
-          <Textarea
-            resize="none"
-            border="1px solid"
-            borderColor="gray.200"
-            name="description"
-            error={errors.description}
-            variant="filled"
-            {...register('description')}
-          />
-        </GridItem>
-
-        <GridItem>
-          <SearchIngredient
-            name="ingredients"
-            label="Ingredients"
-            onAddIngredient={addIngredientName}
-          ></SearchIngredient>
-          {showEditIngredient && (
-            <EditIngredient
-              handleDeleteDish={() => {
-                remove(indexIngredient)
-                setShowEditIngredient(false)
-              }}
-              register={register}
-              setShowEditIngredient={setShowEditIngredient}
-              addIngredient={addIngredient ? addNewIngredient : updateIngredient}
-              errors={errors}
-            />
           )}
-          <Wrap mt="15px">
-            {fields.map(
-              (ingredient: { id: string; name: string; quantity: string }, index: number) => (
-                <Tag
-                  p="0.4em"
-                  onClick={() => openIngredientTag(ingredient, index)}
-                  fontSize={['14px', '18px']}
-                  key={ingredient.id}
-                  size={['sm', 'lg']}
-                  borderRadius="4"
-                  variant="solid"
-                  colorScheme="gray"
-                >
-                  <TagLabel>
-                    {ingredient.name} x {ingredient.quantity}
-                  </TagLabel>
-                  <Icon as={RiEditLine} ml="8px" color="gray.200" fontSize={['14', '16']} />
-                </Tag>
-              )
-            )}
-          </Wrap>
-        </GridItem>
 
-        <GridItem>
-          <Text mb="2">Recipe</Text>
-          <Textarea
-            resize="none"
-            border="1px solid"
-            borderColor="gray.200"
-            name="recipe"
-            error={errors.recipe}
-            variant="filled"
-            {...register('recipe')}
-          />
-        </GridItem>
-      </Grid>
+          <Box>
+            <SearchIngredient
+              name="ingredients"
+              label="Ingredients"
+              onAddIngredient={addIngredientName}
+            ></SearchIngredient>
+            {showEditIngredient && (
+              <EditIngredient
+                handleDeleteDish={() => {
+                  remove(indexIngredient)
+                  setShowEditIngredient(false)
+                }}
+                register={register}
+                setShowEditIngredient={setShowEditIngredient}
+                addIngredient={addIngredient ? addNewIngredient : updateIngredient}
+                errors={errors}
+              />
+            )}
+            <Wrap mt="15px">
+              {fields.map(
+                (ingredient: { id: string; name: string; quantity: string }, index: number) => (
+                  <Tag
+                    p="0.4em"
+                    onClick={() => openIngredientTag(ingredient, index)}
+                    fontSize={['14px', '18px']}
+                    key={ingredient.id}
+                    size={['sm', 'lg']}
+                    borderRadius="4"
+                    variant="solid"
+                    colorScheme="gray"
+                  >
+                    <TagLabel>
+                      {ingredient.name} x {ingredient.quantity}
+                    </TagLabel>
+                    <Icon as={RiEditLine} ml="8px" color="gray.200" fontSize={['14', '16']} />
+                  </Tag>
+                )
+              )}
+            </Wrap>
+          </Box>
+        </Flex>
+
+        <Flex flexDirection="column" gap="15px" flex={['50%']}>
+          <Box>
+            <Text mb="2">Description</Text>
+            <Textarea
+              height="8.8em"
+              resize="none"
+              border="1px solid"
+              borderColor="gray.200"
+              name="description"
+              error={errors.description}
+              variant="filled"
+              {...register('description')}
+            />
+          </Box>
+
+          <Box>
+            <Text mb="2">Recipe</Text>
+            <Textarea
+              height="8.8em"
+              resize="none"
+              border="1px solid"
+              borderColor="gray.200"
+              name="recipe"
+              error={errors.recipe}
+              variant="filled"
+              {...register('recipe')}
+            />
+          </Box>
+        </Flex>
+      </Flex>
 
       <Flex mt="8" justify="flex-end">
         <HStack spacing="4">
