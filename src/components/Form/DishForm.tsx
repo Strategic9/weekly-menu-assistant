@@ -1,10 +1,11 @@
 import React, { useState } from 'react'
+import { RiEditLine } from 'react-icons/ri'
 import {
   Box,
   Flex,
   Heading,
   Divider,
-  VStack,
+  Wrap,
   HStack,
   Grid,
   GridItem,
@@ -14,7 +15,8 @@ import {
   Text,
   Textarea,
   TagLabel,
-  TagCloseButton
+  TagCloseButton,
+  Icon
 } from '@chakra-ui/react'
 import { useDisclosure } from '@chakra-ui/hooks'
 import Link from 'next/link'
@@ -98,7 +100,6 @@ export default function DishForm(props: DishFormParams) {
     register,
     control,
     handleSubmit,
-    watch,
     formState: { errors },
     getValues,
     setValue
@@ -112,13 +113,14 @@ export default function DishForm(props: DishFormParams) {
     name: 'ingredients'
   })
 
-  console.log('watchhhhh', watch())
-
   const ingredientGroceryId = ingredients?.map((item) => item.grocery.id)
 
   const openIngredientTag = (ingredient, index) => {
     setShowEditIngredient(true)
-    setIngredientId(ingredientGroceryId[index] ? ingredientGroceryId[index] : ingredientId)
+    if (ingredientGroceryId) {
+      setIngredientId(ingredientGroceryId[index])
+    }
+
     setValue('ingredientName', ingredient.name)
     setValue('ingredientQuantity', ingredient.quantity)
 
@@ -187,104 +189,115 @@ export default function DishForm(props: DishFormParams) {
 
       <Divider my={[4, 6]} borderColor="gray.700" />
 
-      <VStack spacing="8">
-        <Grid w="100%" gap={['4', '6']} alignContent={'start'} alignItems={'start'}>
-          {!props.isEdit ? (
-            <GridItem w={['100%', '50%']}>
-              <Input name="name" label="Name" error={errors.name} {...register('name')} />
-            </GridItem>
-          ) : (
-            <></>
-          )}
+      <Grid
+        templateColumns={['repeat(1, 1fr)', 'repeat(1, 1fr)', 'repeat(2, 2fr)']}
+        gap="4"
+        alignContent={'start'}
+        alignItems={'start'}
+      >
+        {!props.isEdit ? (
           <GridItem w={['100%', '50%']}>
-            <Input
-              name="description"
-              label="Description"
-              error={errors.description}
-              {...register('description')}
-            />
+            <Input name="name" label="Name" error={errors.name} {...register('name')} />
           </GridItem>
-          {useGroceriesData && (
-            <>
-              <GridItem w={['100%', ' 60%']}>
-                <HStack spacing="4">
-                  <Select
-                    w={['9em', '100%']}
-                    name="mainIngredientId"
-                    label={isWideVersion ? 'Main ingredient' : 'Main ingr.'}
-                    error={errors.mainIngredientId}
-                    {...register('mainIngredientId')}
-                  >
-                    {itemsList?.map((grocery) => (
-                      <option key={grocery.id} value={grocery.id}>
-                        {grocery.name}
-                      </option>
-                    ))}
-                  </Select>
-                  <Input
-                    w={['100%', '25%']}
-                    minW={['30%', '50%']}
-                    name={'mainIngredientQuantity'}
-                    label={'Qty'}
-                    type={'number'}
-                    error={errors.mainIngredientQuantity}
-                    {...register('mainIngredientQuantity')}
-                  />
-                </HStack>
-              </GridItem>
+        ) : (
+          <></>
+        )}
 
-              <GridItem w={['100%', ' 50%']}>
-                <SearchIngredient
-                  name="ingredients"
-                  label="Ingredients"
-                  onAddIngredient={addIngredientName}
-                ></SearchIngredient>
-              </GridItem>
-            </>
-          )}
+        {useGroceriesData && (
+          <GridItem>
+            <HStack spacing="2">
+              <Select
+                w={['9em', '14em']}
+                name="mainIngredientId"
+                label={isWideVersion ? 'Main ingredient' : 'Main ingr.'}
+                error={errors.mainIngredientId}
+                {...register('mainIngredientId')}
+              >
+                {itemsList?.map((grocery) => (
+                  <option key={grocery.id} value={grocery.id}>
+                    {grocery.name}
+                  </option>
+                ))}
+              </Select>
+              <Input
+                w={['100%', '5em']}
+                name={'mainIngredientQuantity'}
+                label={'Qty'}
+                type={'number'}
+                error={errors.mainIngredientQuantity}
+                {...register('mainIngredientQuantity')}
+              />
+            </HStack>
+          </GridItem>
+        )}
 
+        <GridItem>
+          <Text mb="2">Description</Text>
+          <Textarea
+            resize="none"
+            border="1px solid"
+            borderColor="gray.200"
+            name="description"
+            error={errors.description}
+            variant="filled"
+            {...register('description')}
+          />
+        </GridItem>
+
+        <GridItem>
+          <SearchIngredient
+            name="ingredients"
+            label="Ingredients"
+            onAddIngredient={addIngredientName}
+          ></SearchIngredient>
           {showEditIngredient && (
             <EditIngredient
+              handleDeleteDish={() => {
+                remove(indexIngredient)
+                setShowEditIngredient(false)
+              }}
               register={register}
               setShowEditIngredient={setShowEditIngredient}
               addIngredient={addIngredient ? addNewIngredient : updateIngredient}
               errors={errors}
             />
           )}
+          <Wrap mt="15px">
+            {fields.map(
+              (ingredient: { id: string; name: string; quantity: string }, index: number) => (
+                <Tag
+                  p="0.4em"
+                  onClick={() => openIngredientTag(ingredient, index)}
+                  fontSize={['14px', '18px']}
+                  key={ingredient.id}
+                  size={['sm', 'lg']}
+                  borderRadius="4"
+                  variant="solid"
+                  colorScheme="gray"
+                >
+                  <TagLabel>
+                    {ingredient.name} x {ingredient.quantity}
+                  </TagLabel>
+                  <Icon as={RiEditLine} ml="8px" color="gray.200" fontSize={['14', '16']} />
+                </Tag>
+              )
+            )}
+          </Wrap>
+        </GridItem>
 
-          <GridItem w="100%">
-            <HStack spacing={2}>
-              {fields.map(
-                (ingredient: { id: string; name: string; quantity: string }, index: number) => (
-                  <Tag
-                    key={ingredient.id}
-                    size="lg"
-                    borderRadius="4"
-                    variant="solid"
-                    colorScheme="gray"
-                  >
-                    <TagLabel onClick={() => openIngredientTag(ingredient, index)}>
-                      {ingredient.name} x {ingredient.quantity}
-                    </TagLabel>
-                    <TagCloseButton onClick={() => remove(index)} />
-                  </Tag>
-                )
-              )}
-            </HStack>
-          </GridItem>
-          <GridItem w={['100%', '50%']}>
-            <Text mb="2">Recipe</Text>
-            <Textarea
-              border="1px solid"
-              borderColor="gray.200"
-              name="recipe"
-              error={errors.recipe}
-              variant="filled"
-              {...register('recipe')}
-            />
-          </GridItem>
-        </Grid>
-      </VStack>
+        <GridItem>
+          <Text mb="2">Recipe</Text>
+          <Textarea
+            resize="none"
+            border="1px solid"
+            borderColor="gray.200"
+            name="recipe"
+            error={errors.recipe}
+            variant="filled"
+            {...register('recipe')}
+          />
+        </GridItem>
+      </Grid>
 
       <Flex mt="8" justify="flex-end">
         <HStack spacing="4">
