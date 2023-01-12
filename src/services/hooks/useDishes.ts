@@ -5,12 +5,14 @@ import { Grocery } from './useGroceries'
 export type Dish = {
   id: string
   name: string
+  image: string
   description: string
   ingredients: {
     grocery: Grocery
   }[]
   createdAt: string
   mainIngredient: Grocery
+  recipe: string
 }
 
 export type GetDishesResponse = {
@@ -32,6 +34,8 @@ export async function getDishes(page: number): Promise<GetDishesResponse> {
       name: dish.name,
       description: dish.description,
       ingredients: dish.ingredients,
+      image: dish.image,
+      recipe: dish.recipe,
       createdAt: new Date(dish.createdAt).toLocaleDateString('se', {
         day: '2-digit',
         month: 'long',

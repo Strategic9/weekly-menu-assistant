@@ -114,6 +114,8 @@ const SearchIngredientBase: ForwardRefRenderFunction<HTMLInputElement, SearchIng
 
 export const SearchIngredient = forwardRef(SearchIngredientBase)
 
+////////////////////////////////////////////////////////////////////////
+
 interface SearchIngredientModalProps {
   buttonProps: ButtonProps
   buttonLabel?: string
@@ -131,6 +133,7 @@ export function SearchIngredientModal({
     <Modal buttonProps={buttonProps} buttonLabel={buttonLabel} disclosureProps={modalDisclosure}>
       <Box flex="1" borderRadius={8} bg="grain" p={['6', '8']}>
         <SearchIngredient
+          w={['9em', '100%']}
           name="ingredients"
           onAddIngredient={(ingredient: Grocery) => {
             onSelectItem(ingredient)
