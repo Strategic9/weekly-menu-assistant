@@ -18,24 +18,24 @@ export default function Dish({ dish, dishIngredient, onMouseEnter, handleDeleteD
           objectFit="cover"
           maxW={['100%', '180px']}
           src={dish.image}
-          maxH="140px"
+          maxH={['140px', '100%', '100%']}
           alt="dish"
         />
       )}
 
       <Stack ml="10px">
         <Box>
-          <Heading mt={['6px', '2px']} size={['sm', 'md']}>
+          <Heading py={['8px', '6px']} size={['sm', 'md']}>
             {dish.name}
           </Heading>
-          <HStack>
+          <Flex flexDirection="column">
             <Text fontSize={['15', '18']} fontWeight="600">
               Ingredients:
             </Text>
-            <Text fontSize={['14', '16']} py="2">
-              {dishIngredient} {dish.recipe}
+            <Text fontSize={['14', '16']} py={['4px', '4px', '1.5']}>
+              {dishIngredient}
             </Text>
-          </HStack>
+          </Flex>
         </Box>
 
         <Box>
