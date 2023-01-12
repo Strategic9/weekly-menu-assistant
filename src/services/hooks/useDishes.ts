@@ -36,6 +36,11 @@ export async function getDishes(page: number): Promise<GetDishesResponse> {
       ingredients: dish.ingredients,
       image: dish.image,
       recipe: dish.recipe,
+      mainIngredint: dish.mainIngredient,
+      temperature: dish.temperature,
+      rate: dish.rate,
+      portions: dish.portions,
+      cookingTime: dish.cookingTime,
       createdAt: new Date(dish.createdAt).toLocaleDateString('se', {
         day: '2-digit',
         month: 'long',
