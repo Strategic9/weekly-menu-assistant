@@ -241,6 +241,7 @@ export default function DishForm(props: DishFormParams) {
                   <Tag
                     p="0.4em"
                     onClick={() => openIngredientTag(ingredient, index)}
+                    cursor="pointer"
                     fontSize={['14px', '18px']}
                     key={ingredient.id}
                     size={['sm', 'lg']}
