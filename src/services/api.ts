@@ -24,7 +24,7 @@ export const getHeadersForBlob = (fileType: string) => {
 }
 
 export const api = axios.create({
-  baseURL: 'http://localhost:3001/'
+  baseURL: process.env.NEXT_PUBLIC_APIURL
 })
 
 api.interceptors.response.use(
