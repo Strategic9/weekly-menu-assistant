@@ -29,6 +29,7 @@ type FormData = {
 export default function CreateDish() {
   const router = useRouter()
   const alert = useAlert()
+
   const createDish = useMutation(
     async (dish: CreateDishFormData) => {
       await HTTPHandler.post('dishes', {
