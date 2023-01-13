@@ -1,6 +1,8 @@
 import { Box, Flex, Text, Button, Icon, HStack, Stack, Heading, Image } from '@chakra-ui/react'
 import { RiEditLine, RiDeleteBinLine } from 'react-icons/ri'
+import { FaEye } from 'react-icons/fa'
 import Link from 'next/link'
+import { placeholderImage } from '../services/utils'
 
 export default function Dish({ dish, dishIngredient, onMouseEnter, handleDeleteDish }) {
   return (
@@ -13,15 +15,14 @@ export default function Dish({ dish, dishIngredient, onMouseEnter, handleDeleteD
       direction={{ base: 'column', sm: 'row' }}
       overflow="hidden"
     >
-      {!!dish.image && (
-        <Image
-          objectFit="cover"
-          maxW={['100%', '180px']}
-          src={dish.image}
-          maxH={['140px', '100%', '100%']}
-          alt="dish"
-        />
-      )}
+      <Image
+        objectFit="cover"
+        maxW={['100%', '180px']}
+        src={dish?.image ? dish?.image : placeholderImage}
+        maxH={['140px', '100%', '100%']}
+        alt="dish"
+        borderRadius={5}
+      />
 
       <Stack ml="10px">
         <Box>
@@ -57,6 +58,15 @@ export default function Dish({ dish, dishIngredient, onMouseEnter, handleDeleteD
                 leftIcon={<Icon as={RiEditLine} fontSize="16" />}
                 iconSpacing="0"
               />
+            </Link>
+            <Link href={`/dishes/view/${dish.id}`} passHref>
+              <Button
+                size="sm"
+                bg="gray.200"
+                leftIcon={<Icon as={FaEye} fontSize="16" />}
+                iconSpacing="0"
+                _hover={{ bg: 'gray.250' }}
+              ></Button>
             </Link>
           </HStack>
         </Box>
