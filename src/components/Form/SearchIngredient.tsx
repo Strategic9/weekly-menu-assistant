@@ -50,7 +50,7 @@ const SearchIngredientBase: ForwardRefRenderFunction<HTMLInputElement, SearchIng
   }, [itemsList])
 
   return (
-    <div onBlur={onClose}>
+    <div>
       <Popover
         isOpen={isOpen}
         onOpen={onOpen}
@@ -95,7 +95,10 @@ const SearchIngredientBase: ForwardRefRenderFunction<HTMLInputElement, SearchIng
                   borderRadius="none"
                   size="sm"
                   fontSize={['sm', 'md']}
-                  onClick={() => onAddIngredient(el)}
+                  onClick={() => {
+                    onClose()
+                    onAddIngredient(el)
+                  }}
                 >
                   {el.name}
                 </Button>
