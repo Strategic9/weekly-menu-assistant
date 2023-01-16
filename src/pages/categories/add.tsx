@@ -30,7 +30,7 @@ export default function CreateCategory() {
         ...category
       })
         .then(() => {
-          alert.success('Category added with success')
+          alert.success('Kategori skapad')
           router.push('.')
         })
         .catch(({ response }) => {
@@ -81,7 +81,7 @@ export default function CreateCategory() {
         <Flex mt="8" justify="flex-end">
           <HStack spacing="4">
             <Link href="/categories" passHref>
-              <Button colorScheme="gray">Cancel</Button>
+              <Button colorScheme="gray">Avbryt</Button>
             </Link>
             <Button type="submit" colorScheme="oxblood">
               Spara

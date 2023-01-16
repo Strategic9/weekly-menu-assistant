@@ -75,7 +75,7 @@ export default function CategoryPage() {
       await api
         .patch(`categories/${categoryId}`, { ...category })
         .then(() => {
-          alert.success('Category updated with success')
+          alert.success('Kategori ändrad')
           router.push('..')
         })
         .catch(({ response }) => {
@@ -105,7 +105,7 @@ export default function CategoryPage() {
         </Flex>
       ) : error ? (
         <Flex justify="center">
-          <Text>Fail to obtain category data.</Text>
+          <Text>Fel vid hämtning av kategori.</Text>
         </Flex>
       ) : (
         <Box

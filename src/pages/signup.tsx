@@ -48,11 +48,11 @@ export default function SignUp() {
       ...values
     })
       .then(() => {
-        alert.success('Sign up successful')
+        alert.success('Konto skapat')
         handleSignIn(values)
       })
       .catch((er) => {
-        alert.error('Please verify the information')
+        alert.error('Kontrollera angiven information')
       })
   }
 

@@ -49,9 +49,9 @@ export default function GroceryList({ groceries, totalCount }) {
     await HTTPHandler.delete(`groceries/${id}`)
       .then(async () => {
         await queryClient.invalidateQueries(['groceries', page])
-        alert.success('Grocery deleted')
+        alert.success('Ingrediens borttagen')
       })
-      .catch(() => alert.error('Fail to delete grocery'))
+      .catch(() => alert.error('Misslyckad borttagning'))
   }
 
   return (
@@ -81,7 +81,7 @@ export default function GroceryList({ groceries, totalCount }) {
           </Flex>
         ) : error ? (
           <Flex justify="center">
-            <Text>Fail to obtain groceries data.</Text>
+            <Text>Fel vid hämtning av Ingredienser.</Text>
           </Flex>
         ) : (
           <Flex direction="column" justify="center" align="center">
@@ -92,7 +92,7 @@ export default function GroceryList({ groceries, totalCount }) {
                   <Th fontSize={[14, 15, 18]}>kategori</Th>
                   {isWideVersion && (
                     <Th fontSize={[14, 16, 18]} width="8">
-                      Actions
+                      händelser
                     </Th>
                   )}
                 </Tr>

@@ -35,7 +35,7 @@ export default function CreateDish() {
         ...dish
       })
         .then(() => {
-          alert.success('Dish added with success')
+          alert.success('Maträtt tillagd')
           router.push('.')
         })
         .catch(({ response }) => {
@@ -73,7 +73,7 @@ export default function CreateDish() {
 
   return (
     <PageWrapper>
-      <DishForm title={'Edit Dish'} isEdit={false} handleSubmit={handleCreateDish} />
+      <DishForm title={'Skapa maträtt'} isEdit={false} handleSubmit={handleCreateDish} />
     </PageWrapper>
   )
 }
