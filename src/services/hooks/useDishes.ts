@@ -20,14 +20,15 @@ export type GetDishesResponse = {
   totalCount: number
 }
 
-export async function getDishes(page: number): Promise<GetDishesResponse> {
+export async function getDishes(page: number, pageLimit = {}): Promise<GetDishesResponse> {
   const { data } = await HTTPHandler.get('dishes', {
     params: {
-      page
+      page,
+      ...pageLimit
     }
   })
 
-  const totalCount = data.items.length
+  const totalCount = data.count
   const dishes = data.items.map((dish) => {
     return {
       id: dish.id,
@@ -57,16 +58,16 @@ export async function getDishes(page: number): Promise<GetDishesResponse> {
 
 let currentPage: number
 
-export function useDishes(page: number, options: UseQueryOptions) {
+export function useDishes(page: number, options: UseQueryOptions, pageLimit) {
   currentPage = page
-  return useQuery(['dishes', page], () => getDishes(page), {
+  return useQuery(['dishes', page], () => getDishes(page, pageLimit), {
     staleTime: 1000 * 60 * 10, // 10 minutes
     ...options
   })
 }
 
 export function useDish(dish_id: string) {
-  const { data: useDishesData } = useDishes(currentPage, {})
+  const { data: useDishesData } = useDishes(currentPage, {}, {})
   const data = useDishesData as GetDishesResponse
 
   return useQuery(
