@@ -33,9 +33,24 @@ type UseGroceryData = {
   count: number
 }
 
-export default function GroceryList({ groceries, totalCount }) {
+export default function GroceryList() {
   const [page, setPage] = useState(1)
-  const { data: useGroceriesData, isLoading, isFetching, error } = useGroceries(page, {})
+  const [offset, setOffset] = useState(0)
+  const registersPerPage = 10
+
+  const {
+    data: useGroceriesData,
+    isLoading,
+    isFetching,
+    error
+  } = useGroceries(
+    page,
+    {},
+    {
+      'page[limit]': registersPerPage,
+      'page[offset]': offset
+    }
+  )
   const alert = useAlert()
 
   const data = useGroceriesData as UseGroceryData
@@ -148,6 +163,8 @@ export default function GroceryList({ groceries, totalCount }) {
 
             <Pagination
               totalCountOfRegisters={data.count}
+              registersPerPage={registersPerPage}
+              setOffset={setOffset}
               currentPage={page}
               onPageChange={setPage}
             />
