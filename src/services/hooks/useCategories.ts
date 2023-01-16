@@ -13,10 +13,11 @@ export type GetCategoriesResponse = {
   count: number
 }
 
-export async function getCategories(page?: number): Promise<GetCategoriesResponse> {
+export async function getCategories(page?: number, pageLimit = {}): Promise<GetCategoriesResponse> {
   const { data } = await HTTPHandler.get('categories', {
     params: {
-      page
+      page,
+      ...pageLimit
     }
   })
 
@@ -38,12 +39,16 @@ export async function getCategories(page?: number): Promise<GetCategoriesRespons
 
 let currentPage: number
 
-export function useCategories(page: number, options: UseQueryOptions) {
+export function useCategories(page: number, options: UseQueryOptions, pageLimit) {
   currentPage = page
-  return useQuery(page ? ['categories', page] : ['categories'], () => getCategories(page), {
-    staleTime: 1000 * 60 * 10, // 10 minutes
-    ...options
-  })
+  return useQuery(
+    page ? ['categories', page] : ['categories'],
+    () => getCategories(page, pageLimit),
+    {
+      staleTime: 1000 * 60 * 10, // 10 minutes
+      ...options
+    }
+  )
 }
 
 // get one category

@@ -20,9 +20,8 @@ import { RiEditLine, RiDeleteBinLine } from 'react-icons/ri'
 import Link from 'next/link'
 import { Pagination } from '../../components/Pagination'
 import { useState } from 'react'
-import { GetServerSideProps } from 'next'
 import { queryClient } from '../../services/queryClient'
-import { api, HTTPHandler } from '../../services/api'
+import { HTTPHandler } from '../../services/api'
 import TooltipButton from '../../components/TooltipButton'
 import { useAlert } from 'react-alert'
 import { useCategories } from '../../services/hooks/useCategories'
@@ -40,9 +39,23 @@ type UseCategoryData = {
   count: number
 }
 
-export default function CategoryList({ categories, totalCount }) {
+export default function CategoryList() {
   const [page, setPage] = useState(1)
-  const { data: useCategoriesData, isLoading, isFetching, error } = useCategories(page, {})
+  const [offset, setOffset] = useState(0)
+  const registersPerPage = 10
+  const {
+    data: useCategoriesData,
+    isLoading,
+    isFetching,
+    error
+  } = useCategories(
+    page,
+    {},
+    {
+      'page[limit]': registersPerPage,
+      'page[offset]': offset
+    }
+  )
   const alert = useAlert()
 
   const data = useCategoriesData as UseCategoryData
@@ -131,6 +144,8 @@ export default function CategoryList({ categories, totalCount }) {
 
             <Pagination
               totalCountOfRegisters={data.count}
+              registersPerPage={registersPerPage}
+              setOffset={setOffset}
               currentPage={page}
               onPageChange={setPage}
             />
@@ -140,14 +155,3 @@ export default function CategoryList({ categories, totalCount }) {
     </PageWrapper>
   )
 }
-
-// export const getServerSideProps: GetServerSideProps = async () => {
-//     const { users, totalCount } = await getUsers(1);
-
-//     return {
-//         props: {
-//             users,
-//             totalCount
-//         }
-//     }
-// }

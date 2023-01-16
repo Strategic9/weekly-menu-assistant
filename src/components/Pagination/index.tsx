@@ -23,7 +23,7 @@ export function Pagination({
   totalCountOfRegisters,
   registersPerPage = 4,
   currentPage = 1,
-  onPageChange: setPage,
+  onPageChange,
   setOffset
 }: PaginationProps) {
   const lastPage = Math.ceil(totalCountOfRegisters / registersPerPage)
@@ -66,7 +66,7 @@ export function Pagination({
           <>
             <PaginationItem
               onClick={() => {
-                setPage(1)
+                onPageChange(1)
                 onChangeOffset('firstpage')
               }}
               number={1}
@@ -85,7 +85,7 @@ export function Pagination({
               <PaginationItem
                 onClick={() => {
                   onChangeOffset('previousPage')
-                  setPage(page)
+                  onPageChange(page)
                 }}
                 key={page}
                 number={page}
@@ -101,7 +101,7 @@ export function Pagination({
               <PaginationItem
                 onClick={() => {
                   onChangeOffset('nextPage')
-                  setPage(page)
+                  onPageChange(page)
                 }}
                 key={page}
                 number={page}
@@ -118,7 +118,7 @@ export function Pagination({
             )}
             <PaginationItem
               onClick={() => {
-                setPage(lastPage)
+                onPageChange(lastPage)
                 onChangeOffset('lastPage')
               }}
               number={lastPage}
