@@ -49,7 +49,7 @@ export default function GroceryPage() {
             id: grocery.categoryId
           }
         })
-        alert.success('Grocery updated with success')
+        alert.success('Ingrediens uppdaterad')
         router.push('..')
       } catch (response) {
         alert.error(response.data.message)
@@ -75,7 +75,7 @@ export default function GroceryPage() {
         </Flex>
       ) : error ? (
         <Flex justify="center">
-          <Text>Fail to obtain grocery data.</Text>
+          <Text>Fel vid hämtning av ingredienser.</Text>
         </Flex>
       ) : (
         <GroceryForm handleSubmit={handleEditGrocery} initialData={data} />

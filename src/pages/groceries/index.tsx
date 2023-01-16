@@ -59,7 +59,7 @@ export default function GroceryList({ groceries, totalCount }) {
       <Box flex="1" borderRadius={8} bg="grain" p={[4, 8]}>
         <Flex mb="8" justify="space-between" align="center">
           <Heading size="lg" fontWeight="normal">
-            Groceries
+            Ingredienser
             {!isLoading && isFetching && <Spinner size="sm" color="gray.500" ml="4" />}
           </Heading>
 
@@ -88,8 +88,8 @@ export default function GroceryList({ groceries, totalCount }) {
             <Table size={!isWideVersion ? 'sm' : 'lg'} colorScheme="whiteAlpha" color="gray.700">
               <Thead bg="gray.200" color="black">
                 <Tr>
-                  <Th fontSize={[14, 15, 18]}>Grocery</Th>
-                  <Th fontSize={[14, 15, 18]}>Category</Th>
+                  <Th fontSize={[14, 15, 18]}>ingrediens</Th>
+                  <Th fontSize={[14, 15, 18]}>kategori</Th>
                   {isWideVersion && (
                     <Th fontSize={[14, 16, 18]} width="8">
                       Actions
@@ -131,7 +131,7 @@ export default function GroceryList({ groceries, totalCount }) {
                           </Tooltip>
                           <Link href={`/groceries/edit/${grocery.id}`} passHref>
                             <TooltipButton
-                              tooltipLabel="Edit"
+                              tooltipLabel="Redigera"
                               size="sm"
                               bg="gray.200"
                               leftIcon={<Icon as={RiEditLine} fontSize="16" />}

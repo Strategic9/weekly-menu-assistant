@@ -17,8 +17,8 @@ type SignInFormData = {
 }
 
 const signInFormSchema = yup.object({
-  email: yup.string().required('Email is required').email('Invalid email'),
-  password: yup.string().required('Password is required')
+  email: yup.string().required('Vänligen ange e-post').email('Ogiltig e-post'),
+  password: yup.string().required('Lösenord är obligatoriskt')
 })
 
 export default function SignIn() {
@@ -70,7 +70,7 @@ export default function SignIn() {
         if (error.response.status === 404) {
           signUp(res)
         } else {
-          alert.error('Please verify the information')
+          alert.error('Vänligen kontrollera angiven information')
         }
       })
   }
@@ -91,7 +91,7 @@ export default function SignIn() {
         handleSignIn({ email: gisRes.profileObj.email, password: gisRes.googleId })
       })
       .catch(() => {
-        alert.error('Please verify the information')
+        alert.error('Vänligen kontrollera angiven information')
       })
   }
 
@@ -104,12 +104,12 @@ export default function SignIn() {
         onLoginSucess(res)
       })
       .catch(() => {
-        alert.error('Please verify the information')
+        alert.error('Vänligen kontrollera angiven information')
       })
   }
 
   const onLoginSucess = (res) => {
-    alert.success('Welcome')
+    alert.success('Välkommen in')
     localStorage.set('token', res.data?.token)
     localStorage.set('username', res.data?.username)
     localStorage.set('email', res.data?.email)
@@ -133,22 +133,22 @@ export default function SignIn() {
       >
         <Logo linkTo={'/'} />
         <Stack mt={10} spacing="4">
-          <Input type="email" label="Email" error={errors.email} {...register('email')} />
+          <Input type="email" label="E-post" error={errors.email} {...register('email')} />
           <Input
             type="password"
-            label="Password"
+            label="Lösenord"
             error={errors.password}
             {...register('password')}
           />
         </Stack>
 
         <Button type="submit" mt="6" colorScheme="oxblood">
-          Sign In
+          Logga in
         </Button>
         <Flex mt="6" w="100%" justifyContent="center">
           <GoogleLogin
             clientId={clientId}
-            buttonText="Sign in with Google"
+            buttonText="Logga in med Google"
             onSuccess={onSuccess}
             onFailure={onFailure}
             cookiePolicy={'single_host_origin'}
@@ -156,9 +156,9 @@ export default function SignIn() {
           />
         </Flex>
         <Text mt={8} fontSize={14}>
-          Don&apos;t have an account?
+          Har du inget konto?
           <Link ml={1} textDecorationLine="underline" color="oxblood.400" href="/signup">
-            Create one here
+            Skapa ett här!
           </Link>
         </Text>
       </Flex>

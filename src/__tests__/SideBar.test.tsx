@@ -6,7 +6,6 @@ import PageWrapper from '../pages/page-wrapper'
 import mediaQuery from 'css-mediaquery'
 import { ThemeWrapper } from '../services/themeWrapper'
 import '@testing-library/jest-dom'
-import { debug } from 'console'
 
 declare global {
   interface Window {
@@ -40,12 +39,12 @@ describe('Render sidebar on desktop', () => {
     const { container } = render(<Sidebar />, { wrapper: ThemeWrapper })
 
     const mockElementsArray = [
-      'Dashboard',
-      'Menu',
-      'Groceries',
-      'Dishes',
-      'Categories',
-      'Shop List'
+      'Instrumentpanel',
+      'Menyer',
+      'Ingredienser',
+      'Maträtter',
+      'Kategorier',
+      'Inköpslistor'
     ]
 
     const sidebarElements = Array.from(container.getElementsByClassName('sidebar-text'))
@@ -76,7 +75,7 @@ describe('render sidebar on mobile', () => {
     const button = screen.getByLabelText('Open navigation')
     fireEvent.click(button)
 
-    const sideBarTitle = screen.getByText('Navigation')
+    const sideBarTitle = screen.getByText('Navigeringsmeny')
     expect(sideBarTitle).toBeInTheDocument()
 
     const closeButton = screen.getByLabelText('Close')

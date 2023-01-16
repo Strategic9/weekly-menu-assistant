@@ -27,7 +27,7 @@ export function SearchBox() {
         variant="unstyled"
         px="4"
         mr="4"
-        placeholder="Search"
+        placeholder="Sök"
         _placeholder={{ color: 'gray' }}
         ref={searchInputRef}
         className="search-input"

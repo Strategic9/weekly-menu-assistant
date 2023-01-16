@@ -67,14 +67,14 @@ export default function CreateCategory() {
         onSubmit={handleSubmit(handleCreateCategory)}
       >
         <Heading size="lg" fontWeight="normal">
-          Create category
+          Skapa kategori
         </Heading>
 
         <Divider my="6" borderColor="gray.700" />
 
         <VStack spacing="8">
           <SimpleGrid minChildWidth="240px" spacing={['6', '8']} w="100%">
-            <Input name="name" label="Name" error={errors.name} {...register('name')} />
+            <Input name="name" label="Namn" error={errors.name} {...register('name')} />
           </SimpleGrid>
         </VStack>
 
@@ -84,7 +84,7 @@ export default function CreateCategory() {
               <Button colorScheme="gray">Cancel</Button>
             </Link>
             <Button type="submit" colorScheme="oxblood">
-              Save
+              Spara
             </Button>
           </HStack>
         </Flex>

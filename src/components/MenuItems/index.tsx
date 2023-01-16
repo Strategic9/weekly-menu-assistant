@@ -72,7 +72,7 @@ export const MenuItem = ({
                   _hover: { background: 'gray.100' },
                   color: 'gray.700'
                 }}
-                buttonLabel="Replace"
+                buttonLabel="Ersätt"
                 onSelectItem={(dish) => {
                   menuDish.dish = dish
                   data.menu.dishes.splice(index, 1, menuDish)
@@ -119,11 +119,11 @@ export const EmptyMenuItem = ({
         >
           <Flex direction="column">
             <Text fontWeight="bold" fontSize={[14, 18]}>
-              No dish for this day
+              Ingen meny vald
             </Text>
             {isWideVersion && (
               <Text overflowWrap="anywhere" fontSize={14}>
-                You can add a new dish
+                Du kan lägga till en meny
               </Text>
             )}
           </Flex>

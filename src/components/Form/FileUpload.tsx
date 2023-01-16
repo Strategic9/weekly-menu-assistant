@@ -50,7 +50,7 @@ const FileUpload = ({
           style={{ display: 'none' }}
         ></input>
         <Input
-          placeholder={placeholder || 'Your file ...'}
+          placeholder={placeholder || 'Din fil ...'}
           onClick={() => inputRef.current.click()}
           value={value}
         />

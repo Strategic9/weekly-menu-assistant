@@ -56,7 +56,7 @@ export default function CategoryList({ categories, totalCount }) {
     await HTTPHandler.delete(`categories/${id}`)
       .then(async () => {
         await queryClient.invalidateQueries(['categories', page])
-        alert.success('Category deleted')
+        alert.success('Kategori borttagen')
       })
       .catch(() => alert.error('Fail to delete category'))
   }
@@ -66,7 +66,7 @@ export default function CategoryList({ categories, totalCount }) {
       <Box flex="1" borderRadius={8} bg="grain" p={[4, 8]}>
         <Flex mb="8" justify="space-between" align="center">
           <Heading size="lg" fontWeight="normal">
-            Categories
+            Kategorier
             {!isLoading && isFetching && <Spinner size="sm" color="gray.500" ml="4" />}
           </Heading>
         </Flex>
@@ -83,9 +83,9 @@ export default function CategoryList({ categories, totalCount }) {
             <Table size={!isWideVersion ? 'sm' : 'lg'} colorScheme="whiteAlpha" color="gray.700">
               <Thead bg="gray.200" fontSize="14px" color="black">
                 <Tr fontSize="14px">
-                  <Th fontSize={[14, 15, 18]}>Category</Th>
+                  <Th fontSize={[14, 15, 18]}>Kategori</Th>
                   <Th fontSize={[14, 15, 18]} width="8">
-                    Actions
+                    händelser
                   </Th>
                 </Tr>
               </Thead>
@@ -115,7 +115,7 @@ export default function CategoryList({ categories, totalCount }) {
                         </Tooltip>
                         <Link href={`/categories/edit/${category.id}`} passHref>
                           <TooltipButton
-                            tooltipLabel="Edit"
+                            tooltipLabel="Redigera"
                             size={['xs', 'sm']}
                             bg="gray.200"
                             leftIcon={<Icon as={RiEditLine} fontSize="16" />}

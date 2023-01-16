@@ -49,7 +49,7 @@ export default function DishPage() {
         ...updatedDish
       })
         .then(() => {
-          alert.success('Dish updated with success')
+          alert.success('Maträtt ändrad')
           router.push('..')
         })
         .catch(({ response }) => {

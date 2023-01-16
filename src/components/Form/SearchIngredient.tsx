@@ -67,7 +67,7 @@ const SearchIngredientBase: ForwardRefRenderFunction<HTMLInputElement, SearchIng
             name={name}
             label={label}
             error={error}
-            placeholder="Search"
+            placeholder="Sök ingrediens"
             onChange={(e) => filterResults(e)}
           />
         </PopoverTrigger>

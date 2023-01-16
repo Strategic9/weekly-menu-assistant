@@ -47,7 +47,7 @@ export default function Menu() {
       <Box as="form" flex="1" borderRadius={8} bg="grain" p={['4', '8']}>
         <Flex align="center">
           <Heading size="lg" fontWeight="normal">
-            Menu history
+            Menyhistorik
           </Heading>
         </Flex>
 
@@ -57,7 +57,7 @@ export default function Menu() {
           </Box>
         ) : error ? (
           <Flex justify="center">
-            <Text>Fail to obtain menu history.</Text>
+            <Text>Fel vid hämtning av menyhistorik.</Text>
           </Flex>
         ) : (
           <div>
@@ -68,7 +68,7 @@ export default function Menu() {
                     <Flex maxW="100%">
                       <Box mr="16px">
                         <Text mb="5px" fontSize={['sm', 'md']}>
-                          From
+                          Från
                         </Text>
                         <Input
                           width={['133px', '100%']}
@@ -83,7 +83,7 @@ export default function Menu() {
                       </Box>
                       <Box>
                         <Text mb="5px" fontSize={['sm', 'md']}>
-                          to
+                          till
                         </Text>
                         <Input
                           width={['133px', '100%']}
@@ -116,10 +116,10 @@ export default function Menu() {
                           flexDirection="column"
                         >
                           <Text fontSize={[14, 18]}>
-                            {getDayName(menuDish.selectionDate, 'en')}
+                            {getDayName(menuDish.selectionDate, 'se')}
                           </Text>
                           <Text fontSize={[10, 14]} color="oxblood.100">
-                            {getMonthName(menuDish.selectionDate, 'en')}
+                            {getMonthName(menuDish.selectionDate, 'se')}
                           </Text>
                         </Flex>
                       </VStack>

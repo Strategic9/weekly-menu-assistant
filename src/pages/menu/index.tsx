@@ -125,10 +125,10 @@ export default function Menu() {
       })
         .then(() => {
           queryClient.invalidateQueries('menu')
-          alert.success('Menu saved with success')
+          alert.success('Meny sparad')
         })
         .catch(() => {
-          alert.error('Fail to update menu')
+          alert.error('Fel vid uppdatering av meny')
         })
 
       setHasUpdates.off()
@@ -176,7 +176,7 @@ export default function Menu() {
         queryClient.invalidateQueries('menu')
       })
       .catch(() => {
-        alert.error('Failed to generate menu')
+        alert.error('Fel vid menygenerering')
       })
   }
 
@@ -192,14 +192,14 @@ export default function Menu() {
       >
         <Flex mb="8" align="center">
           <Heading size="lg" fontWeight="normal">
-            Week Menu
+            Veckomeny
           </Heading>
         </Flex>
         <WeekPicker setWeek={setWeek} />
         {!menuForChoosenWeekExists ? (
           <Flex>
             <Button mt="20px" onClick={() => generateMenu()}>
-              Generate Menu
+              Generera Veckomeny
             </Button>
           </Flex>
         ) : isLoading || isFetching || !localData ? (
@@ -212,7 +212,7 @@ export default function Menu() {
               <Flex maxW="100%">
                 <Box>
                   <Text mb="5px" fontSize={['sm', 'md']}>
-                    From
+                    Från
                   </Text>
                   <Controller
                     name="startDate"
@@ -225,7 +225,7 @@ export default function Menu() {
 
                 <Box>
                   <Text mb="5px" fontSize={['sm', 'md']}>
-                    to
+                    till
                   </Text>
                   <Controller
                     name="endDate"
@@ -314,7 +314,7 @@ export default function Menu() {
               <Flex mt="8" justify="flex-end">
                 <HStack spacing="4">
                   <Button type="submit" colorScheme="oxblood">
-                    Save
+                    Spara
                   </Button>
                 </HStack>
               </Flex>
