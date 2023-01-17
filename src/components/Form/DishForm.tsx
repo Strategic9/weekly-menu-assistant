@@ -37,6 +37,10 @@ import EditIngredient from './EditIngredient'
 export type CreateDishFormData = {
   id?: string
   name: string
+  image?: string
+  portions?: string
+  temperature?: string
+  cookingTime?: string
   description?: string
   ingredients?: { id: string; name: string; quantity: number }[]
   mainIngredientId?: string
@@ -59,7 +63,11 @@ const createDishFormSchema = yup.object({
   ingredientQuantity: yup.string(),
   mainIngredientId: yup.string().required('Huvudingrediens är obligatoriskt'),
   mainIngredientQuantity: yup.string().required('Mängd/volym är obligatorisk'),
-  recipe: yup.string()
+  recipe: yup.string(),
+  portions: yup.string().nullable(),
+  temperature: yup.string().nullable(),
+  cookingTime: yup.string().nullable(),
+  image: yup.string().nullable()
 })
 
 export default function DishForm(props: DishFormParams) {
@@ -216,6 +224,43 @@ export default function DishForm(props: DishFormParams) {
               />
             </HStack>
           )}
+
+          <HStack spacing="2">
+            <Input
+              w={['100%']}
+              name="image"
+              label="bildlänk"
+              error={errors.name}
+              {...register('image')}
+            />
+            <Input
+              w={['100%']}
+              name={'cookingTime'}
+              label={'tillagningstid'}
+              placeholder="40 mins"
+              error={errors.cookingTime}
+              {...register('cookingTime')}
+            />
+          </HStack>
+
+          <HStack spacing="2">
+            <Input
+              w={['100%']}
+              name={'portions'}
+              label={'portioner'}
+              placeholder="4 portioner"
+              error={errors.portions}
+              {...register('portions')}
+            />
+            <Input
+              w={['100%']}
+              name={'temperature'}
+              label={'temperatur'}
+              placeholder="180°c"
+              error={errors.temperature}
+              {...register('temperature')}
+            />
+          </HStack>
 
           <Box>
             <SearchIngredient
