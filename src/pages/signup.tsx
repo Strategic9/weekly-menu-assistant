@@ -64,7 +64,7 @@ export default function SignUp() {
     localStorage.set('token', res.data?.token)
     localStorage.set('username', res.data?.username)
     localStorage.set('email', res.data?.email)
-    router.push('dashboard')
+    router.push('menu')
   }
 
   return (

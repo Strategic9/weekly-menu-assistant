@@ -114,7 +114,7 @@ export default function SignIn() {
     localStorage.set('username', res.data?.username)
     localStorage.set('email', res.data?.email)
     getUserId(res.data?.email, res.data?.token)
-    router.push('dashboard')
+    router.push('menu')
   }
 
   return (
