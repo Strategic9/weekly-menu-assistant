@@ -62,9 +62,9 @@ export default function DishList({ users, totalCount }) {
     await HTTPHandler.delete(`dishes/${id}`)
       .then(async () => {
         await queryClient.invalidateQueries(['dishes', page])
-        alert.success('Dish deleted')
+        alert.success('Maträtt borttagen')
       })
-      .catch(() => alert.error('Fail to delete dish'))
+      .catch(() => alert.error('Borttagning misslyckad'))
   }
 
   function getDishIngredients(dish: Dish): string {
@@ -78,7 +78,7 @@ export default function DishList({ users, totalCount }) {
       <Box flex="1" borderRadius={8} bg="grain" p={['4', '8']}>
         <Flex mb="8" justify="space-between" align="center">
           <Heading size="lg" fontWeight="normal">
-            Dishes
+            Maträtter
             {!isLoading && isFetching && <Spinner size="sm" color="gray.500" ml="4" />}
           </Heading>
         </Flex>
@@ -88,7 +88,7 @@ export default function DishList({ users, totalCount }) {
           </Flex>
         ) : error ? (
           <Flex justify="center">
-            <Text>Fail to obtain dishes data.</Text>
+            <Text>Fel vid hämtning av maträtter</Text>
           </Flex>
         ) : (
           <>

@@ -53,12 +53,12 @@ interface DishFormParams {
 }
 
 const createDishFormSchema = yup.object({
-  name: yup.string().required('Name is required'),
-  description: yup.string().required('Description is required'),
-  ingredients: yup.array().min(1, 'Ingredients is required'),
+  name: yup.string().required('Namn är obligatoriskt'),
+  description: yup.string().required('Beskrivning är obligatorisk'),
+  ingredients: yup.array().min(1, 'Ingredienser är obligatoriska'),
   ingredientQuantity: yup.string(),
-  mainIngredientId: yup.string().required('Main ingredient is required'),
-  mainIngredientQuantity: yup.string().required('Quantity is required'),
+  mainIngredientId: yup.string().required('Huvudingrediens är obligatoriskt'),
+  mainIngredientQuantity: yup.string().required('Mängd/volym är obligatorisk'),
   recipe: yup.string()
 })
 
@@ -189,14 +189,14 @@ export default function DishForm(props: DishFormParams) {
       <Flex flexDirection={['column', 'column', 'row']} gap="4">
         <Flex flexDirection="column" gap="15px" flex={['50%']}>
           <Box>
-            <Input name="name" label="Name" error={errors.name} {...register('name')} />
+            <Input name="name" label="Namn" error={errors.name} {...register('name')} />
           </Box>
           {useGroceriesData && (
             <HStack spacing="2">
               <Select
                 w={['9em', '14em']}
                 name="mainIngredientId"
-                label={isWideVersion ? 'Main ingredient' : 'Main ingr.'}
+                label={isWideVersion ? 'Huvudingrediens' : 'H ingr.'}
                 error={errors.mainIngredientId}
                 {...register('mainIngredientId')}
               >
@@ -209,7 +209,7 @@ export default function DishForm(props: DishFormParams) {
               <Input
                 w={['100%']}
                 name={'mainIngredientQuantity'}
-                label={'Qty'}
+                label={'Mängd/volym'}
                 type={'number'}
                 error={errors.mainIngredientQuantity}
                 {...register('mainIngredientQuantity')}
@@ -219,8 +219,8 @@ export default function DishForm(props: DishFormParams) {
 
           <Box>
             <SearchIngredient
-              name="ingredients"
-              label="Ingredients"
+              name="Sök ingrediens"
+              label="Sök Ingrediens"
               onAddIngredient={addIngredientName}
             ></SearchIngredient>
             {showEditIngredient && (
@@ -262,7 +262,7 @@ export default function DishForm(props: DishFormParams) {
 
         <Flex flexDirection="column" gap="15px" flex={['50%']}>
           <Box>
-            <Text mb="2">Description</Text>
+            <Text mb="2">Information</Text>
             <Textarea
               height="8.8em"
               resize="none"
@@ -276,13 +276,13 @@ export default function DishForm(props: DishFormParams) {
           </Box>
 
           <Box>
-            <Text mb="2">Recipe</Text>
+            <Text mb="2">Recept</Text>
             <Textarea
               height="8.8em"
               resize="none"
               border="1px solid"
               borderColor="gray.200"
-              name="recipe"
+              name="recept"
               error={errors.recipe}
               variant="filled"
               {...register('recipe')}
@@ -294,10 +294,10 @@ export default function DishForm(props: DishFormParams) {
       <Flex mt="8" justify="flex-end">
         <HStack spacing="4">
           <Link href="/dishes" passHref>
-            <Button colorScheme="gray">Cancel</Button>
+            <Button colorScheme="gray">Avbryt</Button>
           </Link>
           <Button type="submit" colorScheme="oxblood">
-            Save
+            Spara
           </Button>
         </HStack>
       </Flex>
@@ -329,7 +329,7 @@ export function DishFormModal({
         })
         .then((response) => {
           const { dish } = response.data
-          alert.success('Dish added with success')
+          alert.success('Maträtt tillagd')
           onAddDish(dish)
           modalDisclosure.onClose()
         })

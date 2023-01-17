@@ -75,7 +75,7 @@ export default function CategoryPage() {
       await api
         .patch(`categories/${categoryId}`, { ...category })
         .then(() => {
-          alert.success('Category updated with success')
+          alert.success('Kategori ändrad')
           router.push('..')
         })
         .catch(({ response }) => {
@@ -105,7 +105,7 @@ export default function CategoryPage() {
         </Flex>
       ) : error ? (
         <Flex justify="center">
-          <Text>Fail to obtain category data.</Text>
+          <Text>Fel vid hämtning av kategori.</Text>
         </Flex>
       ) : (
         <Box
@@ -117,24 +117,24 @@ export default function CategoryPage() {
           onSubmit={handleSubmit(handleEditCategory)}
         >
           <Heading size="lg" fontWeight="normal">
-            Edit category
+            Ändra kategori
           </Heading>
 
           <Divider my="6" borderColor="gray.700" />
 
           <VStack spacing="8">
             <SimpleGrid minChildWidth="240px" spacing={['6', '8']} w="100%">
-              <Input name="name" label="Name" error={errors.name} {...register('name')} />
+              <Input name="name" label="Namn" error={errors.name} {...register('name')} />
             </SimpleGrid>
           </VStack>
 
           <Flex mt="8" justify="flex-end">
             <HStack spacing="4">
               <Link href="/categories" passHref>
-                <Button colorScheme="gray">Cancel</Button>
+                <Button colorScheme="gray">Avbryt</Button>
               </Link>
               <Button type="submit" colorScheme="oxblood">
-                Save
+                Spara
               </Button>
             </HStack>
           </Flex>

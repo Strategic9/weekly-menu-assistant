@@ -22,7 +22,7 @@ export default function CreateGrocery() {
             id: grocery.categoryId
           }
         })
-        alert.success('Grocery added with success')
+        alert.success('Ingrediens tillagd')
         router.push('.')
       } catch ({ response }) {
         alert.error(response.data.status && 400 && 'Validate all values are correct')

@@ -39,8 +39,8 @@ interface GroceryFormParams {
 }
 
 const createGroceryFormSchema = yup.object({
-  name: yup.string().required('Name is required'),
-  categoryId: yup.string().required('A category must be selected')
+  name: yup.string().required('Namn måste anges'),
+  categoryId: yup.string().required('En kategori måste väljas')
 })
 
 export default function GroceryForm(props: GroceryFormParams) {
@@ -80,17 +80,17 @@ export default function GroceryForm(props: GroceryFormParams) {
       onSubmit={handleSubmitGroceryForm}
     >
       <Heading size="lg" fontWeight="normal">
-        {`${props.initialData ? 'Edit' : 'Create'}`} grocery
+        {`${props.initialData ? 'Ändra' : 'Skapa'}`} Ingrediens
       </Heading>
 
       <Divider my="6" borderColor="gray.700" />
 
       <VStack spacing="8">
         <SimpleGrid minChildWidth="240px" spacing={['6', '8']} w="100%">
-          <Input name="name" label="Name" error={errors.name} {...register('name')} />
+          <Input name="name" label="Namn" error={errors.name} {...register('name')} />
           <Select
-            name="category"
-            label="Category"
+            name="Kategori"
+            label="Kategori"
             error={errors.categoryId}
             {...register('categoryId')}
           >
@@ -107,15 +107,15 @@ export default function GroceryForm(props: GroceryFormParams) {
         <HStack spacing="4">
           {props.handleCancel ? (
             <Button colorScheme="gray" onClick={props.handleCancel}>
-              Cancel
+              Avbryt
             </Button>
           ) : (
             <Link href="/groceries" passHref>
-              <Button colorScheme="gray">Cancel</Button>
+              <Button colorScheme="gray">Avbryt</Button>
             </Link>
           )}
           <Button type="submit" colorScheme="oxblood">
-            Save
+            Spara
           </Button>
         </HStack>
       </Flex>
@@ -148,7 +148,7 @@ export function GroceryFormModal({
         }
       })
         .then((response) => {
-          alert.success('Grocery added with success')
+          alert.success('Ingrediens tillagd')
           onAddIngredient(response.data)
           modalDisclosure.onClose()
         })

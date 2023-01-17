@@ -31,7 +31,7 @@ export default function Dish({ dish, dishIngredient, onMouseEnter, handleDeleteD
           </Heading>
           <Flex flexDirection="column">
             <Text fontSize={['15', '18']} fontWeight="600">
-              Ingredients:
+              Ingredienser:
             </Text>
             <Text fontSize={['14', '16']} py={['4px', '4px', '1.5']}>
               {dishIngredient}

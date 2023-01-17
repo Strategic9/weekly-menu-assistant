@@ -66,13 +66,13 @@ export default function ShopList() {
       })
     }
     queryClient.setQueryData(['menu'], { ...menuData })
-    alert.success('Item added')
+    alert.success('Tillagd')
   }
 
   function handleRemoveGrocery(category: string, index: number) {
     menuData.shopList.categories[category].splice(index, 1)
     queryClient.setQueryData(['menu'], { ...menuData })
-    alert.success('Item removed')
+    alert.success('Borttagen')
   }
 
   useEffect(() => {
@@ -88,13 +88,13 @@ export default function ShopList() {
       <Box flex="1" borderRadius={8} bg="grain" p="8">
         <Flex justifyContent="space-between">
           <Heading mb="8" size="lg" fontWeight="normal">
-            Shop List
+            Inköpslista
           </Heading>
           <SearchIngredientModal
             buttonProps={{
               colorScheme: 'oxblood'
             }}
-            buttonLabel={isWideVersion ? 'Add new item' : '+'}
+            buttonLabel={isWideVersion ? 'Lägg till' : '+'}
             onSelectItem={handleAddGrocery}
           />
         </Flex>
@@ -107,7 +107,7 @@ export default function ShopList() {
           <Box mt="8">
             {error ? (
               <Flex justify="center">
-                <Text>Fail to obtain shop list.</Text>
+                <Text>Fel vid hämtning av Inköpslistor.</Text>
               </Flex>
             ) : (
               <List as={Stack} spacing="2">
@@ -149,8 +149,8 @@ export default function ShopList() {
                             size: 'xsm',
                             cursor: 'pointer'
                           }}
-                          header="Confirm"
-                          body="Remove item from shop list?"
+                          header="Bekräfta"
+                          body="Ta bort ingrediens från inköpslistan?"
                           onConfirm={() => handleRemoveGrocery(key, index)}
                         />
                       </ListItem>

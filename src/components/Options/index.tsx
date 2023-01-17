@@ -21,7 +21,7 @@ export const MenuDishOptions = ({ replace, deleteDish }) => {
           color="red.100"
           icon={<FaTrash size={16} />}
         >
-          Remove
+          Ta bort
         </MenuItem>
       </MenuList>
     </Menu>

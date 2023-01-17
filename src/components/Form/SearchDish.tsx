@@ -59,7 +59,7 @@ const SearchDishBase: ForwardRefRenderFunction<HTMLInputElement, SearchDishProps
           name={name}
           label={label}
           error={error}
-          placeholder="Search"
+          placeholder="Sök maträtt"
           onChange={(e) => filterResults(e)}
         />
       </PopoverTrigger>

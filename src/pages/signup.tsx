@@ -48,11 +48,11 @@ export default function SignUp() {
       ...values
     })
       .then(() => {
-        alert.success('Sign up successful')
+        alert.success('Konto skapat')
         handleSignIn(values)
       })
       .catch((er) => {
-        alert.error('Please verify the information')
+        alert.error('Kontrollera angiven information')
       })
   }
 
@@ -86,34 +86,34 @@ export default function SignUp() {
           <Stack spacing={4} direction="row">
             <Input
               type="text"
-              label="First Name"
+              label="Tilltalsnamn"
               error={errors.firstName}
               {...register('firstName')}
             />
             <Input
               type="text"
-              label="Last Name"
+              label="Efternamn"
               error={errors.lastName}
               {...register('lastName')}
             />
           </Stack>
-          <Input type="email" label="Email" error={errors.email} {...register('email')} />
+          <Input type="email" label="E-post" error={errors.email} {...register('email')} />
           <Input
             type="password"
-            label="Password"
+            label="Lösenord"
             error={errors.password}
             {...register('password')}
           />
         </Stack>
 
         <Button type="submit" mt="6" colorScheme="oxblood">
-          Sign Up
+          Registrera konto
         </Button>
 
         <Text mt={8} fontSize={14}>
-          Already have an account?
+          Har du redan ett konto?
           <Link ml={1} textDecorationLine="underline" color="oxblood.400" href="/">
-            Sign in here
+            Logga in här
           </Link>
         </Text>
       </Flex>

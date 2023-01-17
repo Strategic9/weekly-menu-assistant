@@ -23,8 +23,8 @@ const EditIngredient = ({
           <Input
             mr="10px"
             w={['7.5em', '90%', '14rem']}
-            name={'ingredientName'}
-            label={'Ingredient'}
+            name={'ingrediens'}
+            label={'Ingrediens'}
             readOnly
             {...register('ingredientName')}
           />
@@ -32,7 +32,7 @@ const EditIngredient = ({
           <Input
             w={['100%']}
             name={'ingredientQuantity'}
-            label={'Qty'}
+            label={'Antal/volym'}
             {...register('ingredientQuantity')}
             type={'number'}
             error={errors.ingredientQuantity}
@@ -56,10 +56,10 @@ const EditIngredient = ({
               mr="2"
               px="35px"
             >
-              Cancel
+              Avbryt
             </Button>
             <Button size={['sm', 'md']} onClick={addIngredient} colorScheme="oxblood" px="35px">
-              Save
+              Spara
             </Button>
           </Box>
         </Flex>

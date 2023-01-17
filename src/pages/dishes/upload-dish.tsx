@@ -22,10 +22,10 @@ export default function UploadDish() {
     await HTTPHandler.postBlob(`dishes/upload`, formData, 'plain/text')
       .then(() => {
         queryClient.invalidateQueries('dishes')
-        alert.success('Dishes saved with success')
+        alert.success('Maträtt sparad')
       })
       .catch(() => {
-        alert.error('Fail to upload dishes')
+        alert.error('Skapande av maträtt misslyckad')
       })
   }
 
@@ -40,7 +40,7 @@ export default function UploadDish() {
         onSubmit={handleSubmit(handleUploadFile)}
       >
         <Heading size="lg" fontWeight="normal">
-          Upload Dish
+          Ladda up maträtt
         </Heading>
 
         <Divider my="6" borderColor="gray.700" />
@@ -76,7 +76,7 @@ export default function UploadDish() {
               <Button colorScheme="gray">Cancel</Button>
             </Link>
             <Button type="submit" colorScheme="oxblood">
-              Save
+              Spara
             </Button>
           </HStack>
         </Flex>
