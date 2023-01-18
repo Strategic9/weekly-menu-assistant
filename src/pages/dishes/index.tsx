@@ -1,4 +1,4 @@
-import { Box, Text, Flex, Heading, useBreakpointValue, Spinner } from '@chakra-ui/react'
+import { Box, Text, Flex, Heading, Spinner } from '@chakra-ui/react'
 
 import { Pagination } from '../../components/Pagination'
 import { useState } from 'react'
@@ -25,21 +25,24 @@ type UseDishData = {
   totalCount: number
 }
 
-export default function DishList({ users, totalCount }) {
+export default function DishList() {
   const [page, setPage] = useState(1)
+  const [offset, setOffset] = useState(0)
+  const registersPerPage = 4
+
   const {
     data: useDishesData,
     isLoading,
     isFetching,
     error
-  } = useDishes(page, {
-    /*
-        initialData: {
-            users,
-            totalCount
-        },
-    */
-  })
+  } = useDishes(
+    page,
+    {},
+    {
+      'page[limit]': registersPerPage,
+      'page[offset]': offset
+    }
+  )
   const alert = useAlert()
 
   const data = useDishesData as UseDishData
@@ -105,6 +108,8 @@ export default function DishList({ users, totalCount }) {
 
             <Pagination
               totalCountOfRegisters={data.totalCount}
+              registersPerPage={registersPerPage}
+              setOffset={setOffset}
               currentPage={page}
               onPageChange={setPage}
             />
