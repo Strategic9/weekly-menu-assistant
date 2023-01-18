@@ -20,10 +20,9 @@ import { RiEditLine, RiDeleteBinLine } from 'react-icons/ri'
 import Link from 'next/link'
 import { Pagination } from '../../components/Pagination'
 import { useState } from 'react'
-import { GetServerSideProps } from 'next'
 import { Grocery, useGroceries } from '../../services/hooks/useGroceries'
 import { queryClient } from '../../services/queryClient'
-import { api, HTTPHandler } from '../../services/api'
+import { HTTPHandler } from '../../services/api'
 import TooltipButton from '../../components/TooltipButton'
 import { useAlert } from 'react-alert'
 import PageWrapper from '../page-wrapper'
@@ -77,18 +76,6 @@ export default function GroceryList() {
             Groceries
             {!isLoading && isFetching && <Spinner size="sm" color="gray.500" ml="4" />}
           </Heading>
-
-          {/* <Link href="/groceries/create" passHref>
-                            <Button
-                                as="a"
-                                size="sm"
-                                fontSize="sm"
-                                colorScheme="oxblood"
-                                leftIcon={<Icon as={RiAddLine} fontSize="20" />}
-                            >
-                                New Grocery
-                            </Button>
-                        </Link> */}
         </Flex>
         {isLoading ? (
           <Flex justify="center">
@@ -174,14 +161,3 @@ export default function GroceryList() {
     </PageWrapper>
   )
 }
-
-// export const getServerSideProps: GetServerSideProps = async () => {
-//     const { users, totalCount } = await getUsers(1);
-
-//     return {
-//         props: {
-//             users,
-//             totalCount
-//         }
-//     }
-// }

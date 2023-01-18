@@ -1,5 +1,5 @@
 import { useQuery, UseQueryOptions } from 'react-query'
-import { api, HTTPHandler } from '../api'
+import { HTTPHandler } from '../api'
 import { setDate } from '../utils'
 
 export type Category = {
