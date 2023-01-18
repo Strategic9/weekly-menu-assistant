@@ -10,11 +10,14 @@ import DishForm from '../../components/Form/DishForm'
 
 type CreateDishFormData = {
   name: string
-  description: string
-  image: string
+  image?: string
+  portions?: string
+  temperature?: string
+  cookingTime?: string
   ingredients: { id: string; quantity: string }[]
   mainIngredient: { id: string; quantity: string }
   recipe: string
+  description: string
 }
 
 type FormData = {
@@ -24,6 +27,10 @@ type FormData = {
   mainIngredientId: string
   mainIngredientQuantity: string
   recipe: string
+  image?: string
+  portions?: string
+  temperature?: string
+  cookingTime?: string
 }
 
 export default function CreateDish() {
@@ -55,18 +62,24 @@ export default function CreateDish() {
     ingredients,
     mainIngredientId,
     mainIngredientQuantity,
-    recipe
+    recipe,
+    image,
+    cookingTime,
+    portions,
+    temperature
   }) => {
     const newDish: CreateDishFormData = {
       name,
       description,
-      image:
-        'https://images.unsplash.com/photo-1584255014406-2a68ea38e48c?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTZ8fGZvcmt8ZW58MHx8MHx8&auto=format&fit=crop&w=500&q=60',
+      image: image || '',
       ingredients: ingredients
         .filter((i) => i.id !== mainIngredientId)
         .map(({ id, quantity }) => ({ id: id, quantity: quantity })),
       mainIngredient: { id: mainIngredientId, quantity: mainIngredientQuantity },
-      recipe
+      recipe: recipe || '',
+      cookingTime: cookingTime || '',
+      portions: portions || '',
+      temperature: temperature || ''
     }
     await createDish.mutateAsync(newDish)
   }

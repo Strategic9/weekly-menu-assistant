@@ -25,6 +25,10 @@ type FormData = {
   mainIngredientId: string
   mainIngredientQuantity: string
   recipe: string
+  image?: string
+  portions?: string
+  temperature?: string
+  cookingTime?: string
 }
 
 export default function DishPage() {
@@ -35,7 +39,17 @@ export default function DishPage() {
 
   const editDish = useMutation(
     async (dish: FormData) => {
-      const { name, description, mainIngredientId, mainIngredientQuantity, recipe } = dish
+      const {
+        name,
+        description,
+        mainIngredientId,
+        mainIngredientQuantity,
+        recipe,
+        image,
+        portions,
+        temperature,
+        cookingTime
+      } = dish
       const updatedDish = {
         name,
         description,
@@ -43,7 +57,11 @@ export default function DishPage() {
           .filter((i) => i.id !== mainIngredientId)
           .map(({ id, quantity }) => ({ id: id, quantity: quantity })),
         mainIngredient: { id: mainIngredientId, quantity: mainIngredientQuantity },
-        recipe
+        recipe: recipe || null,
+        cookingTime: cookingTime || null,
+        portions: portions || null,
+        temperature: temperature || null,
+        image: image || null
       }
       await HTTPHandler.patch(`dishes/${dish.id}`, {
         ...updatedDish
