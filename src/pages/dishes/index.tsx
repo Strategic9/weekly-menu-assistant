@@ -70,10 +70,10 @@ export default function DishList() {
       .catch(() => alert.error('Borttagning misslyckad'))
   }
 
-  function getDishIngredients(dish: Dish): string {
+  function getDishIngredients(dish: Dish) {
     return !!dish.ingredients && dish.ingredients.length > 0
-      ? dish.ingredients.map((i) => i.grocery.name).join(', ')
-      : ''
+      ? dish.ingredients.reverse().map((i) => i.grocery.name)
+      : []
   }
 
   return (

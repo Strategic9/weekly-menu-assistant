@@ -37,7 +37,7 @@ export async function getDishes(page: number, pageLimit = {}): Promise<GetDishes
       ingredients: dish.ingredients,
       image: dish.image,
       recipe: dish.recipe,
-      mainIngredint: dish.mainIngredient,
+      mainIngredient: dish.mainIngredient,
       temperature: dish.temperature,
       rate: dish.rate,
       portions: dish.portions,
