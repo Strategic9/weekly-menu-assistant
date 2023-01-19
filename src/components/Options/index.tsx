@@ -1,8 +1,8 @@
 import { Menu, MenuButton, MenuList, MenuItem, IconButton } from '@chakra-ui/react'
 
-import { FaEllipsisV, FaTrash } from 'react-icons/fa'
+import { FaEllipsisV, FaEye, FaTrash } from 'react-icons/fa'
 
-export const MenuDishOptions = ({ replace, deleteDish }) => {
+export const MenuDishOptions = ({ replace, deleteDish, dishId }) => {
   return (
     <Menu>
       <MenuButton
@@ -14,6 +14,17 @@ export const MenuDishOptions = ({ replace, deleteDish }) => {
         variant="outline"
       />
       <MenuList>
+        <MenuItem
+          as="a"
+          _hover={{ background: 'gray.100' }}
+          bgColor="white"
+          color="gray.700"
+          href={`/dishes/view/${dishId}`}
+          fontSize="16"
+          icon={<FaEye size={16} />}
+        >
+          Se maträtt
+        </MenuItem>
         {replace}
         <MenuItem
           onClick={() => deleteDish()}

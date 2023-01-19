@@ -14,6 +14,7 @@ import { FieldError } from 'react-hook-form'
 import { Input } from './Input'
 import Modal from '../Modal'
 import { useDishes, Dish, GetDishesResponse } from '../../services/hooks/useDishes'
+import { placeholderImage } from '../../services/utils'
 
 interface SearchDishProps extends ChakraInputProps {
   name: string
@@ -72,8 +73,19 @@ const SearchDishBase: ForwardRefRenderFunction<HTMLInputElement, SearchDishProps
               borderRadius="none"
               onClick={() => onSelectDish(el)}
               key={el.id}
+              _hover={{ bgColor: 'gray.200' }}
+              cursor="pointer"
             >
-              <Image maxW="90" mb="5px" src={el.image} alt="dish" />
+              <Image
+                w="70px"
+                borderRadius={6}
+                m={2}
+                h="50"
+                mb="5px"
+                src={el.image || placeholderImage}
+                alt="dish"
+                objectFit="cover"
+              />
 
               <Text>{el.name}</Text>
             </HStack>

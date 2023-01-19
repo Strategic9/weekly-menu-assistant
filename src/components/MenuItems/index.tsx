@@ -58,6 +58,7 @@ export const MenuItem = ({
             )}
           </Flex>
           <MenuDishOptions
+            dishId={menuDish.dish.id}
             replace={
               <SearchDishModal
                 buttonProps={{
