@@ -83,7 +83,7 @@ export default function Menu() {
                       </Box>
                       <Box>
                         <Text mb="5px" fontSize={['sm', 'md']}>
-                          till
+                          Till
                         </Text>
                         <Input
                           width={['133px', '100%']}
