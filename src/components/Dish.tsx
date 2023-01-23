@@ -37,7 +37,7 @@ export default function Dish({ dish, dishIngredient, onMouseEnter, handleDeleteD
               {dishIngredient.map((ingredient, i, { length }) => (
                 <Text
                   as="span"
-                  key={Math.random()}
+                  key={i}
                   _first={{ fontWeight: '600' }}
                   fontSize={['14', '16']}
                   py={['2px', '2px', '2px']}
