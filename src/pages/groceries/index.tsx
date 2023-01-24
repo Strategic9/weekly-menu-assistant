@@ -14,7 +14,9 @@ import {
   Tbody,
   Td,
   useBreakpointValue,
-  Spinner
+  Spinner,
+  MenuItem,
+  Show
 } from '@chakra-ui/react'
 import { RiEditLine, RiDeleteBinLine } from 'react-icons/ri'
 import Link from 'next/link'
@@ -26,6 +28,7 @@ import { HTTPHandler } from '../../services/api'
 import TooltipButton from '../../components/TooltipButton'
 import { useAlert } from 'react-alert'
 import PageWrapper from '../page-wrapper'
+import { MenuDishOptions } from '../../components/Options'
 
 type UseGroceryData = {
   items: Grocery[]
@@ -91,12 +94,12 @@ export default function GroceryList() {
               <Thead bg="gray.200" color="black">
                 <Tr>
                   <Th fontSize={[14, 15, 18]}>ingrediens</Th>
-                  <Th fontSize={[14, 15, 18]}>kategori</Th>
-                  {isWideVersion && (
-                    <Th fontSize={[14, 16, 18]} width="8">
-                      händelser
-                    </Th>
-                  )}
+                  <Show breakpoint="(min-width: 400px)">
+                    <Th fontSize={[14, 15, 18]}>kategori</Th>
+                  </Show>
+                  <Th fontSize={[14, 16, 18]} width="8">
+                    händelser
+                  </Th>
                 </Tr>
               </Thead>
               <Tbody>
@@ -109,15 +112,33 @@ export default function GroceryList() {
                         </Text>
                       </Box>
                     </Td>
-                    <Td>
-                      {grocery.category && (
-                        <Text fontSize={[14, 16, 18]} textTransform="capitalize">
-                          {grocery.category.name}
-                        </Text>
-                      )}
-                    </Td>
-                    {isWideVersion && (
+                    <Show breakpoint="(min-width: 400px)">
                       <Td>
+                        {grocery.category && (
+                          <Text fontSize={[14, 16, 18]} textTransform="capitalize">
+                            {grocery.category.name}
+                          </Text>
+                        )}
+                      </Td>
+                    </Show>
+                    <Td>
+                      <Show breakpoint="(max-width: 400px)">
+                        <MenuDishOptions
+                          replace={
+                            <Link href={`/groceries/edit/${grocery.id}`} passHref>
+                              <MenuItem
+                                fontSize="16"
+                                color="gray.700"
+                                icon={<RiEditLine size={16} />}
+                              >
+                                Redigera
+                              </MenuItem>
+                            </Link>
+                          }
+                          deleteDish={() => handleDelete(grocery.id)}
+                        />
+                      </Show>
+                      <Show breakpoint="(min-width: 400px)">
                         <HStack>
                           <Tooltip label="Remove" bg="red.200" color="white" placement="top-start">
                             <Button
@@ -141,8 +162,8 @@ export default function GroceryList() {
                             />
                           </Link>
                         </HStack>
-                      </Td>
-                    )}
+                      </Show>
+                    </Td>
                   </Tr>
                 ))}
               </Tbody>
