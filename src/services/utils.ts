@@ -9,6 +9,12 @@ export function arrayMove<T>(arr: Array<T>, old_index: number, new_index: number
   return arr // for testing
 }
 
+export const organizeByDate = (menu) => {
+  return menu.menu.dishes.sort(
+    (a, b) => new Date(a.selectionDate).getTime() - new Date(b.selectionDate).getTime()
+  )
+}
+
 export function addLeadingZero(num: number): string {
   let numStr = num.toString()
   if (num < 10) {
@@ -41,7 +47,7 @@ export const setDate = (data) =>
   })
 
 export const getDayName = (dateStr, locale) =>
-  new Date(dateStr).toLocaleDateString(locale, { weekday: 'long' }).slice(0, -3)
+  new Date(dateStr).toLocaleDateString(locale, { weekday: 'long' })
 
 export const getMonthName = (dateStr, locale) =>
   `${new Date(dateStr).toLocaleDateString(locale, {

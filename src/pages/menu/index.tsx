@@ -23,7 +23,8 @@ import {
   arrayMove,
   getDayName,
   getMonthName,
-  convertDateToString
+  convertDateToString,
+  organizeByDate
 } from '../../services/utils'
 import PageWrapper from '../page-wrapper'
 import { HTTPHandler } from '../../services/api'
@@ -150,6 +151,7 @@ export default function Menu() {
       if (menuWeek) {
         setMenuForChoosenWeekExists(true)
         setLocalData({ ...menuCurrentWeek })
+        organizeByDate(menuCurrentWeek)
       } else {
         setMenuForChoosenWeekExists(false)
       }
@@ -268,9 +270,9 @@ export default function Menu() {
                         align="flex-end"
                         flexDirection="column"
                       >
-                        <Text fontSize={[14, 18]}>{getDayName(menuDish.selectionDate, 'en')}</Text>
+                        <Text fontSize={[14, 18]}>{getDayName(menuDish.selectionDate, 'sv')}</Text>
                         <Text fontSize={[10, 14]} color="oxblood.100">
-                          {getMonthName(menuDish.selectionDate, 'en')}
+                          {getMonthName(menuDish.selectionDate, 'sv')}
                         </Text>
                       </Flex>
                     ))}
