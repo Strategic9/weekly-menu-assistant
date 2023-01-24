@@ -30,7 +30,14 @@ const SearchIngredientBase: ForwardRefRenderFunction<HTMLInputElement, SearchIng
   const { onOpen, onClose, isOpen } = useDisclosure()
   const [results, setResults] = useState([])
   const [newIngredient, setNewIngredient] = useState()
-  const { data: useGroceriesData } = useGroceries(null, {})
+  const { data: useGroceriesData } = useGroceries(
+    null,
+    {},
+    {
+      'page[limit]': 1000,
+      'page[offset]': 0
+    }
+  )
   const groceriesData = useGroceriesData as GetGroceriesResponse
   const itemsList = groceriesData?.items
 
@@ -96,8 +103,8 @@ const SearchIngredientBase: ForwardRefRenderFunction<HTMLInputElement, SearchIng
                   size="sm"
                   fontSize={['sm', 'md']}
                   onClick={() => {
-                    onClose()
                     onAddIngredient(el)
+                    onClose()
                   }}
                 >
                   {el.name}
@@ -116,8 +123,6 @@ const SearchIngredientBase: ForwardRefRenderFunction<HTMLInputElement, SearchIng
 }
 
 export const SearchIngredient = forwardRef(SearchIngredientBase)
-
-////////////////////////////////////////////////////////////////////////
 
 interface SearchIngredientModalProps {
   buttonProps: ButtonProps

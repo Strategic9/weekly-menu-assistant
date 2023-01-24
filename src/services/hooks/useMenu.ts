@@ -81,9 +81,7 @@ export async function getMenu(): Promise<any> {
 
     menu.dishes.forEach((dish) => (dish.selectionDate = new Date(dish.selectionDate)))
 
-    let shopList: ShopList = cookieShopList ? JSON.parse(cookieShopList) : {}
-
-    shopList = generateShopList(shopList, menu)
+    let shopList: ShopList = cookieShopList ? JSON.parse(cookieShopList) : generateShopList(menu)
 
     const updatedDishes = checkDishesAndDays(menu)
 
@@ -104,8 +102,8 @@ export function setShopListCookie(shopList: ShopList) {
   })
 }
 
-function generateShopList(shopList: ShopList, menu: Menu) {
-  shopList = menu.dishes.reduce<ShopList>(
+function generateShopList(menu: Menu) {
+  const shopList = menu.dishes.reduce<ShopList>(
     (shopList, menuDish) => {
       menuDish.dish.ingredients.map((ingredient) => {
         const category = ingredient.grocery.category ? ingredient.grocery.category.name : 'övrigt'
