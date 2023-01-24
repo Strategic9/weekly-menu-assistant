@@ -17,9 +17,9 @@ export default function Dish({ dish, dishIngredient, onMouseEnter, handleDeleteD
     >
       <Image
         objectFit="cover"
-        maxW={['100%', '180px']}
+        w={['100%', '180px']}
         src={dish?.image ? dish?.image : placeholderImage}
-        maxH={['140px', '100%', '100%']}
+        maxH={['140px', '140px', '140px']}
         alt="dish"
         borderRadius={5}
       />
@@ -33,9 +33,19 @@ export default function Dish({ dish, dishIngredient, onMouseEnter, handleDeleteD
             <Text fontSize={['15', '18']} fontWeight="600">
               Ingredienser:
             </Text>
-            <Text fontSize={['14', '16']} py={['4px', '4px', '1.5']}>
-              {dishIngredient}
-            </Text>
+            <Flex flexFlow={'wrap'} mb="4px">
+              {dishIngredient.map((ingredient, i, { length }) => (
+                <Text
+                  as="span"
+                  key={i}
+                  _first={{ fontWeight: '600' }}
+                  fontSize={['14', '16']}
+                  py={['2px', '2px', '2px']}
+                >
+                  {length - 1 === i ? ingredient : `${ingredient},\u00A0`}
+                </Text>
+              ))}
+            </Flex>
           </Flex>
         </Box>
 

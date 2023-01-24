@@ -114,9 +114,8 @@ export default function ViewDishPage() {
           Ingredients
         </Heading>
         <UnorderedList>
-          {/* <ListItem>{data?.dish?.mainIngredient.name}</ListItem> */}
-          {data?.dish?.ingredients.map((ingredient) => (
-            <ListItem key={ingredient.grocery.id}>
+          {data?.dish?.ingredients.reverse().map((ingredient) => (
+            <ListItem _first={{ fontWeight: '700' }} key={ingredient.grocery.id}>
               <span>{ingredient.quantity} </span>
               {ingredient.grocery.name}
             </ListItem>
@@ -179,7 +178,6 @@ export default function ViewDishPage() {
           src={data?.dish?.image ? data?.dish?.image : placeholderImage}
           alt="Dish Image"
           borderRadius={8}
-          mb={6}
         />
       </Flex>
       <Flex bgColor="white" borderRadius={8} padding={4} mb={8} flexDirection="column">
@@ -196,9 +194,8 @@ export default function ViewDishPage() {
             Ingredients
           </Heading>
           <UnorderedList>
-            {/* <ListItem>{data?.mainIngredient.name}</ListItem> */}
             {data?.dish?.ingredients.map((ingredient) => (
-              <ListItem key={ingredient.grocery.id}>
+              <ListItem _first={{ fontWeight: '700' }} key={ingredient.grocery.id}>
                 <span>{ingredient.quantity} </span>
                 {ingredient.grocery.name}
               </ListItem>
