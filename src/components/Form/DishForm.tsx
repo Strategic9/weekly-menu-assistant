@@ -89,6 +89,7 @@ export default function DishForm(props: DishFormParams) {
 
   const [addIngredient, setAddIngredient] = useState<boolean>()
   const [showEditIngredient, setShowEditIngredient] = useState<boolean>()
+  const [ingredientExists, setIngredientExists] = useState<boolean>()
 
   const defaultValues = {
     ...props.initialData,
@@ -128,7 +129,6 @@ export default function DishForm(props: DishFormParams) {
 
     setValue('ingredientName', ingredient.name)
     setValue('ingredientQuantity', ingredient.quantity)
-
     setIndexIngredient(index)
   }
 
@@ -138,6 +138,7 @@ export default function DishForm(props: DishFormParams) {
     setIngredientId(el.id)
     setAddIngredient(true)
     setShowEditIngredient(true)
+    setIndexIngredient(null)
   }
 
   const addNewIngredient = () => {
@@ -167,6 +168,14 @@ export default function DishForm(props: DishFormParams) {
     }
 
     setShowEditIngredient(false)
+  }
+
+  const handleAddorUpdate = (el) => {
+    const nameExists = fields.map((item) => item?.name).includes(el.name)
+
+    const index = fields.map((item) => item?.name).indexOf(el.name)
+    setIngredientExists(nameExists)
+    nameExists ? openIngredientTag(fields[index], index) : addIngredientName(el)
   }
 
   const isWideVersion = useBreakpointValue(
@@ -266,10 +275,11 @@ export default function DishForm(props: DishFormParams) {
             <SearchIngredient
               name="Sök ingrediens"
               label="Sök Ingrediens"
-              onAddIngredient={addIngredientName}
+              onAddIngredient={handleAddorUpdate}
             ></SearchIngredient>
             {showEditIngredient && (
               <EditIngredient
+                isAdded={ingredientExists}
                 handleDeleteDish={() => {
                   remove(indexIngredient)
                   setShowEditIngredient(false)
@@ -285,7 +295,7 @@ export default function DishForm(props: DishFormParams) {
                 (ingredient: { id: string; name: string; quantity: string }, index: number) => (
                   <Tag
                     p="0.4em"
-                    onClick={() => openIngredientTag(ingredient, index)}
+                    onClick={() => handleAddorUpdate(ingredient)}
                     cursor="pointer"
                     fontSize={['14px', '18px']}
                     key={ingredient.id}

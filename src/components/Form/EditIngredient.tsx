@@ -7,7 +7,8 @@ const EditIngredient = ({
   setShowEditIngredient,
   errors,
   addIngredient,
-  handleDeleteDish
+  handleDeleteDish,
+  isAdded
 }) => {
   return (
     <Box
@@ -39,15 +40,19 @@ const EditIngredient = ({
           />
         </Flex>
         <Flex justifyContent="space-between" w="100%">
-          <Button
-            size={['sm', 'md']}
-            bg="red.100"
-            color="white"
-            leftIcon={<Icon as={RiDeleteBinLine} fontSize="16" />}
-            iconSpacing="0"
-            _hover={{ bg: 'red.200' }}
-            onClick={() => handleDeleteDish()}
-          ></Button>
+          {isAdded ? (
+            <Button
+              size={['sm', 'md']}
+              bg="red.100"
+              color="white"
+              leftIcon={<Icon as={RiDeleteBinLine} fontSize="16" />}
+              iconSpacing="0"
+              _hover={{ bg: 'red.200' }}
+              onClick={() => handleDeleteDish()}
+            ></Button>
+          ) : (
+            <Box />
+          )}
           <Box>
             <Button
               _hover={{ bg: 'white' }}
