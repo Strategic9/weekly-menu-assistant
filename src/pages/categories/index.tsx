@@ -14,7 +14,9 @@ import {
   Tbody,
   Td,
   useBreakpointValue,
-  Spinner
+  Spinner,
+  MenuItem,
+  Show
 } from '@chakra-ui/react'
 import { RiEditLine, RiDeleteBinLine } from 'react-icons/ri'
 import Link from 'next/link'
@@ -26,6 +28,7 @@ import TooltipButton from '../../components/TooltipButton'
 import { useAlert } from 'react-alert'
 import { useCategories } from '../../services/hooks/useCategories'
 import PageWrapper from '../page-wrapper'
+import { MenuDishOptions } from '../../components/Options'
 
 type Category = {
   id: string
@@ -107,35 +110,53 @@ export default function CategoryList() {
                   <Tr key={category.id}>
                     <Td>
                       <Box>
-                        <Text fontSize={[14, 16, 20]} fontWeight="bold" textTransform="capitalize">
+                        <Text fontSize={[16, 16, 20]} fontWeight="bold" textTransform="capitalize">
                           {category.name}
                         </Text>
                       </Box>
                     </Td>
                     <Td>
-                      <HStack>
-                        <Tooltip label="Remove" bg="red.100" color="white" placement="top-start">
-                          <Button
-                            size={['xs', 'sm']}
-                            bg="red.100"
-                            color="white"
-                            justifyContent="center"
-                            leftIcon={<Icon as={RiDeleteBinLine} fontSize="16" />}
-                            iconSpacing="0"
-                            _hover={{ bg: 'red.200' }}
-                            onClick={() => handleDelete(category.id)}
-                          />
-                        </Tooltip>
-                        <Link href={`/categories/edit/${category.id}`} passHref>
-                          <TooltipButton
-                            tooltipLabel="Redigera"
-                            size={['xs', 'sm']}
-                            bg="gray.200"
-                            leftIcon={<Icon as={RiEditLine} fontSize="16" />}
-                            iconSpacing="0"
-                          />
-                        </Link>
-                      </HStack>
+                      <Show breakpoint="(max-width: 400px)">
+                        <MenuDishOptions
+                          replace={
+                            <Link href={`/categories/edit/${category.id}`} passHref>
+                              <MenuItem
+                                fontSize="16"
+                                color="gray.700"
+                                icon={<RiEditLine size={16} />}
+                              >
+                                Redigera
+                              </MenuItem>
+                            </Link>
+                          }
+                          deleteDish={() => handleDelete(category.id)}
+                        />
+                      </Show>
+                      <Show breakpoint="(min-width: 400px)">
+                        <HStack>
+                          <Tooltip label="Remove" bg="red.100" color="white" placement="top-start">
+                            <Button
+                              size={['xs', 'sm']}
+                              bg="red.100"
+                              color="white"
+                              justifyContent="center"
+                              leftIcon={<Icon as={RiDeleteBinLine} fontSize="16" />}
+                              iconSpacing="0"
+                              _hover={{ bg: 'red.200' }}
+                              onClick={() => handleDelete(category.id)}
+                            />
+                          </Tooltip>
+                          <Link href={`/categories/edit/${category.id}`} passHref>
+                            <TooltipButton
+                              tooltipLabel="Redigera"
+                              size={['xs', 'sm']}
+                              bg="gray.200"
+                              leftIcon={<Icon as={RiEditLine} fontSize="16" />}
+                              iconSpacing="0"
+                            />
+                          </Link>
+                        </HStack>
+                      </Show>
                     </Td>
                   </Tr>
                 ))}
