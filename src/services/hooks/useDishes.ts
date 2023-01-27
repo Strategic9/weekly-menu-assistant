@@ -1,13 +1,18 @@
 import { useQuery, UseQueryOptions } from 'react-query'
-import { api, HTTPHandler } from '../api'
+import { HTTPHandler } from '../api'
 import { Grocery } from './useGroceries'
 
 export type Dish = {
   id: string
   name: string
+  image: string
   description: string
-  ingredients: Grocery[]
+  ingredients: {
+    grocery: Grocery
+  }[]
   createdAt: string
+  mainIngredient: Grocery
+  recipe: string
 }
 
 export type GetDishesResponse = {
@@ -15,20 +20,28 @@ export type GetDishesResponse = {
   totalCount: number
 }
 
-export async function getDishes(page: number): Promise<GetDishesResponse> {
+export async function getDishes(page: number, pageLimit = {}): Promise<GetDishesResponse> {
   const { data } = await HTTPHandler.get('dishes', {
     params: {
-      page
+      page,
+      ...pageLimit
     }
   })
 
-  const totalCount = data.items.length
+  const totalCount = data.count
   const dishes = data.items.map((dish) => {
     return {
       id: dish.id,
       name: dish.name,
       description: dish.description,
       ingredients: dish.ingredients,
+      image: dish.image,
+      recipe: dish.recipe,
+      mainIngredient: dish.mainIngredient,
+      temperature: dish.temperature,
+      rate: dish.rate,
+      portions: dish.portions,
+      cookingTime: dish.cookingTime,
       createdAt: new Date(dish.createdAt).toLocaleDateString('se', {
         day: '2-digit',
         month: 'long',
@@ -45,16 +58,16 @@ export async function getDishes(page: number): Promise<GetDishesResponse> {
 
 let currentPage: number
 
-export function useDishes(page: number, options: UseQueryOptions) {
+export function useDishes(page: number, options: UseQueryOptions, pageLimit) {
   currentPage = page
-  return useQuery(['dishes', page], () => getDishes(page), {
+  return useQuery(['dishes', page], () => getDishes(page, pageLimit), {
     staleTime: 1000 * 60 * 10, // 10 minutes
     ...options
   })
 }
 
 export function useDish(dish_id: string) {
-  const { data: useDishesData } = useDishes(currentPage, {})
+  const { data: useDishesData } = useDishes(currentPage, {}, {})
   const data = useDishesData as GetDishesResponse
 
   return useQuery(

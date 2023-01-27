@@ -14,28 +14,45 @@ import {
   Tbody,
   Td,
   useBreakpointValue,
-  Spinner
+  Spinner,
+  MenuItem,
+  Show
 } from '@chakra-ui/react'
 import { RiEditLine, RiDeleteBinLine } from 'react-icons/ri'
 import Link from 'next/link'
 import { Pagination } from '../../components/Pagination'
 import { useState } from 'react'
-import { GetServerSideProps } from 'next'
 import { Grocery, useGroceries } from '../../services/hooks/useGroceries'
 import { queryClient } from '../../services/queryClient'
-import { api, HTTPHandler } from '../../services/api'
+import { HTTPHandler } from '../../services/api'
 import TooltipButton from '../../components/TooltipButton'
 import { useAlert } from 'react-alert'
 import PageWrapper from '../page-wrapper'
+import { MenuDishOptions } from '../../components/Options'
 
 type UseGroceryData = {
   items: Grocery[]
   count: number
 }
 
-export default function GroceryList({ groceries, totalCount }) {
+export default function GroceryList() {
   const [page, setPage] = useState(1)
-  const { data: useGroceriesData, isLoading, isFetching, error } = useGroceries(page, {})
+  const [offset, setOffset] = useState(0)
+  const registersPerPage = 10
+
+  const {
+    data: useGroceriesData,
+    isLoading,
+    isFetching,
+    error
+  } = useGroceries(
+    page,
+    {},
+    {
+      'page[limit]': registersPerPage,
+      'page[offset]': offset
+    }
+  )
   const alert = useAlert()
 
   const data = useGroceriesData as UseGroceryData
@@ -49,31 +66,19 @@ export default function GroceryList({ groceries, totalCount }) {
     await HTTPHandler.delete(`groceries/${id}`)
       .then(async () => {
         await queryClient.invalidateQueries(['groceries', page])
-        alert.success('Grocery deleted')
+        alert.success('Ingrediens borttagen')
       })
-      .catch(() => alert.error('Fail to delete grocery'))
+      .catch(() => alert.error('Misslyckad borttagning'))
   }
 
   return (
     <PageWrapper>
-      <Box flex="1" borderRadius={8} bg="grain" p="8">
+      <Box flex="1" borderRadius={8} bg="grain" p={[4, 8]}>
         <Flex mb="8" justify="space-between" align="center">
           <Heading size="lg" fontWeight="normal">
-            Groceries
+            Ingredienser
             {!isLoading && isFetching && <Spinner size="sm" color="gray.500" ml="4" />}
           </Heading>
-
-          {/* <Link href="/groceries/create" passHref>
-                            <Button
-                                as="a"
-                                size="sm"
-                                fontSize="sm"
-                                colorScheme="oxblood"
-                                leftIcon={<Icon as={RiAddLine} fontSize="20" />}
-                            >
-                                New Grocery
-                            </Button>
-                        </Link> */}
         </Flex>
         {isLoading ? (
           <Flex justify="center">
@@ -81,16 +86,20 @@ export default function GroceryList({ groceries, totalCount }) {
           </Flex>
         ) : error ? (
           <Flex justify="center">
-            <Text>Fail to obtain groceries data.</Text>
+            <Text>Fel vid hämtning av Ingredienser.</Text>
           </Flex>
         ) : (
-          <>
-            <Table colorScheme="whiteAlpha" color="gray.700">
+          <Flex direction="column" justify="center" align="center">
+            <Table size={!isWideVersion ? 'sm' : 'lg'} colorScheme="whiteAlpha" color="gray.700">
               <Thead bg="gray.200" color="black">
                 <Tr>
-                  <Th>Grocery</Th>
-                  <Th>Category</Th>
-                  {isWideVersion && <Th width="8">Actions</Th>}
+                  <Th fontSize={[14, 15, 18]}>ingrediens</Th>
+                  <Show breakpoint="(min-width: 400px)">
+                    <Th fontSize={[14, 15, 18]}>kategori</Th>
+                  </Show>
+                  <Th fontSize={[14, 16, 18]} width="8">
+                    händelser
+                  </Th>
                 </Tr>
               </Thead>
               <Tbody>
@@ -98,20 +107,38 @@ export default function GroceryList({ groceries, totalCount }) {
                   <Tr key={grocery.id}>
                     <Td>
                       <Box>
-                        <Text fontWeight="bold" textTransform="capitalize">
+                        <Text fontSize={[14, 16, 20]} fontWeight="bold" textTransform="capitalize">
                           {grocery.name}
                         </Text>
                       </Box>
                     </Td>
-                    <Td>
-                      {grocery.category && (
-                        <Text fontSize="sm" textTransform="capitalize">
-                          {grocery.category.name}
-                        </Text>
-                      )}
-                    </Td>
-                    {isWideVersion && (
+                    <Show breakpoint="(min-width: 400px)">
                       <Td>
+                        {grocery.category && (
+                          <Text fontSize={[14, 16, 18]} textTransform="capitalize">
+                            {grocery.category.name}
+                          </Text>
+                        )}
+                      </Td>
+                    </Show>
+                    <Td>
+                      <Show breakpoint="(max-width: 400px)">
+                        <MenuDishOptions
+                          replace={
+                            <Link href={`/groceries/edit/${grocery.id}`} passHref>
+                              <MenuItem
+                                fontSize="16"
+                                color="gray.700"
+                                icon={<RiEditLine size={16} />}
+                              >
+                                Redigera
+                              </MenuItem>
+                            </Link>
+                          }
+                          deleteDish={() => handleDelete(grocery.id)}
+                        />
+                      </Show>
+                      <Show breakpoint="(min-width: 400px)">
                         <HStack>
                           <Tooltip label="Remove" bg="red.200" color="white" placement="top-start">
                             <Button
@@ -127,7 +154,7 @@ export default function GroceryList({ groceries, totalCount }) {
                           </Tooltip>
                           <Link href={`/groceries/edit/${grocery.id}`} passHref>
                             <TooltipButton
-                              tooltipLabel="Edit"
+                              tooltipLabel="Redigera"
                               size="sm"
                               bg="gray.200"
                               leftIcon={<Icon as={RiEditLine} fontSize="16" />}
@@ -135,8 +162,8 @@ export default function GroceryList({ groceries, totalCount }) {
                             />
                           </Link>
                         </HStack>
-                      </Td>
-                    )}
+                      </Show>
+                    </Td>
                   </Tr>
                 ))}
               </Tbody>
@@ -144,23 +171,14 @@ export default function GroceryList({ groceries, totalCount }) {
 
             <Pagination
               totalCountOfRegisters={data.count}
+              registersPerPage={registersPerPage}
+              setOffset={setOffset}
               currentPage={page}
               onPageChange={setPage}
             />
-          </>
+          </Flex>
         )}
       </Box>
     </PageWrapper>
   )
 }
-
-// export const getServerSideProps: GetServerSideProps = async () => {
-//     const { users, totalCount } = await getUsers(1);
-
-//     return {
-//         props: {
-//             users,
-//             totalCount
-//         }
-//     }
-// }

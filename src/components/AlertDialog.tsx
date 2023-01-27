@@ -50,10 +50,10 @@ export default function AlertDialog({
           <AlertDialogBody>{body}</AlertDialogBody>
           <AlertDialogFooter>
             <Button ref={cancelRef} onClick={onClose}>
-              No
+              Nej
             </Button>
             <Button colorScheme="oxblood" ml={3} onClick={onConfirm}>
-              Yes
+              Ja
             </Button>
           </AlertDialogFooter>
         </AlertDialogContent>

@@ -1,6 +1,16 @@
 import { extendTheme } from '@chakra-ui/react'
 
 export const theme = extendTheme({
+  components: {
+    Popover: {
+      baseStyle: {
+        popper: {
+          width: 'fit-content',
+          maxWidth: 'fit-content'
+        }
+      }
+    }
+  },
   colors: {
     grain: '#efebe8',
     red: {
@@ -10,6 +20,7 @@ export const theme = extendTheme({
     gray: {
       '100': '#f7f5f3',
       '200': '#e3dcd7',
+      '250': '#d7d1cd',
       '300': '#7d7d7d',
       '400': '#636363',
       '500': '#565656',
@@ -26,6 +37,7 @@ export const theme = extendTheme({
       '500': '#042319'
     },
     tan: {
+      '200': '#e7fad4',
       '300': '#D7EFBF',
       '400': '#BDE598',
       '500': '#91C263',

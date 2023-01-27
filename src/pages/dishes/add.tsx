@@ -1,24 +1,36 @@
 import { SubmitHandler } from 'react-hook-form'
 import { useMutation } from 'react-query'
 
-import { api, HTTPHandler } from '../../services/api'
+import { HTTPHandler } from '../../services/api'
 import { queryClient } from '../../services/queryClient'
 import { useAlert } from 'react-alert'
-import { Grocery } from '../../services/hooks/useGroceries'
 import { useRouter } from 'next/router'
 import PageWrapper from '../page-wrapper'
 import DishForm from '../../components/Form/DishForm'
 
 type CreateDishFormData = {
   name: string
+  image?: string
+  portions?: string
+  temperature?: string
+  cookingTime?: string
+  ingredients: { id: string; quantity: string }[]
+  mainIngredient: { id: string; quantity: string }
+  recipe: string
   description: string
-  ingredients: { id: string }[]
 }
 
 type FormData = {
   name: string
   description: string
-  ingredients: Grocery[]
+  ingredients: any[]
+  mainIngredientId: string
+  mainIngredientQuantity: string
+  recipe: string
+  image?: string
+  portions?: string
+  temperature?: string
+  cookingTime?: string
 }
 
 export default function CreateDish() {
@@ -30,7 +42,7 @@ export default function CreateDish() {
         ...dish
       })
         .then(() => {
-          alert.success('Dish added with success')
+          alert.success('Maträtt tillagd')
           router.push('.')
         })
         .catch(({ response }) => {
@@ -44,20 +56,37 @@ export default function CreateDish() {
     }
   )
 
-  // const { errors } = formState;
-
-  const handleCreateDish: SubmitHandler<FormData> = async ({ name, description, ingredients }) => {
+  const handleCreateDish: SubmitHandler<FormData> = async ({
+    name,
+    description,
+    ingredients,
+    mainIngredientId,
+    mainIngredientQuantity,
+    recipe,
+    image,
+    cookingTime,
+    portions,
+    temperature
+  }) => {
     const newDish: CreateDishFormData = {
       name,
       description,
-      ingredients: ingredients.map(({ id }) => ({ id }))
+      image: image || '',
+      ingredients: ingredients
+        .filter((i) => i.id !== mainIngredientId)
+        .map(({ id, quantity }) => ({ id: id, quantity: quantity })),
+      mainIngredient: { id: mainIngredientId, quantity: mainIngredientQuantity },
+      recipe: recipe || '',
+      cookingTime: cookingTime || '',
+      portions: portions || '',
+      temperature: temperature || ''
     }
     await createDish.mutateAsync(newDish)
   }
 
   return (
     <PageWrapper>
-      <DishForm title={'Edit'} handleSubmit={handleCreateDish} />
+      <DishForm title={'Skapa maträtt'} isEdit={false} handleSubmit={handleCreateDish} />
     </PageWrapper>
   )
 }

@@ -4,15 +4,17 @@ import {
   useDisclosure,
   Box,
   Spinner,
-  Button,
   ButtonProps,
-  Icon
+  Text,
+  Image,
+  HStack
 } from '@chakra-ui/react'
 import { Popover, PopoverTrigger, PopoverContent } from '@chakra-ui/react'
 import { FieldError } from 'react-hook-form'
 import { Input } from './Input'
 import Modal from '../Modal'
 import { useDishes, Dish, GetDishesResponse } from '../../services/hooks/useDishes'
+import { placeholderImage } from '../../services/utils'
 
 interface SearchDishProps extends ChakraInputProps {
   name: string
@@ -58,24 +60,35 @@ const SearchDishBase: ForwardRefRenderFunction<HTMLInputElement, SearchDishProps
           name={name}
           label={label}
           error={error}
-          placeholder="Search"
+          placeholder="Sök maträtt"
           onChange={(e) => filterResults(e)}
         />
       </PopoverTrigger>
       <PopoverContent borderRadius="none">
         {results ? (
           results.map((el) => (
-            <Box key={el.id}>
-              <Button
-                width="100%"
-                justifyContent="left"
-                borderRadius="none"
-                size="sm"
-                onClick={() => onSelectDish(el)}
-              >
-                {el.name}
-              </Button>
-            </Box>
+            <HStack
+              width="100%"
+              justifyContent="left"
+              borderRadius="none"
+              onClick={() => onSelectDish(el)}
+              key={el.id}
+              _hover={{ bgColor: 'gray.200' }}
+              cursor="pointer"
+            >
+              <Image
+                w="70px"
+                borderRadius={6}
+                m={2}
+                h="50"
+                mb="5px"
+                src={el.image || placeholderImage}
+                alt="dish"
+                objectFit="cover"
+              />
+
+              <Text>{el.name}</Text>
+            </HStack>
           ))
         ) : (
           <Box py="4" mx="auto">

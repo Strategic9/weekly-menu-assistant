@@ -9,6 +9,12 @@ export function arrayMove<T>(arr: Array<T>, old_index: number, new_index: number
   return arr // for testing
 }
 
+export const organizeByDate = (menu) => {
+  return menu.menu.dishes.sort(
+    (a, b) => new Date(a.selectionDate).getTime() - new Date(b.selectionDate).getTime()
+  )
+}
+
 export function addLeadingZero(num: number): string {
   let numStr = num.toString()
   if (num < 10) {
@@ -21,7 +27,7 @@ export function getDays(from: Date, to: Date) {
   const diffTime = to.getTime() - from.getTime()
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
   const daysList: Date[] = []
-  for (let i = 0; i < diffDays; i++) {
+  for (let i = 0; i <= diffDays; i++) {
     const day = addDays(from, i)
     daysList.push(day)
   }
@@ -39,3 +45,18 @@ export const setDate = (data) =>
     month: 'long',
     year: 'numeric'
   })
+
+export const getDayName = (dateStr, locale) =>
+  new Date(dateStr).toLocaleDateString(locale, { weekday: 'long' })
+
+export const getMonthName = (dateStr, locale) =>
+  `${new Date(dateStr).toLocaleDateString(locale, {
+    month: 'long'
+  })}, ${new Date(dateStr).getDate()}`
+
+export const convertDateToString = (date) => {
+  return new Date(date).toISOString().split('T')[0]
+}
+
+export const placeholderImage =
+  'https://images.unsplash.com/photo-1584255014406-2a68ea38e48c?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTZ8fGZvcmt8ZW58MHx8MHx8&auto=format&fit=crop&w=500&q=60'

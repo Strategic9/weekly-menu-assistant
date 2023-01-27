@@ -8,28 +8,28 @@ import { NavSection } from './NavSection'
 export function SidebarNav() {
   return (
     <Stack spacing="6">
-      <NavLink icon={RiDashboardLine} href="/dashboard">
-        Dashboard
+      <NavLink className="sidebar-text" icon={RiDashboardLine} href="/dashboard">
+        Instrumentpanel
       </NavLink>
-      <NavSection title="Menu" icon={BiFoodMenu} activePath="/menu">
-        <NavLink href="/menu">Week Menu</NavLink>
-        <NavLink href="/menu/history">Menu History</NavLink>
+      <NavSection title="Menyer" icon={BiFoodMenu} activePath="/menu">
+        <NavLink href="/menu">Veckomeny</NavLink>
+        <NavLink href="/menu/history">Meny historik</NavLink>
       </NavSection>
-      <NavSection title="Groceries" icon={FaShoppingBasket} activePath="/groceries">
-        <NavLink href="/groceries">Grocery List</NavLink>
-        <NavLink href="/groceries/add">Add Grocery</NavLink>
+      <NavSection title="Ingredienser" icon={FaShoppingBasket} activePath="/groceries">
+        <NavLink href="/groceries">Ingredienser</NavLink>
+        <NavLink href="/groceries/add">Lägg till ingredienser</NavLink>
       </NavSection>
-      <NavSection title="Dishes" icon={BiRestaurant} activePath="/dishes">
-        <NavLink href="/dishes">Dish List</NavLink>
-        <NavLink href="/dishes/add">Add Dish</NavLink>
+      <NavSection title="Maträtter" icon={BiRestaurant} activePath="/dishes">
+        <NavLink href="/dishes">Maträtter</NavLink>
+        <NavLink href="/dishes/add">Lägg till maträtt</NavLink>
         {/* <NavLink href="/dishes/upload">Add Multiple Dishes</NavLink> */}
       </NavSection>
-      <NavSection title="Categories" icon={BiCategory} activePath="/categories">
-        <NavLink href="/categories">Category List</NavLink>
-        <NavLink href="/categories/add">Add Category</NavLink>
+      <NavSection title="Kategorier" icon={BiCategory} activePath="/categories">
+        <NavLink href="/categories">Kategorier</NavLink>
+        <NavLink href="/categories/add">Lägg till kategori</NavLink>
       </NavSection>
-      <NavLink icon={RiListCheck} href="/shop-list">
-        Shop List
+      <NavLink className="sidebar-text" icon={RiListCheck} href="/shop-list">
+        Inköpslistor
       </NavLink>
     </Stack>
   )

@@ -1,15 +1,14 @@
-import { Spinner, Flex } from '@chakra-ui/react'
+import { Spinner, Flex, Image, Container } from '@chakra-ui/react'
 import { SubmitHandler } from 'react-hook-form'
 import { useMutation } from 'react-query'
-
-import { api, HTTPHandler } from '../../../services/api'
+import { HTTPHandler } from '../../../services/api'
 import { queryClient } from '../../../services/queryClient'
 import { useAlert } from 'react-alert'
 import { useRouter } from 'next/router'
 import { useDish } from '../../../services/hooks/useDishes'
-import { Grocery } from '../../../services/hooks/useGroceries'
 import PageWrapper from '../../page-wrapper'
 import DishForm from '../../../components/Form/DishForm'
+import React from 'react'
 
 type UpdateDishFormData = {
   id?: string
@@ -22,7 +21,14 @@ type FormData = {
   id?: string
   name: string
   description: string
-  ingredients: Grocery[]
+  ingredients: any[]
+  mainIngredientId: string
+  mainIngredientQuantity: string
+  recipe: string
+  image?: string
+  portions?: string
+  temperature?: string
+  cookingTime?: string
 }
 
 export default function DishPage() {
@@ -33,17 +39,35 @@ export default function DishPage() {
 
   const editDish = useMutation(
     async (dish: FormData) => {
-      const { name, description } = dish
+      const {
+        name,
+        description,
+        mainIngredientId,
+        mainIngredientQuantity,
+        recipe,
+        image,
+        portions,
+        temperature,
+        cookingTime
+      } = dish
       const updatedDish = {
         name,
         description,
-        ingredients: dish.ingredients.map(({ id }) => ({ id }))
+        ingredients: dish.ingredients
+          .filter((i) => i.id !== mainIngredientId)
+          .map(({ id, quantity }) => ({ id: id, quantity: quantity })),
+        mainIngredient: { id: mainIngredientId, quantity: mainIngredientQuantity },
+        recipe: recipe || null,
+        cookingTime: cookingTime || null,
+        portions: portions || null,
+        temperature: temperature || null,
+        image: image || null
       }
       await HTTPHandler.patch(`dishes/${dish.id}`, {
         ...updatedDish
       })
         .then(() => {
-          alert.success('Dish updated with success')
+          alert.success('Maträtt ändrad')
           router.push('..')
         })
         .catch(({ response }) => {
@@ -52,7 +76,9 @@ export default function DishPage() {
     },
     {
       onSuccess: () => {
-        queryClient.invalidateQueries('dishes')
+        queryClient
+          .invalidateQueries(['dishes'])
+          .then(() => queryClient.invalidateQueries(['dish', dish_id]))
       }
     }
   )
@@ -68,7 +94,23 @@ export default function DishPage() {
           <Spinner />
         </Flex>
       ) : (
-        <DishForm title={'Edit'} handleSubmit={handleEditDish} initialData={data.dish} />
+        <>
+          <Container
+            id="header-logo"
+            alignSelf="center"
+            w={['190px', '250px']}
+            color="white"
+            alignItems="center"
+          >
+            <Image src="/assets/dish-placeholder.png" alt="Dish Image Placeholder" />
+          </Container>
+          <DishForm
+            title={data.dish?.name}
+            isEdit={true}
+            handleSubmit={handleEditDish}
+            initialData={data.dish}
+          />
+        </>
       )}
     </PageWrapper>
   )

@@ -1,20 +1,27 @@
 import { setCookie, parseCookies } from 'nookies'
 import { useQuery, UseQueryOptions } from 'react-query'
 import ShopList from '../../pages/shop-list'
-import { api } from '../api'
 import { Dish } from './useDishes'
+import { HTTPHandler } from '../api'
+import { getDays } from '../utils'
 
 export type Menu = {
+  user: User
   id: string
-  start_date: Date
-  end_date: Date
+  startDate: Date
+  endDate: Date
   dishes: MenuDish[]
-  created_at: Date
+  createdAt: Date
+}
+
+type User = {
+  id: string
 }
 
 export type MenuDish = {
+  selectionDate: Date
   dish: Dish
-  date: Date
+  id: string
 }
 
 export type ShopList = {
@@ -29,7 +36,7 @@ export type ShopList = {
 }
 
 export type GetMenuResponse = {
-  menu: Menu
+  menu: Menu[]
   shopList: ShopList
 }
 
@@ -38,21 +45,55 @@ export type GetMenuHistoryResponse = {
   totalCount: number
 }
 
-export async function getMenu(): Promise<GetMenuResponse> {
+const checkDishesAndDays = (menu) => {
+  const days = getDays(menu.startDate, menu.endDate)
+
+  const filteredArray = days.filter(
+    (day) => !menu.dishes.some((dish) => day.toString() === new Date(dish.selectionDate).toString())
+  )
+
+  filteredArray.forEach((object, i) =>
+    menu.dishes.push({
+      id: i.toString(),
+      selectionDate: object,
+      dish: {
+        id: '0'
+      }
+    })
+  )
+
+  return menu.dishes.sort((a, b) => a.selectionDate.getTime() - b.selectionDate.getTime())
+}
+
+export async function getMenu(): Promise<any> {
   const { 'menu.shopList': cookieShopList } = parseCookies()
-  const { data } = await api.get<GetMenuResponse>('menu')
-  const menu = data.menu as Menu
-  let shopList: ShopList = cookieShopList ? JSON.parse(cookieShopList) : {}
+  const { data } = await HTTPHandler.get('menus', {
+    params: {
+      'page[limit]': 1000,
+      'page[offset]': 0
+    }
+  })
+  const items = JSON.parse(JSON.stringify(data.items))
+  if (items.length) {
+    const menu = data.items[0] as Menu
+    menu.startDate = new Date(menu.startDate)
+    menu.endDate = new Date(menu.endDate)
 
-  shopList = generateShopList(shopList, menu)
+    menu.dishes.forEach((dish) => (dish.selectionDate = new Date(dish.selectionDate)))
 
-  menu.start_date = new Date(menu.start_date)
-  menu.end_date = new Date(menu.end_date)
-  menu.dishes.forEach((dish) => (dish.date = new Date(dish.date)))
+    let shopList: ShopList = cookieShopList ? JSON.parse(cookieShopList) : {}
 
-  return {
-    menu,
-    shopList
+    shopList = generateShopList(shopList, menu)
+
+    const updatedDishes = checkDishesAndDays(menu)
+
+    menu.dishes = updatedDishes
+    return {
+      items,
+      shopList
+    }
+  } else {
+    return null
   }
 }
 
@@ -66,18 +107,18 @@ export function setShopListCookie(shopList: ShopList) {
 function generateShopList(shopList: ShopList, menu: Menu) {
   shopList = menu.dishes.reduce<ShopList>(
     (shopList, menuDish) => {
-      menuDish.dish.ingredients.forEach((ingredient) => {
-        const category = ingredient.category ? ingredient.category.name : 'övrigt'
+      menuDish.dish.ingredients.map((ingredient) => {
+        const category = ingredient.grocery.category ? ingredient.grocery.category.name : 'övrigt'
         const hasEntry = !!shopList.categories[category]
         if (!hasEntry) {
           shopList.categories[category] = []
         }
         const grocery = shopList.categories[category].find(
-          (grocery) => grocery.name === ingredient.name
+          (grocery) => grocery.name === ingredient.grocery.name
         )
         if (!grocery) {
           shopList.categories[category].push({
-            name: ingredient.name,
+            name: ingredient.grocery.name,
             amount: 1,
             bought: false
           })
@@ -92,35 +133,8 @@ function generateShopList(shopList: ShopList, menu: Menu) {
   return shopList
 }
 
-export async function getMenuHistory(page: number): Promise<GetMenuHistoryResponse> {
-  const { data, headers } = await api.get<GetMenuHistoryResponse>('menu/history', {
-    params: {
-      page
-    }
-  })
-  const menuHistory = data.menuHistory
-  menuHistory.forEach((menu) => {
-    menu.start_date = new Date(menu.start_date)
-    menu.end_date = new Date(menu.end_date)
-  })
-
-  const totalCount = Number(headers['x-total-count'])
-
-  return {
-    menuHistory,
-    totalCount
-  }
-}
-
 export function useMenu(options: UseQueryOptions) {
   return useQuery(['menu'], () => getMenu(), {
-    staleTime: 1000 * 60 * 10, // 10 minutes
-    ...options
-  })
-}
-
-export function useMenuHistory(page: number, options: UseQueryOptions) {
-  return useQuery(['menus', page], () => getMenuHistory(page), {
     staleTime: 1000 * 60 * 10, // 10 minutes
     ...options
   })

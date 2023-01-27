@@ -24,7 +24,7 @@ interface SearchIngredientProps extends ChakraInputProps {
 }
 
 const SearchIngredientBase: ForwardRefRenderFunction<HTMLInputElement, SearchIngredientProps> = (
-  { name, label, error = null, onAddIngredient, ...rest },
+  { name, label, w, minW, error = null, onAddIngredient, ...rest },
   ref
 ) => {
   const { onOpen, onClose, isOpen } = useDisclosure()
@@ -50,7 +50,7 @@ const SearchIngredientBase: ForwardRefRenderFunction<HTMLInputElement, SearchIng
   }, [itemsList])
 
   return (
-    <div onBlur={onClose}>
+    <div>
       <Popover
         isOpen={isOpen}
         onOpen={onOpen}
@@ -61,14 +61,17 @@ const SearchIngredientBase: ForwardRefRenderFunction<HTMLInputElement, SearchIng
       >
         <PopoverTrigger>
           <Input
+            h="53"
+            w={w}
+            minW={minW}
             name={name}
             label={label}
             error={error}
-            placeholder="Search"
+            placeholder="Sök ingrediens"
             onChange={(e) => filterResults(e)}
           />
         </PopoverTrigger>
-        <PopoverContent borderRadius="none">
+        <PopoverContent maxW={['160px', '100%']} borderRadius="none">
           {!!newIngredient && (
             <GroceryFormModal
               buttonProps={{
@@ -91,7 +94,11 @@ const SearchIngredientBase: ForwardRefRenderFunction<HTMLInputElement, SearchIng
                   justifyContent="left"
                   borderRadius="none"
                   size="sm"
-                  onClick={() => onAddIngredient(el)}
+                  fontSize={['sm', 'md']}
+                  onClick={() => {
+                    onClose()
+                    onAddIngredient(el)
+                  }}
                 >
                   {el.name}
                 </Button>
@@ -110,6 +117,8 @@ const SearchIngredientBase: ForwardRefRenderFunction<HTMLInputElement, SearchIng
 
 export const SearchIngredient = forwardRef(SearchIngredientBase)
 
+////////////////////////////////////////////////////////////////////////
+
 interface SearchIngredientModalProps {
   buttonProps: ButtonProps
   buttonLabel?: string
@@ -127,8 +136,8 @@ export function SearchIngredientModal({
     <Modal buttonProps={buttonProps} buttonLabel={buttonLabel} disclosureProps={modalDisclosure}>
       <Box flex="1" borderRadius={8} bg="grain" p={['6', '8']}>
         <SearchIngredient
+          w={['9em', '100%']}
           name="ingredients"
-          label="Ingredients"
           onAddIngredient={(ingredient: Grocery) => {
             onSelectItem(ingredient)
             modalDisclosure.onClose()

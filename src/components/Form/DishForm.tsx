@@ -1,23 +1,26 @@
+import React, { useState } from 'react'
+import { RiEditLine } from 'react-icons/ri'
 import {
   Box,
   Flex,
   Heading,
   Divider,
-  VStack,
+  Wrap,
   HStack,
-  Grid,
-  GridItem,
   Button,
   ButtonProps,
   Tag,
+  Text,
+  Textarea,
   TagLabel,
-  TagCloseButton
+  Icon
 } from '@chakra-ui/react'
 import { useDisclosure } from '@chakra-ui/hooks'
 import Link from 'next/link'
 import { Input } from './Input'
 
 import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form'
+import { useBreakpointValue } from '@chakra-ui/media-query'
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup'
 import { Dish } from '../../services/hooks/useDishes'
@@ -26,49 +29,164 @@ import { useMutation } from 'react-query'
 import { api } from '../../services/api'
 import { useAlert } from 'react-alert'
 import { queryClient } from '../../services/queryClient'
+import { Select } from './Select'
+import { GetGroceriesResponse, useGroceries } from '../../services/hooks/useGroceries'
 import { SearchIngredient } from './SearchIngredient'
-import { Grocery } from '../../services/hooks/useGroceries'
+import EditIngredient from './EditIngredient'
 
 export type CreateDishFormData = {
   id?: string
   name: string
+  image?: string
+  portions?: string
+  temperature?: string
+  cookingTime?: string
   description?: string
-  ingredients?: { id: string }[]
+  ingredients?: { id: string; name: string; quantity: number }[]
+  mainIngredientId?: string
+  recipe?: string
+  mainIngredientQuantity?: string
 }
 
 interface DishFormParams {
   title: string
   handleSubmit: SubmitHandler<CreateDishFormData>
   handleCancel?: () => void
-  initialData?: Dish
+  initialData?: any
+  isEdit: boolean
 }
 
 const createDishFormSchema = yup.object({
-  name: yup.string().required('Name is required'),
-  description: yup.string(),
-  ingredients: yup.array()
+  name: yup.string().required('Namn är obligatoriskt'),
+  description: yup.string().required('Beskrivning är obligatorisk'),
+  ingredients: yup.array().min(1, 'Ingredienser är obligatoriska'),
+  ingredientQuantity: yup.string(),
+  mainIngredientId: yup.string().required('Huvudingrediens är obligatoriskt'),
+  mainIngredientQuantity: yup.string().required('Mängd/volym är obligatorisk'),
+  recipe: yup.string(),
+  portions: yup.string().nullable(),
+  temperature: yup.string().nullable(),
+  cookingTime: yup.string().nullable(),
+  image: yup.string().nullable()
 })
 
 export default function DishForm(props: DishFormParams) {
+  const { data: useGroceriesData } = useGroceries(
+    null,
+    {},
+    {
+      'page[limit]': 1000,
+      'page[offset]': 0
+    }
+  )
+  const groceriesData = useGroceriesData as GetGroceriesResponse
+  const itemsList = groceriesData?.items
+  const mainIngredient: any = props.initialData?.ingredients.find((i: any) => i.isMain)
+  const ingredients: any = props.initialData?.ingredients.filter((i: any) => !i.isMain)
+
+  const [ingredientId, setIngredientId] = useState('')
+  const [indexIngredient, setIndexIngredient] = useState<number>()
+
+  const [addIngredient, setAddIngredient] = useState<boolean>()
+  const [showEditIngredient, setShowEditIngredient] = useState<boolean>()
+  const [ingredientExists, setIngredientExists] = useState<boolean>()
+
   const defaultValues = {
     ...props.initialData,
-    ...{ ingredients: props.initialData?.ingredients.map((e: any) => e.grocery) }
+    ...{
+      ingredients: ingredients?.map((e: any) => {
+        return { id: e.grocery.id, name: e.grocery.name, quantity: e.quantity }
+      }),
+      mainIngredientId: mainIngredient?.grocery?.id,
+      mainIngredientQuantity: mainIngredient?.quantity
+    }
   }
+
   const {
     register,
     control,
-    reset,
     handleSubmit,
-    formState: { errors }
+    formState: { errors },
+    getValues,
+    setValue
   } = useForm({
     resolver: yupResolver(createDishFormSchema),
     defaultValues
   })
 
-  const { fields, append, remove } = useFieldArray({
+  const { fields, append, update, remove } = useFieldArray({
     control,
     name: 'ingredients'
   })
+
+  const ingredientGroceryId = ingredients?.map((item) => item.grocery.id)
+
+  const openIngredientTag = (ingredient, index) => {
+    setShowEditIngredient(true)
+    if (ingredientGroceryId) {
+      setIngredientId(ingredientGroceryId[index])
+    }
+
+    setValue('ingredientName', ingredient.name)
+    setValue('ingredientQuantity', ingredient.quantity)
+    setIndexIngredient(index)
+  }
+
+  const addIngredientName = (el) => {
+    setValue('ingredientName', el.name)
+    setValue('ingredientQuantity', el.quantity)
+    setIngredientId(el.id)
+    setAddIngredient(true)
+    setShowEditIngredient(true)
+    setIndexIngredient(null)
+  }
+
+  const addNewIngredient = () => {
+    const quantity = getValues('ingredientQuantity')
+    const name = getValues('ingredientName')
+    const quantityExists = !!quantity && quantity > 0
+
+    if (quantityExists) {
+      append({ id: ingredientId, name: name, quantity: quantity })
+
+      setAddIngredient(false)
+      setShowEditIngredient(false)
+    }
+  }
+
+  const updateIngredient = () => {
+    const quantity = getValues('ingredientQuantity')
+    const name = getValues('ingredientName')
+    const quantityExists = !!quantity && quantity > 0
+
+    if (quantityExists) {
+      update(indexIngredient, {
+        id: ingredientId,
+        name: name,
+        quantity: quantity
+      })
+    }
+
+    setShowEditIngredient(false)
+  }
+
+  const handleAddorUpdate = (el) => {
+    const nameExists = fields.map((item) => item?.name).includes(el.name)
+
+    const index = fields.map((item) => item?.name).indexOf(el.name)
+    setIngredientExists(nameExists)
+    nameExists ? openIngredientTag(fields[index], index) : addIngredientName(el)
+  }
+
+  const isWideVersion = useBreakpointValue(
+    {
+      base: false,
+      lg: true
+    },
+    {
+      fallback: 'lg'
+    }
+  )
 
   return (
     <Box
@@ -76,65 +194,165 @@ export default function DishForm(props: DishFormParams) {
       flex="1"
       borderRadius={8}
       bg="grain"
-      p={['6', '8']}
+      p={['4', '8']}
       onSubmit={handleSubmit(props.handleSubmit)}
     >
-      <Heading size="lg" fontWeight="normal">
-        {props.title} Dish
+      <Heading size={['md', 'lg']} fontWeight="normal">
+        {props.title}
       </Heading>
 
-      <Divider my="6" borderColor="gray.700" />
+      <Divider my={[4, 6]} borderColor="gray.700" />
 
-      <VStack spacing="8">
-        <Grid w="100%" columns={[1, 2]} gap={['4', '6']}>
-          <GridItem>
-            <Input name="name" label="Name" error={errors.name} {...register('name')} />
-          </GridItem>
-          <GridItem>
+      <Flex flexDirection={['column', 'column', 'row']} gap="4">
+        <Flex flexDirection="column" gap="15px" flex={['50%']}>
+          <Box>
+            <Input name="name" label="Namn" error={errors.name} {...register('name')} />
+          </Box>
+          {useGroceriesData && (
+            <HStack spacing="2">
+              <Select
+                w={['9em', '14em']}
+                name="mainIngredientId"
+                label={isWideVersion ? 'Huvudingrediens' : 'H ingr.'}
+                error={errors.mainIngredientId}
+                {...register('mainIngredientId')}
+              >
+                {itemsList?.map((grocery) => (
+                  <option key={grocery.id} value={grocery.id}>
+                    {grocery.name}
+                  </option>
+                ))}
+              </Select>
+              <Input
+                w={['100%']}
+                name={'mainIngredientQuantity'}
+                label={'Mängd/volym'}
+                type={'number'}
+                error={errors.mainIngredientQuantity}
+                {...register('mainIngredientQuantity')}
+              />
+            </HStack>
+          )}
+
+          <HStack spacing="2">
             <Input
+              w={['100%']}
+              name="image"
+              label="bildlänk"
+              error={errors.name}
+              {...register('image')}
+            />
+            <Input
+              w={['100%']}
+              name={'cookingTime'}
+              label={'tillagningstid'}
+              placeholder="40 mins"
+              error={errors.cookingTime}
+              {...register('cookingTime')}
+            />
+          </HStack>
+
+          <HStack spacing="2">
+            <Input
+              w={['100%']}
+              name={'portions'}
+              label={'portioner'}
+              placeholder="4 portioner"
+              error={errors.portions}
+              {...register('portions')}
+            />
+            <Input
+              w={['100%']}
+              name={'temperature'}
+              label={'temperatur'}
+              placeholder="180°c"
+              error={errors.temperature}
+              {...register('temperature')}
+            />
+          </HStack>
+
+          <Box>
+            <SearchIngredient
+              name="Sök ingrediens"
+              label="Sök Ingrediens"
+              onAddIngredient={handleAddorUpdate}
+            ></SearchIngredient>
+            {showEditIngredient && (
+              <EditIngredient
+                isAdded={ingredientExists}
+                handleDeleteDish={() => {
+                  remove(indexIngredient)
+                  setShowEditIngredient(false)
+                }}
+                register={register}
+                setShowEditIngredient={setShowEditIngredient}
+                addIngredient={addIngredient ? addNewIngredient : updateIngredient}
+                errors={errors}
+              />
+            )}
+            <Wrap mt="15px">
+              {fields.map(
+                (ingredient: { id: string; name: string; quantity: string }, index: number) => (
+                  <Tag
+                    p="0.4em"
+                    onClick={() => handleAddorUpdate(ingredient)}
+                    cursor="pointer"
+                    fontSize={['14px', '18px']}
+                    key={ingredient.id}
+                    size={['sm', 'lg']}
+                    borderRadius="4"
+                    variant="solid"
+                    colorScheme="gray"
+                  >
+                    <TagLabel>
+                      {ingredient.name} x {ingredient.quantity}
+                    </TagLabel>
+                    <Icon as={RiEditLine} ml="8px" color="gray.200" fontSize={['14', '16']} />
+                  </Tag>
+                )
+              )}
+            </Wrap>
+          </Box>
+        </Flex>
+
+        <Flex flexDirection="column" gap="15px" flex={['50%']}>
+          <Box>
+            <Text mb="2">Information</Text>
+            <Textarea
+              height="8.8em"
+              resize="none"
+              border="1px solid"
+              borderColor="gray.200"
               name="description"
-              label="Description"
               error={errors.description}
+              variant="filled"
               {...register('description')}
             />
-          </GridItem>
-          <GridItem>
-            <SearchIngredient
-              name="ingredients"
-              label="Ingredients"
-              onAddIngredient={(ingredient: Grocery) => append(ingredient)}
-            ></SearchIngredient>
-          </GridItem>
-          <GridItem colSpan={2} rowSpan={2}>
-            <HStack spacing={2}>
-              {fields.map((ingredient: Grocery, index: number) => (
-                <Tag
-                  key={ingredient.id}
-                  index={index}
-                  size="lg"
-                  borderRadius="4"
-                  variant="solid"
-                  colorScheme="gray"
-                >
-                  <TagLabel>{ingredient.name}</TagLabel>
-                  <TagCloseButton onClick={() => remove(index)} />
-                </Tag>
-              ))}
-            </HStack>
-          </GridItem>
-        </Grid>
-      </VStack>
+          </Box>
+
+          <Box>
+            <Text mb="2">Recept</Text>
+            <Textarea
+              height="8.8em"
+              resize="none"
+              border="1px solid"
+              borderColor="gray.200"
+              name="recept"
+              error={errors.recipe}
+              variant="filled"
+              {...register('recipe')}
+            />
+          </Box>
+        </Flex>
+      </Flex>
 
       <Flex mt="8" justify="flex-end">
         <HStack spacing="4">
           <Link href="/dishes" passHref>
-            <Button colorScheme="gray">Cancel</Button>
+            <Button colorScheme="gray">Avbryt</Button>
           </Link>
-          <Button colorScheme="gray" onClick={() => reset()}>
-            Reset
-          </Button>
           <Button type="submit" colorScheme="oxblood">
-            Save
+            Spara
           </Button>
         </HStack>
       </Flex>
@@ -166,7 +384,7 @@ export function DishFormModal({
         })
         .then((response) => {
           const { dish } = response.data
-          alert.success('Dish added with success')
+          alert.success('Maträtt tillagd')
           onAddDish(dish)
           modalDisclosure.onClose()
         })
@@ -195,8 +413,13 @@ export function DishFormModal({
           name: newDish,
           description: '',
           ingredients: [],
-          createdAt: null
+          mainIngredient: null,
+          recipe: '',
+          createdAt: null,
+          image: null
         }}
+        title={''}
+        isEdit={false}
       />
     </Modal>
   )

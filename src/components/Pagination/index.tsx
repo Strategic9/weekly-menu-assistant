@@ -6,6 +6,7 @@ interface PaginationProps {
   registersPerPage?: number
   currentPage?: number
   onPageChange: (page: number) => void
+  setOffset: (prev: any) => any
 }
 
 const siblingsCount = 1
@@ -20,15 +21,15 @@ function generatePagesArray(from: number, to: number) {
 
 export function Pagination({
   totalCountOfRegisters,
-  registersPerPage = 10,
+  registersPerPage = 4,
   currentPage = 1,
-  onPageChange
+  onPageChange,
+  setOffset
 }: PaginationProps) {
   const lastPage = Math.ceil(totalCountOfRegisters / registersPerPage)
 
   const previousPages =
     currentPage > 1 ? generatePagesArray(currentPage - 1 - siblingsCount, currentPage - 1) : []
-
   const nextPages =
     currentPage < lastPage
       ? generatePagesArray(currentPage, Math.min(currentPage + siblingsCount, lastPage))
@@ -40,6 +41,19 @@ export function Pagination({
     initialRegister +
     (currentPage === lastPage ? totalCountOfRegisters - initialRegister : registersPerPage - 1)
 
+  const onChangeOffset = (action: string) => {
+    if (action === 'firstPage') {
+      setOffset(0)
+    }
+    if (action === 'nextPage') {
+      setOffset((prev: number) => prev + registersPerPage)
+    }
+    if (action === 'previousPage') {
+      setOffset((prev: number) => prev - registersPerPage)
+    } else if (action === 'lastPage') {
+      setOffset(totalCountOfRegisters - registersPerPage)
+    }
+  }
   return (
     <Stack direction={['column', 'row']} mt="8" justify="space-between" align="center" spacing="6">
       <Box>
@@ -50,7 +64,13 @@ export function Pagination({
       <Stack direction="row" spacing="2">
         {currentPage > 1 + siblingsCount && (
           <>
-            <PaginationItem onPageChange={onPageChange} number={1} />
+            <PaginationItem
+              onClick={() => {
+                onPageChange(1)
+                onChangeOffset('firstpage')
+              }}
+              number={1}
+            />
             {currentPage > 2 + siblingsCount && (
               <Text color="gray" w="8" textAlign="center">
                 ...
@@ -61,14 +81,32 @@ export function Pagination({
 
         {previousPages.length > 0 &&
           previousPages.map((page) => {
-            return <PaginationItem onPageChange={onPageChange} key={page} number={page} />
+            return (
+              <PaginationItem
+                onClick={() => {
+                  onChangeOffset('previousPage')
+                  onPageChange(page)
+                }}
+                key={page}
+                number={page}
+              />
+            )
           })}
 
-        <PaginationItem onPageChange={onPageChange} number={currentPage} isCurrent />
+        <PaginationItem number={currentPage} isCurrent />
 
         {nextPages.length > 0 &&
           nextPages.map((page) => {
-            return <PaginationItem onPageChange={onPageChange} key={page} number={page} />
+            return (
+              <PaginationItem
+                onClick={() => {
+                  onChangeOffset('nextPage')
+                  onPageChange(page)
+                }}
+                key={page}
+                number={page}
+              />
+            )
           })}
 
         {currentPage + siblingsCount < lastPage && (
@@ -78,7 +116,13 @@ export function Pagination({
                 ...
               </Text>
             )}
-            <PaginationItem onPageChange={onPageChange} number={lastPage} />
+            <PaginationItem
+              onClick={() => {
+                onPageChange(lastPage)
+                onChangeOffset('lastPage')
+              }}
+              number={lastPage}
+            />
           </>
         )}
       </Stack>

@@ -14,19 +14,21 @@ import {
   Tbody,
   Td,
   useBreakpointValue,
-  Spinner
+  Spinner,
+  MenuItem,
+  Show
 } from '@chakra-ui/react'
 import { RiEditLine, RiDeleteBinLine } from 'react-icons/ri'
 import Link from 'next/link'
 import { Pagination } from '../../components/Pagination'
 import { useState } from 'react'
-import { GetServerSideProps } from 'next'
 import { queryClient } from '../../services/queryClient'
-import { api, HTTPHandler } from '../../services/api'
+import { HTTPHandler } from '../../services/api'
 import TooltipButton from '../../components/TooltipButton'
 import { useAlert } from 'react-alert'
 import { useCategories } from '../../services/hooks/useCategories'
 import PageWrapper from '../page-wrapper'
+import { MenuDishOptions } from '../../components/Options'
 
 type Category = {
   id: string
@@ -40,9 +42,23 @@ type UseCategoryData = {
   count: number
 }
 
-export default function CategoryList({ categories, totalCount }) {
+export default function CategoryList() {
   const [page, setPage] = useState(1)
-  const { data: useCategoriesData, isLoading, isFetching, error } = useCategories(page, {})
+  const [offset, setOffset] = useState(0)
+  const registersPerPage = 10
+  const {
+    data: useCategoriesData,
+    isLoading,
+    isFetching,
+    error
+  } = useCategories(
+    page,
+    {},
+    {
+      'page[limit]': registersPerPage,
+      'page[offset]': offset
+    }
+  )
   const alert = useAlert()
 
   const data = useCategoriesData as UseCategoryData
@@ -56,17 +72,17 @@ export default function CategoryList({ categories, totalCount }) {
     await HTTPHandler.delete(`categories/${id}`)
       .then(async () => {
         await queryClient.invalidateQueries(['categories', page])
-        alert.success('Category deleted')
+        alert.success('Kategori borttagen')
       })
       .catch(() => alert.error('Fail to delete category'))
   }
 
   return (
     <PageWrapper>
-      <Box flex="1" borderRadius={8} bg="grain" p="8">
+      <Box flex="1" borderRadius={8} bg="grain" p={[4, 8]}>
         <Flex mb="8" justify="space-between" align="center">
           <Heading size="lg" fontWeight="normal">
-            Categories
+            Kategorier
             {!isLoading && isFetching && <Spinner size="sm" color="gray.500" ml="4" />}
           </Heading>
         </Flex>
@@ -79,12 +95,14 @@ export default function CategoryList({ categories, totalCount }) {
             <Text>Fail to obtain categories data.</Text>
           </Flex>
         ) : (
-          <>
-            <Table colorScheme="whiteAlpha" color="gray.700">
-              <Thead bg="gray.200" color="black">
-                <Tr>
-                  <Th>Category</Th>
-                  <Th width="8">Actions</Th>
+          <Flex direction="column" justify="center" align="center">
+            <Table size={!isWideVersion ? 'sm' : 'lg'} colorScheme="whiteAlpha" color="gray.700">
+              <Thead bg="gray.200" fontSize="14px" color="black">
+                <Tr fontSize="14px">
+                  <Th fontSize={[14, 15, 18]}>Kategori</Th>
+                  <Th fontSize={[14, 15, 18]} width="8">
+                    händelser
+                  </Th>
                 </Tr>
               </Thead>
               <Tbody>
@@ -92,35 +110,53 @@ export default function CategoryList({ categories, totalCount }) {
                   <Tr key={category.id}>
                     <Td>
                       <Box>
-                        <Text fontWeight="bold" textTransform="capitalize">
+                        <Text fontSize={[16, 16, 20]} fontWeight="bold" textTransform="capitalize">
                           {category.name}
                         </Text>
                       </Box>
                     </Td>
                     <Td>
-                      <HStack>
-                        <Tooltip label="Remove" bg="red.100" color="white" placement="top-start">
-                          <Button
-                            size="sm"
-                            bg="red.100"
-                            color="white"
-                            justifyContent="center"
-                            leftIcon={<Icon as={RiDeleteBinLine} fontSize="16" />}
-                            iconSpacing="0"
-                            _hover={{ bg: 'red.200' }}
-                            onClick={() => handleDelete(category.id)}
-                          />
-                        </Tooltip>
-                        <Link href={`/categories/edit/${category.id}`} passHref>
-                          <TooltipButton
-                            tooltipLabel="Edit"
-                            size="sm"
-                            bg="gray.200"
-                            leftIcon={<Icon as={RiEditLine} fontSize="16" />}
-                            iconSpacing="0"
-                          />
-                        </Link>
-                      </HStack>
+                      <Show breakpoint="(max-width: 400px)">
+                        <MenuDishOptions
+                          replace={
+                            <Link href={`/categories/edit/${category.id}`} passHref>
+                              <MenuItem
+                                fontSize="16"
+                                color="gray.700"
+                                icon={<RiEditLine size={16} />}
+                              >
+                                Redigera
+                              </MenuItem>
+                            </Link>
+                          }
+                          deleteDish={() => handleDelete(category.id)}
+                        />
+                      </Show>
+                      <Show breakpoint="(min-width: 400px)">
+                        <HStack>
+                          <Tooltip label="Remove" bg="red.100" color="white" placement="top-start">
+                            <Button
+                              size={['xs', 'sm']}
+                              bg="red.100"
+                              color="white"
+                              justifyContent="center"
+                              leftIcon={<Icon as={RiDeleteBinLine} fontSize="16" />}
+                              iconSpacing="0"
+                              _hover={{ bg: 'red.200' }}
+                              onClick={() => handleDelete(category.id)}
+                            />
+                          </Tooltip>
+                          <Link href={`/categories/edit/${category.id}`} passHref>
+                            <TooltipButton
+                              tooltipLabel="Redigera"
+                              size={['xs', 'sm']}
+                              bg="gray.200"
+                              leftIcon={<Icon as={RiEditLine} fontSize="16" />}
+                              iconSpacing="0"
+                            />
+                          </Link>
+                        </HStack>
+                      </Show>
                     </Td>
                   </Tr>
                 ))}
@@ -129,23 +165,14 @@ export default function CategoryList({ categories, totalCount }) {
 
             <Pagination
               totalCountOfRegisters={data.count}
+              registersPerPage={registersPerPage}
+              setOffset={setOffset}
               currentPage={page}
               onPageChange={setPage}
             />
-          </>
+          </Flex>
         )}
       </Box>
     </PageWrapper>
   )
 }
-
-// export const getServerSideProps: GetServerSideProps = async () => {
-//     const { users, totalCount } = await getUsers(1);
-
-//     return {
-//         props: {
-//             users,
-//             totalCount
-//         }
-//     }
-// }

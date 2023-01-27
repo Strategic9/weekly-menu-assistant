@@ -1,16 +1,24 @@
-import { Flex, Button, Stack } from '@chakra-ui/react'
+import { Flex, Button, Stack, Text, Link } from '@chakra-ui/react'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup'
 import { Input } from '../components/Form/Input'
 import { HTTPHandler } from '../services/api'
 import { useRouter } from 'next/router'
+import { useAlert } from 'react-alert'
+import { localStorage } from '../services/localstorage'
+import { Logo } from '../components/Header/Logo'
 
 type SignUpFormData = {
   email: string
   password: string
   firstName: string
   lastName: string
+}
+
+type SignInFormData = {
+  email: string
+  password: string
 }
 
 const signUpFormSchema = yup.object({
@@ -33,13 +41,30 @@ export default function SignUp() {
     resolver: yupResolver(signUpFormSchema)
   })
   const router = useRouter()
+  const alert = useAlert()
 
   const handleSignUp: SubmitHandler<SignUpFormData> = async (values) => {
-    await HTTPHandler.post('/users', {
+    await HTTPHandler.post('users', {
       ...values
-    }).then(() => {
-      router.push('/')
     })
+      .then(() => {
+        alert.success('Konto skapat')
+        handleSignIn(values)
+      })
+      .catch((er) => {
+        alert.error('Kontrollera angiven information')
+      })
+  }
+
+  const handleSignIn: SubmitHandler<SignInFormData> = async (values) => {
+    const res = await HTTPHandler.post('users/login', {
+      email: values.email,
+      password: values.password
+    })
+    localStorage.set('token', res.data?.token)
+    localStorage.set('username', res.data?.username)
+    localStorage.set('email', res.data?.email)
+    router.push('menu')
   }
 
   return (
@@ -47,7 +72,7 @@ export default function SignUp() {
       <Flex
         as="form"
         w="100%"
-        maxW={360}
+        maxW={400}
         bg="white"
         p="8"
         borderRadius={8}
@@ -56,26 +81,41 @@ export default function SignUp() {
         boxShadow="xl"
         rounded="md"
       >
-        <Stack spacing="4">
-          <Input type="email" label="Email" error={errors.email} {...register('email')} />
+        <Logo linkTo="/" />
+        <Stack mt={8} spacing={2}>
+          <Stack spacing={4} direction="row">
+            <Input
+              type="text"
+              label="Tilltalsnamn"
+              error={errors.firstName}
+              {...register('firstName')}
+            />
+            <Input
+              type="text"
+              label="Efternamn"
+              error={errors.lastName}
+              {...register('lastName')}
+            />
+          </Stack>
+          <Input type="email" label="E-post" error={errors.email} {...register('email')} />
           <Input
             type="password"
-            label="Password"
+            label="Lösenord"
             error={errors.password}
             {...register('password')}
           />
-          <Input
-            type="text"
-            label="First Name"
-            error={errors.firstName}
-            {...register('firstName')}
-          />
-          <Input type="text" label="Last Name" error={errors.lastName} {...register('lastName')} />
         </Stack>
 
         <Button type="submit" mt="6" colorScheme="oxblood">
-          Sign Up
+          Registrera konto
         </Button>
+
+        <Text mt={8} fontSize={14}>
+          Har du redan ett konto?
+          <Link ml={1} textDecorationLine="underline" color="oxblood.400" href="/">
+            Logga in här
+          </Link>
+        </Text>
       </Flex>
     </Flex>
   )

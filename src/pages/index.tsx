@@ -1,11 +1,15 @@
-import { Flex, Button, Stack } from '@chakra-ui/react'
+import { Flex, Button, Stack, Text, Link } from '@chakra-ui/react'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup'
 import { Input } from '../components/Form/Input'
-import { api } from '../services/api'
+import { api, HTTPHandler } from '../services/api'
 import { localStorage } from '../services/localstorage'
 import { useRouter } from 'next/router'
+import { useAlert } from 'react-alert'
+import { GoogleLogin } from 'react-google-login'
+import { useEffect } from 'react'
+import { Logo } from '../components/Header/Logo'
 
 type SignInFormData = {
   email: string
@@ -13,8 +17,8 @@ type SignInFormData = {
 }
 
 const signInFormSchema = yup.object({
-  email: yup.string().required('Email is required').email('Invalid email'),
-  password: yup.string().required('Password is required')
+  email: yup.string().required('Vänligen ange e-post').email('Ogiltig e-post'),
+  password: yup.string().required('Lösenord är obligatoriskt')
 })
 
 export default function SignIn() {
@@ -26,13 +30,91 @@ export default function SignIn() {
     resolver: yupResolver(signInFormSchema)
   })
   const router = useRouter()
+  const alert = useAlert()
+  const clientId = process.env.NEXT_PUBLIC_GOOGLE_SIGNIN_CLIENT_ID
+
+  const useGapi = async () => {
+    const gapi = await import('gapi-script').then((pack) => pack.gapi)
+    const initClient = () => {
+      gapi.client.init({
+        clientId: clientId,
+        scope: ''
+      })
+    }
+    gapi.load('client:auth2', initClient)
+  }
+
+  const getUserId = async (email, token) => {
+    const users = await HTTPHandler.get('/users', token)
+
+    users.data.items.map((user) => {
+      user.email === email && localStorage.set('user-id', user.id)
+    })
+  }
+
+  useEffect(() => {
+    useGapi()
+  })
+
+  const onSuccess = async (res) => {
+    console.log('success:', res)
+    await api
+      .post('users/login', {
+        email: res.profileObj.email,
+        password: res.googleId
+      })
+      .then((res) => {
+        onLoginSucess(res)
+      })
+      .catch((error) => {
+        if (error.response.status === 404) {
+          signUp(res)
+        } else {
+          alert.error('Vänligen kontrollera angiven information')
+        }
+      })
+  }
+
+  const onFailure = (err) => {
+    console.log('failed:', err)
+  }
+
+  const signUp = async (gisRes) => {
+    await api
+      .post('users', {
+        email: gisRes.profileObj.email,
+        password: gisRes.googleId,
+        firstName: gisRes.profileObj.givenName,
+        lastName: gisRes.profileObj.familyName
+      })
+      .then(() => {
+        handleSignIn({ email: gisRes.profileObj.email, password: gisRes.googleId })
+      })
+      .catch(() => {
+        alert.error('Vänligen kontrollera angiven information')
+      })
+  }
 
   const handleSignIn: SubmitHandler<SignInFormData> = async (values) => {
-    const res = await api.post('users/login', {
-      ...values
-    })
+    await api
+      .post('users/login', {
+        ...values
+      })
+      .then((res) => {
+        onLoginSucess(res)
+      })
+      .catch(() => {
+        alert.error('Vänligen kontrollera angiven information')
+      })
+  }
+
+  const onLoginSucess = (res) => {
+    alert.success('Välkommen in')
     localStorage.set('token', res.data?.token)
-    router.push('dashboard')
+    localStorage.set('username', res.data?.username)
+    localStorage.set('email', res.data?.email)
+    getUserId(res.data?.email, res.data?.token)
+    router.push('menu')
   }
 
   return (
@@ -49,19 +131,36 @@ export default function SignIn() {
         boxShadow="xl"
         rounded="md"
       >
-        <Stack spacing="4">
-          <Input type="email" label="Email" error={errors.email} {...register('email')} />
+        <Logo linkTo={'/'} />
+        <Stack mt={10} spacing="4">
+          <Input type="email" label="E-post" error={errors.email} {...register('email')} />
           <Input
             type="password"
-            label="Password"
+            label="Lösenord"
             error={errors.password}
             {...register('password')}
           />
         </Stack>
 
         <Button type="submit" mt="6" colorScheme="oxblood">
-          Sign In
+          Logga in
         </Button>
+        <Flex mt="6" w="100%" justifyContent="center">
+          <GoogleLogin
+            clientId={clientId}
+            buttonText="Logga in med Google"
+            onSuccess={onSuccess}
+            onFailure={onFailure}
+            cookiePolicy={'single_host_origin'}
+            isSignedIn={false}
+          />
+        </Flex>
+        <Text mt={8} fontSize={14}>
+          Har du inget konto?
+          <Link ml={1} textDecorationLine="underline" color="oxblood.400" href="/signup">
+            Skapa ett här!
+          </Link>
+        </Text>
       </Flex>
     </Flex>
   )

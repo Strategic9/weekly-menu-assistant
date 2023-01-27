@@ -25,6 +25,7 @@ const InputBase: ForwardRefRenderFunction<HTMLInputElement, InputProps> = (
         name={name}
         id={name}
         focusBorderColor="oxblood.500"
+        _placeholder={{ color: 'gray.250' }}
         bgColor="gray.100"
         _hover={{
           bgColor: 'gray.100'

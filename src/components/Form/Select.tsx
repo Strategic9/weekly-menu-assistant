@@ -24,7 +24,7 @@ const SelectBase: ForwardRefRenderFunction<HTMLSelectElement, SelectProps> = (
       <ChakraSelect
         name={name}
         id={name}
-        placeholder="Select"
+        placeholder="Gör ett val"
         focusBorderColor="oxblood.500"
         bgColor="gray.100"
         _hover={{
