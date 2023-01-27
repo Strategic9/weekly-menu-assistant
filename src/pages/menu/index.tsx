@@ -227,7 +227,7 @@ export default function Menu() {
 
                 <Box>
                   <Text mb="5px" fontSize={['sm', 'md']}>
-                    till
+                    Till
                   </Text>
                   <Controller
                     name="endDate"
