@@ -74,7 +74,7 @@ export default function CategoryList() {
         await queryClient.invalidateQueries(['categories', page])
         alert.success('Kategori borttagen')
       })
-      .catch(() => alert.error('Fail to delete category'))
+      .catch(() => alert.error('Borttagning misslyckad'))
   }
 
   return (

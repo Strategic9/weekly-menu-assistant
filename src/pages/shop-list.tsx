@@ -81,7 +81,7 @@ export default function ShopList() {
     queryClient.setQueryData(['menu'], { ...menuData })
 
     setShopListCookie(menuData.shopList)
-    alert.success('Item added')
+    alert.success('Ingrediens tillagd')
   }
 
   function handleRemoveGrocery(category: string, index: number) {
@@ -90,7 +90,7 @@ export default function ShopList() {
     queryClient.setQueryData(['menu'], { ...menuData })
 
     setShopListCookie(menuData.shopList)
-    alert.success('Item removed')
+    alert.success('Ingrediens borttagen')
   }
 
   return (
