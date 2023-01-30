@@ -66,20 +66,37 @@ export default function ShopList() {
   }
 
   function handleAddGrocery(grocery: Grocery) {
-    const category = categoryData.items.find((g) => g.id === grocery.category.id).name
-
-    const item = menuData.shopList.categories[category].find((item) => item.name === grocery.name)
-    if (item) {
-      item.amount++
-    } else {
-      menuData.shopList.categories[category].push({
-        name: grocery.name,
-        amount: 1,
-        bought: false
-      })
+    const newIngredient = {
+      name: grocery.name,
+      amount: 1,
+      bought: false
     }
-    queryClient.setQueryData(['menu'], { ...menuData })
 
+    const category = categoryData.items.find((category) => category.id === grocery.category.id).name
+
+    const shopListCategories = menuData.shopList.categories
+    const new_Category_Ingredient = {
+      [category]: [newIngredient]
+    }
+
+    const updatedshopList = { ...shopListCategories, ...new_Category_Ingredient }
+
+    const ingredientExistsInShopList = menuData.shopList?.categories[category]?.find(
+      (ingr) => ingr.name === grocery.name
+    )
+
+    const categoryExistsInShopList = menuData.shopList?.categories[category]
+
+    if (ingredientExistsInShopList) {
+      ingredientExistsInShopList.amount++
+    }
+    if (!categoryExistsInShopList) {
+      menuData.shopList.categories = updatedshopList
+    } else if (categoryExistsInShopList && !ingredientExistsInShopList) {
+      menuData.shopList.categories[category].push(newIngredient)
+    }
+
+    queryClient.setQueryData(['menu'], { ...menuData })
     setShopListCookie(menuData.shopList)
     alert.success('Ingrediens tillagd')
   }
