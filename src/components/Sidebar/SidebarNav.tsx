@@ -28,6 +28,9 @@ export function SidebarNav() {
         <NavLink href="/categories">Kategorier</NavLink>
         <NavLink href="/categories/add">Lägg till kategori</NavLink>
       </NavSection>
+      <NavSection title="Admin" icon={BiCategory} activePath="/admin">
+        <NavLink href="/admin">Admin</NavLink>
+      </NavSection>
       <NavLink className="sidebar-text" icon={RiListCheck} href="/shop-list">
         Inköpslistor
       </NavLink>
