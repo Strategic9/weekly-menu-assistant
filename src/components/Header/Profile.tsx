@@ -22,7 +22,7 @@ export function Profile({ showProfileData = true }: ProfileProps) {
         <Flex align="center">
           {showProfileData && (
             <Box mr="4" textAlign="right">
-              <Text className="profile-name">{username ? username : 'Guest user'}</Text>
+              <Text className="profile-name">{username ? username : 'Gästanvändare'}</Text>
               <Text className="profile-mail" color="gray.600" fontSize="small">
                 {email}
               </Text>

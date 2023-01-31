@@ -44,7 +44,14 @@ const createGroceryFormSchema = yup.object({
 })
 
 export default function GroceryForm(props: GroceryFormParams) {
-  const { data: useCategoriesData } = useCategories(null, {})
+  const { data: useCategoriesData } = useCategories(
+    null,
+    {},
+    {
+      'page[limit]': 1000,
+      'page[offset]': 0
+    }
+  )
   const categoryData = useCategoriesData as GetCategoriesResponse
 
   const {
@@ -148,8 +155,9 @@ export function GroceryFormModal({
         }
       })
         .then((response) => {
-          alert.success('Ingrediens tillagd')
           onAddIngredient(response.data)
+          alert.success('Ingrediens tillagd')
+
           modalDisclosure.onClose()
         })
         .catch(({ response }) => {
@@ -174,6 +182,7 @@ export function GroceryFormModal({
           handleSubmit={handleCreateGrocery}
           handleCancel={modalDisclosure.onClose}
           initialData={{
+            isMain: false,
             id: '',
             name: newIngredient,
             category: null,
