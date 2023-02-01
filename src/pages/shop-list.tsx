@@ -12,18 +12,29 @@ import {
   useBreakpointValue
 } from '@chakra-ui/react'
 import { RiCloseLine } from 'react-icons/ri'
-import { setCookie } from 'nookies'
-import { ChangeEvent, useEffect } from 'react'
+import { ChangeEvent } from 'react'
 import { useAlert } from 'react-alert'
 import { useMutation } from 'react-query'
 import { SearchIngredientModal } from '../components/Form/SearchIngredient'
 import { Grocery } from '../services/hooks/useGroceries'
-import { GetMenuResponse, useMenu } from '../services/hooks/useMenu'
+import { GetMenuResponse, useMenu, setShopListCookie } from '../services/hooks/useMenu'
 import { queryClient } from '../services/queryClient'
 import AlertDialog from '../components/AlertDialog'
 import PageWrapper from './page-wrapper'
 
+import { GetCategoriesResponse, useCategories } from '../services/hooks/useCategories'
+
 export default function ShopList() {
+  const { data: useCategoriesData } = useCategories(
+    null,
+    {},
+    {
+      'page[limit]': 1000,
+      'page[offset]': 0
+    }
+  )
+  const categoryData = useCategoriesData as GetCategoriesResponse
+
   const { data: useMenuData, isLoading, error } = useMenu({})
   const menuData = useMenuData as GetMenuResponse
   const alert = useAlert()
@@ -51,37 +62,53 @@ export default function ShopList() {
   ) {
     listItem.bought = event.target.checked
     changeItem.mutate({ ...listItem, category })
+    setShopListCookie(menuData.shopList)
   }
 
   function handleAddGrocery(grocery: Grocery) {
-    const category = grocery.category ? grocery.category.name : 'övrigt'
-    const item = menuData.shopList.categories[category].find((item) => item.name === grocery.name)
-    if (item) {
-      item.amount++
-    } else {
-      menuData.shopList.categories[category].push({
-        name: grocery.name,
-        amount: 1,
-        bought: false
-      })
+    const newIngredient = {
+      name: grocery.name,
+      amount: 1,
+      bought: false
     }
+
+    const category = categoryData.items.find((category) => category.id === grocery.category.id).name
+
+    const shopListCategories = menuData.shopList.categories
+    const new_Category_Ingredient = {
+      [category]: [newIngredient]
+    }
+
+    const updatedshopList = { ...shopListCategories, ...new_Category_Ingredient }
+
+    const ingredientExistsInShopList = menuData.shopList?.categories[category]?.find(
+      (ingr) => ingr.name === grocery.name
+    )
+
+    const categoryExistsInShopList = menuData.shopList?.categories[category]
+
+    if (ingredientExistsInShopList) {
+      ingredientExistsInShopList.amount++
+    }
+    if (!categoryExistsInShopList) {
+      menuData.shopList.categories = updatedshopList
+    } else if (categoryExistsInShopList && !ingredientExistsInShopList) {
+      menuData.shopList.categories[category].push(newIngredient)
+    }
+
     queryClient.setQueryData(['menu'], { ...menuData })
-    alert.success('Tillagd')
+    setShopListCookie(menuData.shopList)
+    alert.success('Ingrediens tillagd')
   }
 
   function handleRemoveGrocery(category: string, index: number) {
     menuData.shopList.categories[category].splice(index, 1)
-    queryClient.setQueryData(['menu'], { ...menuData })
-    alert.success('Borttagen')
-  }
 
-  useEffect(() => {
-    return () => {
-      if (menuData) {
-        setCookie(undefined, 'menu.shopList', JSON.stringify(menuData.shopList))
-      }
-    }
-  }, [menuData])
+    queryClient.setQueryData(['menu'], { ...menuData })
+
+    setShopListCookie(menuData.shopList)
+    alert.success('Ingrediens borttagen')
+  }
 
   return (
     <PageWrapper>

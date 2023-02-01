@@ -3,7 +3,7 @@ import { useRouter } from 'next/router'
 import { SubmitHandler } from 'react-hook-form'
 import { useMutation } from 'react-query'
 
-import { api, HTTPHandler } from '../../services/api'
+import { HTTPHandler } from '../../services/api'
 import { queryClient } from '../../services/queryClient'
 import { useAlert } from 'react-alert'
 import GroceryForm, { CreateGroceryFormData } from '../../components/Form/GroceryForm'
@@ -25,7 +25,7 @@ export default function CreateGrocery() {
         alert.success('Ingrediens tillagd')
         router.push('.')
       } catch ({ response }) {
-        alert.error(response.data.status && 400 && 'Validate all values are correct')
+        alert.error(response.data.status && 400 && 'Kontrollera att alla värden är rätt')
       }
     },
     {
