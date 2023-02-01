@@ -18,6 +18,10 @@ import { SubmitHandler, useForm } from 'react-hook-form'
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup'
 import { GetCategoriesResponse, useCategories } from '../../services/hooks/useCategories'
+import {
+  GetMeasurementUnitsResponse,
+  useMeasurementUnits
+} from '../../services/hooks/useMeasurementUnit'
 import { useEffect } from 'react'
 import { Grocery } from '../../services/hooks/useGroceries'
 import Modal from '../Modal'
@@ -30,6 +34,7 @@ export type CreateGroceryFormData = {
   id?: string
   name: string
   categoryId: string
+  measurementUnitId: string
 }
 
 interface GroceryFormParams {
@@ -40,7 +45,8 @@ interface GroceryFormParams {
 
 const createGroceryFormSchema = yup.object({
   name: yup.string().required('Namn måste anges'),
-  categoryId: yup.string().required('En kategori måste väljas')
+  categoryId: yup.string().required('En kategori måste väljas'),
+  measurementUnitId: yup.string().required('En måttenhet måste väljas')
 })
 
 export default function GroceryForm(props: GroceryFormParams) {
@@ -54,11 +60,22 @@ export default function GroceryForm(props: GroceryFormParams) {
   )
   const categoryData = useCategoriesData as GetCategoriesResponse
 
+  const { data: useMeasurementUnitsData } = useMeasurementUnits(
+    null,
+    {},
+    {
+      'page[limit]': 1000,
+      'page[offset]': 0
+    }
+  )
+  const measurementUnitsData = useMeasurementUnitsData as GetMeasurementUnitsResponse
+
   const {
     register,
     handleSubmit,
     formState: { errors },
-    setValue
+    setValue,
+    getValues
   } = useForm({
     resolver: yupResolver(createGroceryFormSchema)
   })
@@ -68,7 +85,8 @@ export default function GroceryForm(props: GroceryFormParams) {
     if (data) {
       setValue('id', data.id)
       setValue('name', data.name)
-      setValue('categoryId', data.category?.id)
+      setValue('categoryId', data?.category?.id)
+      setValue('measurementUnitId', data?.measurementUnits[0]?.measurementUnit.id)
     }
   }, [props.initialData, setValue])
 
@@ -104,6 +122,18 @@ export default function GroceryForm(props: GroceryFormParams) {
             {categoryData?.items.map((category) => (
               <option key={category.id} value={category.id}>
                 {category.name}
+              </option>
+            ))}
+          </Select>
+          <Select
+            name="Measurement Unit"
+            label="Measurement Unit"
+            error={errors.measurementUnitId}
+            {...register('measurementUnitId')}
+          >
+            {measurementUnitsData?.items.map((unit) => (
+              <option key={unit.id} value={unit.id}>
+                {unit.value}
               </option>
             ))}
           </Select>
@@ -152,7 +182,12 @@ export function GroceryFormModal({
         name: grocery.name,
         category: {
           id: grocery.categoryId
-        }
+        },
+        measurementUnits: [
+          {
+            id: grocery.measurementUnitId
+          }
+        ]
       })
         .then((response) => {
           onAddIngredient(response.data)
@@ -182,9 +217,9 @@ export function GroceryFormModal({
           handleSubmit={handleCreateGrocery}
           handleCancel={modalDisclosure.onClose}
           initialData={{
-            isMain: false,
             id: '',
             name: newIngredient,
+            measurementUnits: null,
             category: null,
             createdAt: null
           }}

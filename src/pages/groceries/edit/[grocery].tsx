@@ -25,6 +25,7 @@ export default function GroceryPage() {
       setIsLoading(true)
       try {
         const item = await getGroceryById(groceryId as string, 'category')
+
         setGrocery(item.grocery)
         setIsLoading(false)
       } catch (error) {
@@ -47,7 +48,12 @@ export default function GroceryPage() {
           name: grocery.name,
           category: {
             id: grocery.categoryId
-          }
+          },
+          measurementUnits: [
+            {
+              id: grocery.measurementUnitId
+            }
+          ]
         })
         alert.success('Ingrediens uppdaterad')
         router.push('..')
