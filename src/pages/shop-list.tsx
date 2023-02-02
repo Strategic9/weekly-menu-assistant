@@ -132,13 +132,13 @@ export default function ShopList() {
           </Flex>
         ) : (
           <Box mt="8">
-            {error ? (
+            {error || !menuData ? (
               <Flex justify="center">
                 <Text>Fel vid hämtning av Inköpslistor.</Text>
               </Flex>
             ) : (
               <List as={Stack} spacing="2">
-                {Object.entries(menuData.shopList.categories)?.map(([key, groceries]) => (
+                {Object.entries(menuData?.shopList?.categories)?.map(([key, groceries]) => (
                   <Box key={key}>
                     <Text fontSize={['l', 'xl']} color="gray.500" textTransform="capitalize">
                       {key}
