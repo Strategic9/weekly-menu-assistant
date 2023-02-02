@@ -74,8 +74,7 @@ export default function GroceryForm(props: GroceryFormParams) {
     register,
     handleSubmit,
     formState: { errors },
-    setValue,
-    getValues
+    setValue
   } = useForm({
     resolver: yupResolver(createGroceryFormSchema)
   })
@@ -86,7 +85,10 @@ export default function GroceryForm(props: GroceryFormParams) {
       setValue('id', data.id)
       setValue('name', data.name)
       setValue('categoryId', data?.category?.id)
-      setValue('measurementUnitId', data?.measurementUnits[0]?.measurementUnit.id)
+      setValue(
+        'measurementUnitId',
+        data?.measurementUnits && data?.measurementUnits[0]?.measurementUnit.id
+      )
     }
   }, [props.initialData, setValue])
 
@@ -127,7 +129,7 @@ export default function GroceryForm(props: GroceryFormParams) {
           </Select>
           <Select
             name="Measurement Unit"
-            label="Measurement Unit"
+            label="Måttenhet"
             error={errors.measurementUnitId}
             {...register('measurementUnitId')}
           >
