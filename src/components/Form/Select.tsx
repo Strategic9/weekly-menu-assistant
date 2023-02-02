@@ -31,6 +31,7 @@ const SelectBase: ForwardRefRenderFunction<HTMLSelectElement, SelectProps> = (
           bgColor: 'gray.100'
         }}
         size="lg"
+        fontSize={['14px', '16px']}
         ref={ref}
         {...rest}
       />

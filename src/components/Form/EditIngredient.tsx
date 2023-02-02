@@ -1,6 +1,7 @@
-import { Wrap, Flex, Box, Button, Icon } from '@chakra-ui/react'
+import { Wrap, Flex, Box, Button, Icon, Text } from '@chakra-ui/react'
 import { RiDeleteBinLine } from 'react-icons/ri'
 import { Input } from './Input'
+import { Select } from './Select'
 
 const EditIngredient = ({
   register,
@@ -8,7 +9,8 @@ const EditIngredient = ({
   errors,
   addIngredient,
   handleDeleteDish,
-  isAdded
+  isAdded,
+  measurementUnitsData
 }) => {
   return (
     <Box
@@ -20,24 +22,53 @@ const EditIngredient = ({
       w={['100%', '65%', '100%']}
     >
       <Wrap maxWidth={['400px', '100%']}>
-        <Flex pb="14px">
+        <Flex pb="14px" alignItems={'flex-end'} flexDirection="column">
           <Input
             mr="10px"
-            w={['7.5em', '90%', '14rem']}
+            w={'100%'}
             name={'ingrediens'}
             label={'Ingrediens'}
             readOnly
             {...register('ingredientName')}
           />
-
-          <Input
-            w={['100%']}
-            name={'ingredientQuantity'}
-            label={'Antal/volym'}
-            {...register('ingredientQuantity')}
-            type={'number'}
-            error={errors.ingredientQuantity}
-          />
+          <Flex flexDirection={'column'}>
+            <Text m={'var(--chakra-space-4) 0 var(--chakra-space-2) 0'}>Antal/volym</Text>
+            <Flex
+              justifyContent={'center'}
+              backgroundColor={'gray.100'}
+              borderRadius={'var(--chakra-radii-md)'}
+            >
+              <Input
+                width={'99%'}
+                display={'flex'}
+                justifyContent={'flex-end'}
+                name={'ingredientQuantity'}
+                {...register('ingredientQuantity')}
+                type={'number'}
+                error={errors.ingredientQuantity}
+                backgroundColor={'gray.100'}
+                _placeholder={{ color: 'gray.250' }}
+                border={'none'}
+                borderRadius={'var(--chakra-radii-md) 0 0 var(--chakra-radii-md)'}
+                textAlign="right"
+                autoFocus
+              />
+              <Select
+                width={'99%'}
+                id="unit-select"
+                name="measurementUnitId"
+                error={errors.measurementUnitId}
+                {...register('measurementUnitId')}
+                border={'none'}
+                borderRadius={'0 var(--chakra-radii-md) var(--chakra-radii-md) 0'}
+                textAlign="left"
+              >
+                {measurementUnitsData?.items.map((unit) => (
+                  <option label={unit.name} key={unit.id} value={unit.id} />
+                ))}
+              </Select>
+            </Flex>
+          </Flex>
         </Flex>
         <Flex justifyContent="space-between" w="100%">
           {isAdded ? (

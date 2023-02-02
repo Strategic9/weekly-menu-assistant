@@ -2,13 +2,14 @@ import { useQuery, UseQueryOptions } from 'react-query'
 import { HTTPHandler } from '../api'
 import { setDate } from '../utils'
 import { Category } from './useCategories'
+import { MeasurementUnit } from './useMeasurementUnit'
 
 export type Grocery = {
   id: string
   name: string
   category: Category
   createdAt: string
-  isMain: boolean
+  measurementUnits: MeasurementUnit
 }
 
 export type GetGroceriesResponse = {
@@ -37,6 +38,7 @@ export async function getGroceries(page: number, extraParams?: any): Promise<Get
       id: grocery.id,
       name: grocery.name,
       category: grocery.category,
+      measurementUnits: grocery.measurementUnits,
       createdAt: setDate(grocery)
     }
   })
@@ -73,6 +75,7 @@ export async function getGroceryById(groceryId: string, include: string) {
     id: data.id,
     name: data.name,
     category: data.category,
+    measurementUnits: data.measurementUnits,
     createdAt: setDate(data)
   }
   return {
