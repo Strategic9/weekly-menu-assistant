@@ -117,13 +117,15 @@ export default function ShopList() {
           <Heading mb="8" size="lg" fontWeight="normal">
             Inköpslista
           </Heading>
-          <SearchIngredientModal
-            buttonProps={{
-              colorScheme: 'oxblood'
-            }}
-            buttonLabel={isWideVersion ? 'Lägg till' : '+'}
-            onSelectItem={handleAddGrocery}
-          />
+          {!error && menuData && (
+            <SearchIngredientModal
+              buttonProps={{
+                colorScheme: 'oxblood'
+              }}
+              buttonLabel={isWideVersion ? 'Lägg till' : '+'}
+              onSelectItem={handleAddGrocery}
+            />
+          )}
         </Flex>
         <Divider />
         {isLoading ? (
@@ -132,7 +134,7 @@ export default function ShopList() {
           </Flex>
         ) : (
           <Box mt="8">
-            {error || !menuData ? (
+            {error || !menuData.shopList ? (
               <Flex justify="center">
                 <Text>Fel vid hämtning av Inköpslistor.</Text>
               </Flex>
