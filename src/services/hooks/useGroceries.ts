@@ -79,6 +79,7 @@ export async function getGroceryById(groceryId: string, include: string) {
     measurementUnits: data.measurementUnits,
     createdAt: setDate(data)
   }
+
   return {
     grocery
   }
