@@ -1,5 +1,4 @@
 import { Stack, Box, Text } from '@chakra-ui/react'
-import { loadDefaultErrorComponents } from 'next/dist/server/load-components'
 import { PaginationItem } from './PaginationItem'
 
 interface PaginationProps {
@@ -31,7 +30,6 @@ export function Pagination({
 
   const previousPages =
     currentPage > 1 ? generatePagesArray(currentPage - 1 - siblingsCount, currentPage - 1) : []
-  console.log(previousPages)
   const nextPages =
     currentPage < lastPage
       ? generatePagesArray(currentPage, Math.min(currentPage + siblingsCount, lastPage))
