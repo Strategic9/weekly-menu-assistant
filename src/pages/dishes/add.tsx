@@ -15,7 +15,7 @@ type CreateDishFormData = {
   temperature?: string
   cookingTime?: string
   ingredients: { id: string; quantity: string }[]
-  mainIngredient: { id: string; quantity: string; mainMeasurementUnitId: string }
+  mainIngredient: { id: string; quantity: string; measurementUnitId: string }
   recipe: string
   description: string
 }
@@ -67,7 +67,8 @@ export default function CreateDish() {
     image,
     cookingTime,
     portions,
-    temperature
+    temperature,
+    mainMeasurementUnitId
   }) => {
     const newDish: CreateDishFormData = {
       name,
@@ -83,7 +84,7 @@ export default function CreateDish() {
       mainIngredient: {
         id: mainIngredientId,
         quantity: mainIngredientQuantity,
-        mainMeasurementUnitId: mainMeasurementUnitId
+        measurementUnitId: mainMeasurementUnitId
       },
       recipe: recipe || '',
       cookingTime: cookingTime || '',

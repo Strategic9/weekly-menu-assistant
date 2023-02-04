@@ -24,6 +24,7 @@ type FormData = {
   ingredients: any[]
   mainIngredientId: string
   mainIngredientQuantity: string
+  mainMeasurementUnitId: string
   recipe: string
   image?: string
   portions?: string
@@ -48,15 +49,24 @@ export default function DishPage() {
         image,
         portions,
         temperature,
-        cookingTime
+        cookingTime,
+        mainMeasurementUnitId
       } = dish
       const updatedDish = {
         name,
         description,
         ingredients: dish.ingredients
           .filter((i) => i.id !== mainIngredientId)
-          .map(({ id, quantity }) => ({ id: id, quantity: quantity })),
-        mainIngredient: { id: mainIngredientId, quantity: mainIngredientQuantity },
+          .map(({ id, quantity, measurementUnitId }) => ({
+            id: id,
+            quantity: quantity,
+            measurementUnitId: measurementUnitId
+          })),
+        mainIngredient: {
+          id: mainIngredientId,
+          quantity: mainIngredientQuantity,
+          measurementUnitId: mainMeasurementUnitId
+        },
         recipe: recipe || null,
         cookingTime: cookingTime || null,
         portions: portions || null,
