@@ -50,8 +50,7 @@ export default function DishPage() {
         image,
         portions,
         temperature,
-        cookingTime,
-        mainMeasurementUnitId
+        cookingTime
       } = dish
       const updatedDish = {
         name,
