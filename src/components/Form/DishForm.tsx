@@ -113,11 +113,16 @@ export default function DishForm(props: DishFormParams) {
     ...props.initialData,
     ...{
       ingredients: ingredients?.map((e: any) => {
-        return { id: e.grocery.id, name: e.grocery.name, quantity: e.quantity }
+        return {
+          id: e.grocery.id,
+          name: e.grocery.name,
+          quantity: e.quantity,
+          measurementUnitId: e.measurementUnitId
+        }
       }),
       mainIngredientId: mainIngredient?.grocery?.id,
       mainIngredientQuantity: mainIngredient?.quantity,
-      mainMeasurementUnitId: mainIngredient?.mainMeasurementUnitId
+      mainMeasurementUnitId: mainIngredient?.measurementUnitId
     }
   }
 
@@ -148,12 +153,14 @@ export default function DishForm(props: DishFormParams) {
 
     setValue('ingredientName', ingredient.name)
     setValue('ingredientQuantity', ingredient.quantity)
+    setValue('measurementUnitId', ingredient.measurementUnitId)
     setIndexIngredient(index)
   }
 
   const addIngredientName = (el) => {
     setValue('ingredientName', el.name)
     setValue('ingredientQuantity', el.quantity)
+    setValue('measurementUnitId', el.measurementUnitId)
     setIngredientId(el.id)
     setAddIngredient(true)
     setShowEditIngredient(true)
