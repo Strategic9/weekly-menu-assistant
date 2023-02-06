@@ -68,8 +68,7 @@ export default function CreateDish() {
     image,
     cookingTime,
     portions,
-    temperature,
-    mainMeasurementUnitId
+    temperature
   }) => {
     const newDish: CreateDishFormData = {
       name,
