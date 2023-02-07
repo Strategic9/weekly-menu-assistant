@@ -33,6 +33,10 @@ import { Select } from './Select'
 import { GetGroceriesResponse, useGroceries } from '../../services/hooks/useGroceries'
 import { SearchIngredient } from './SearchIngredient'
 import EditIngredient from './EditIngredient'
+import {
+  GetMeasurementUnitsResponse,
+  useMeasurementUnits
+} from '../../services/hooks/useMeasurementUnit'
 
 export type CreateDishFormData = {
   id?: string
@@ -42,10 +46,11 @@ export type CreateDishFormData = {
   temperature?: string
   cookingTime?: string
   description?: string
-  ingredients?: { id: string; name: string; quantity: number }[]
+  ingredients?: { id: string; name: string; quantity: number; measurementUnit?: string }[]
   mainIngredientId?: string
   recipe?: string
   mainIngredientQuantity?: string
+  mainMeasurementUnitId?: string
 }
 
 interface DishFormParams {
@@ -63,6 +68,8 @@ const createDishFormSchema = yup.object({
   ingredientQuantity: yup.string(),
   mainIngredientId: yup.string().required('Huvudingrediens är obligatoriskt'),
   mainIngredientQuantity: yup.string().required('Mängd/volym är obligatorisk'),
+  mainMeasurementUnitId: yup.string().required('Obligatorisk'),
+  measurementUnitId: yup.string().required('Obligatorisk'),
   recipe: yup.string(),
   portions: yup.string().nullable(),
   temperature: yup.string().nullable(),
@@ -81,6 +88,17 @@ export default function DishForm(props: DishFormParams) {
   )
   const groceriesData = useGroceriesData as GetGroceriesResponse
   const itemsList = groceriesData?.items
+
+  const { data: useMeasurementUnitsData } = useMeasurementUnits(
+    null,
+    {},
+    {
+      'page[limit]': 1000,
+      'page[offset]': 0
+    }
+  )
+  const measurementUnitsData = useMeasurementUnitsData as GetMeasurementUnitsResponse
+
   const mainIngredient: any = props.initialData?.ingredients.find((i: any) => i.isMain)
   const ingredients: any = props.initialData?.ingredients.filter((i: any) => !i.isMain)
 
@@ -95,10 +113,16 @@ export default function DishForm(props: DishFormParams) {
     ...props.initialData,
     ...{
       ingredients: ingredients?.map((e: any) => {
-        return { id: e.grocery.id, name: e.grocery.name, quantity: e.quantity }
+        return {
+          id: e.grocery.id,
+          name: e.grocery.name,
+          quantity: e.quantity,
+          measurementUnitId: e.measurementUnitId
+        }
       }),
       mainIngredientId: mainIngredient?.grocery?.id,
-      mainIngredientQuantity: mainIngredient?.quantity
+      mainIngredientQuantity: mainIngredient?.quantity,
+      mainMeasurementUnitId: mainIngredient?.measurementUnitId
     }
   }
 
@@ -129,12 +153,14 @@ export default function DishForm(props: DishFormParams) {
 
     setValue('ingredientName', ingredient.name)
     setValue('ingredientQuantity', ingredient.quantity)
+    setValue('measurementUnitId', ingredient.measurementUnitId)
     setIndexIngredient(index)
   }
 
   const addIngredientName = (el) => {
     setValue('ingredientName', el.name)
     setValue('ingredientQuantity', el.quantity)
+    setValue('measurementUnitId', el.measurementUnitId)
     setIngredientId(el.id)
     setAddIngredient(true)
     setShowEditIngredient(true)
@@ -145,9 +171,10 @@ export default function DishForm(props: DishFormParams) {
     const quantity = getValues('ingredientQuantity')
     const name = getValues('ingredientName')
     const quantityExists = !!quantity && quantity > 0
+    const mUnit = getValues('measurementUnitId')
 
     if (quantityExists) {
-      append({ id: ingredientId, name: name, quantity: quantity })
+      append({ id: ingredientId, name: name, quantity: quantity, measurementUnitId: mUnit })
 
       setAddIngredient(false)
       setShowEditIngredient(false)
@@ -158,12 +185,14 @@ export default function DishForm(props: DishFormParams) {
     const quantity = getValues('ingredientQuantity')
     const name = getValues('ingredientName')
     const quantityExists = !!quantity && quantity > 0
+    const mUnit = getValues('measurementUnitId')
 
     if (quantityExists) {
       update(indexIngredient, {
         id: ingredientId,
         name: name,
-        quantity: quantity
+        quantity: quantity,
+        measurementUnitId: mUnit
       })
     }
 
@@ -209,9 +238,9 @@ export default function DishForm(props: DishFormParams) {
             <Input name="name" label="Namn" error={errors.name} {...register('name')} />
           </Box>
           {useGroceriesData && (
-            <HStack spacing="2">
+            <Flex flexDirection={'column'}>
               <Select
-                w={['9em', '14em']}
+                w={'100%'}
                 name="mainIngredientId"
                 label={isWideVersion ? 'Huvudingrediens' : 'H ingr.'}
                 error={errors.mainIngredientId}
@@ -223,15 +252,41 @@ export default function DishForm(props: DishFormParams) {
                   </option>
                 ))}
               </Select>
-              <Input
-                w={['100%']}
-                name={'mainIngredientQuantity'}
-                label={'Mängd/volym'}
-                type={'number'}
-                error={errors.mainIngredientQuantity}
-                {...register('mainIngredientQuantity')}
-              />
-            </HStack>
+              <Text m={'var(--chakra-space-4) 0 var(--chakra-space-2) 0'}>Antal/volym</Text>
+              <Flex
+                justifyContent={'center'}
+                backgroundColor={'gray.100'}
+                borderRadius={'var(--chakra-radii-md)'}
+              >
+                <Input
+                  width={'99%'}
+                  display={'flex'}
+                  justifyContent={'flex-end'}
+                  name={'mainIngredientQuantity'}
+                  {...register('mainIngredientQuantity')}
+                  type={'number'}
+                  error={errors.mainIngredientQuantity}
+                  backgroundColor={'gray.100'}
+                  _placeholder={{ color: 'gray.250' }}
+                  border={'none'}
+                  borderRadius={'var(--chakra-radii-md) 0 0 var(--chakra-radii-md)'}
+                  textAlign="right"
+                />
+                <Select
+                  width={'99%'}
+                  name="mainMeasurementUnitId"
+                  error={errors.mainMeasurementUnitId}
+                  {...register('mainMeasurementUnitId')}
+                  border={'none'}
+                  borderRadius={'0 var(--chakra-radii-md) var(--chakra-radii-md) 0'}
+                  textAlign="left"
+                >
+                  {measurementUnitsData?.items.map((unit) => (
+                    <option label={unit.name} key={unit.id} value={unit.id} />
+                  ))}
+                </Select>
+              </Flex>
+            </Flex>
           )}
 
           <HStack spacing="2">
@@ -284,6 +339,7 @@ export default function DishForm(props: DishFormParams) {
                   remove(indexIngredient)
                   setShowEditIngredient(false)
                 }}
+                measurementUnitsData={measurementUnitsData}
                 register={register}
                 setShowEditIngredient={setShowEditIngredient}
                 addIngredient={addIngredient ? addNewIngredient : updateIngredient}
@@ -414,6 +470,7 @@ export function DishFormModal({
           description: '',
           ingredients: [],
           mainIngredient: null,
+          mainMeasurementUnitId: null,
           recipe: '',
           createdAt: null,
           image: null

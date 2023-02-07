@@ -29,6 +29,7 @@ export default function ViewDishPage() {
   const { data } = useDish(dish_id as string)
   const totalStars = Array.from(Array(4 + 1), (_, i) => i)
 
+  console.log('data => ', data)
   const [localData, setLocalData] = useState({})
   const [loading, setLoading] = useState(true)
 
@@ -116,7 +117,8 @@ export default function ViewDishPage() {
         <UnorderedList>
           {data?.dish?.ingredients.reverse().map((ingredient) => (
             <ListItem _first={{ fontWeight: '700' }} key={ingredient.grocery.id}>
-              <span>{ingredient.quantity} </span>
+              <span>{ingredient.quantity}</span>
+              <span>{ingredient.grocery.measurementUnits.at(-1).measurementUnit.value} </span>
               {ingredient.grocery.name}
             </ListItem>
           ))}
