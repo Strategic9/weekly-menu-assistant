@@ -117,13 +117,15 @@ export default function ShopList() {
           <Heading mb="8" size="lg" fontWeight="normal">
             Inköpslista
           </Heading>
-          <SearchIngredientModal
-            buttonProps={{
-              colorScheme: 'oxblood'
-            }}
-            buttonLabel={isWideVersion ? 'Lägg till' : '+'}
-            onSelectItem={handleAddGrocery}
-          />
+          {!error && menuData && (
+            <SearchIngredientModal
+              buttonProps={{
+                colorScheme: 'oxblood'
+              }}
+              buttonLabel={isWideVersion ? 'Lägg till' : '+'}
+              onSelectItem={handleAddGrocery}
+            />
+          )}
         </Flex>
         <Divider />
         {isLoading ? (
@@ -132,13 +134,13 @@ export default function ShopList() {
           </Flex>
         ) : (
           <Box mt="8">
-            {error ? (
+            {error || !menuData.shopList ? (
               <Flex justify="center">
                 <Text>Fel vid hämtning av Inköpslistor.</Text>
               </Flex>
             ) : (
               <List as={Stack} spacing="2">
-                {Object.entries(menuData.shopList.categories)?.map(([key, groceries]) => (
+                {Object.entries(menuData?.shopList?.categories)?.map(([key, groceries]) => (
                   <Box key={key}>
                     <Text fontSize={['l', 'xl']} color="gray.500" textTransform="capitalize">
                       {key}
