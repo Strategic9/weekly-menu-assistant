@@ -49,7 +49,7 @@ export default function DishPage() {
       })
         .then(() => {
           alert.success('Maträtt tillagd')
-          router.push('..')
+          router.push(`/dishes/view/${dish_id}`)
         })
         .catch(({ response }) => {
           alert.error(response.data.message)
@@ -57,7 +57,7 @@ export default function DishPage() {
     },
     {
       onSuccess: () => {
-        queryClient.invalidateQueries('dishes')
+        queryClient.invalidateQueries(`/dishes/view/${dish_id}`)
       }
     }
   )
