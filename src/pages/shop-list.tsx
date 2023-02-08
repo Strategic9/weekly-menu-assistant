@@ -39,6 +39,8 @@ export default function ShopList() {
   const menuData = useMenuData as GetMenuResponse
   const alert = useAlert()
 
+  console.log(menuData)
+
   const isWideVersion = useBreakpointValue({
     base: false,
     md: true,
@@ -134,7 +136,7 @@ export default function ShopList() {
           </Flex>
         ) : (
           <Box mt="8">
-            {error || !menuData.shopList ? (
+            {error || !menuData?.shopList ? (
               <Flex justify="center">
                 <Text>Fel vid hämtning av Inköpslistor.</Text>
               </Flex>
