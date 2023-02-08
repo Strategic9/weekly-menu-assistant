@@ -39,8 +39,6 @@ export default function ShopList() {
   const menuData = useMenuData as GetMenuResponse
   const alert = useAlert()
 
-  console.log(menuData)
-
   const isWideVersion = useBreakpointValue({
     base: false,
     md: true,
