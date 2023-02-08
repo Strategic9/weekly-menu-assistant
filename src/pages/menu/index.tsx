@@ -178,9 +178,10 @@ export default function Menu() {
         queryClient.invalidateQueries('menu')
       })
       .catch((error) => {
-        const errorMsg = error.response.data.details
-        const msg = errorMsg && errorMsg === 'not enough dishes found for menu' ?
-          'No dishes information found' : 'Fel vid menygenerering'
+        const msg =
+          error.response.data.details === 'generate.menu.error.not.enough.dishes'
+            ? 'No dishes information found'
+            : 'Fel vid menygenerering'
         alert.error(msg)
       })
   }
