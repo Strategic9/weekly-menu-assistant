@@ -105,7 +105,7 @@ export default function SignIn() {
     localStorage.set('token', res.data?.token)
     localStorage.set('username', res.data?.username)
     localStorage.set('email', res.data?.email)
-    localStorage.set(ad, res.data?.userId)
+    localStorage.set('user-id', res.data?.userId)
     router.push('menu')
   }
 
