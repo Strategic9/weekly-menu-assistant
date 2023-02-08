@@ -72,7 +72,9 @@ export default function DishList() {
 
   function getDishIngredients(dish: Dish) {
     return !!dish.ingredients && dish.ingredients.length > 0
-      ? dish.ingredients.reverse().map((i) => i.grocery.name)
+      ? dish.ingredients.sort((a, b) => {
+          return a.isMain - b.isMain
+        })
       : []
   }
 

@@ -66,18 +66,12 @@ export function useDishes(page: number, options: UseQueryOptions, pageLimit) {
   })
 }
 
-export function useDish(dish_id: string) {
-  const { data: useDishesData } = useDishes(currentPage, {}, {})
-  const data = useDishesData as GetDishesResponse
+export const getDishByID = async (dishId: string) => {
+  const { data } = await HTTPHandler.get(`dishes/${dishId}`, {})
 
-  return useQuery(
-    ['dish', dish_id],
-    () => {
-      const dish = data?.dishes.find((d: Dish) => d.id === dish_id)
-      return { dish }
-    },
-    {
-      staleTime: 1000 * 60 * 10 // 10 minutes
-    }
-  )
+  return { dish: data }
+}
+
+export function useDish(dish_id: string) {
+  return useQuery(['dishes', dish_id], () => getDishByID(dish_id))
 }

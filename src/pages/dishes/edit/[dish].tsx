@@ -11,14 +11,18 @@ import DishForm from '../../../components/Form/DishForm'
 import React from 'react'
 
 type UpdateDishFormData = {
-  id?: string
   name: string
+  image?: string
+  portions?: string
+  temperature?: string
+  cookingTime?: string
+  ingredients: { id: string; quantity: string }[]
+  mainIngredient: { id: string; quantity: string; measurementUnitId: string }
+  recipe: string
   description: string
-  ingredients: string[]
 }
 
 type FormData = {
-  id?: string
   name: string
   description: string
   ingredients: any[]
@@ -38,47 +42,14 @@ export default function DishPage() {
   const alert = useAlert()
   const { data, isFetching, isLoading } = useDish(dish_id as string)
 
-  const editDish = useMutation(
-    async (dish: FormData) => {
-      const {
-        name,
-        description,
-        mainIngredientId,
-        mainIngredientQuantity,
-        mainMeasurementUnitId,
-        recipe,
-        image,
-        portions,
-        temperature,
-        cookingTime
-      } = dish
-      const updatedDish = {
-        name,
-        description,
-        ingredients: dish.ingredients
-          .filter((i) => i.id !== mainIngredientId)
-          .map(({ id, quantity, measurementUnitId }) => ({
-            id: id,
-            quantity: quantity,
-            measurementUnitId: measurementUnitId
-          })),
-        mainIngredient: {
-          id: mainIngredientId,
-          quantity: mainIngredientQuantity,
-          measurementUnitId: mainMeasurementUnitId
-        },
-        recipe: recipe || null,
-        cookingTime: cookingTime || null,
-        portions: portions || null,
-        temperature: temperature || null,
-        image: image || null
-      }
-      await HTTPHandler.patch(`dishes/${dish.id}`, {
-        ...updatedDish
+  const updateDish = useMutation(
+    async (dish: UpdateDishFormData) => {
+      await HTTPHandler.patch(`dishes/${dish_id}`, {
+        ...dish
       })
         .then(() => {
-          alert.success('Maträtt ändrad')
-          router.push('..')
+          alert.success('Maträtt tillagd')
+          router.push(`/dishes/view/${dish_id}`)
         })
         .catch(({ response }) => {
           alert.error(response.data.message)
@@ -86,15 +57,46 @@ export default function DishPage() {
     },
     {
       onSuccess: () => {
-        queryClient
-          .invalidateQueries(['dishes'])
-          .then(() => queryClient.invalidateQueries(['dish', dish_id]))
+        queryClient.invalidateQueries(`/dishes/view/${dish_id}`)
       }
     }
   )
 
-  const handleEditDish: SubmitHandler<FormData> = async (values) => {
-    await editDish.mutateAsync(values)
+  const handleEditDish: SubmitHandler<FormData> = async ({
+    name,
+    description,
+    ingredients,
+    mainIngredientId,
+    mainIngredientQuantity,
+    mainMeasurementUnitId,
+    recipe,
+    image,
+    cookingTime,
+    portions,
+    temperature
+  }) => {
+    const newDish: UpdateDishFormData = {
+      name,
+      description,
+      image: image || '',
+      ingredients: ingredients
+        .filter((i) => i.id !== mainIngredientId)
+        .map(({ id, quantity, measurementUnitId }) => ({
+          id: id,
+          quantity: quantity,
+          measurementUnitId: measurementUnitId
+        })),
+      mainIngredient: {
+        id: mainIngredientId,
+        quantity: mainIngredientQuantity,
+        measurementUnitId: mainMeasurementUnitId
+      },
+      recipe: recipe || '',
+      cookingTime: cookingTime || '',
+      portions: portions || '',
+      temperature: temperature || ''
+    }
+    await updateDish.mutateAsync(newDish)
   }
 
   return (
