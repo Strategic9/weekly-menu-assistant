@@ -37,14 +37,16 @@ type FormData = {
 export default function CreateDish() {
   const router = useRouter()
   const alert = useAlert()
+  let id = ''
   const createDish = useMutation(
     async (dish: CreateDishFormData) => {
       await HTTPHandler.post('dishes', {
         ...dish
       })
-        .then(() => {
+        .then((response) => {
+          id = response.data.id
           alert.success('Maträtt tillagd')
-          router.push('.')
+          router.push(`/dishes/view/${id}`)
         })
         .catch(({ response }) => {
           alert.error(response.data.message)
@@ -52,7 +54,7 @@ export default function CreateDish() {
     },
     {
       onSuccess: () => {
-        queryClient.invalidateQueries('dishes')
+        queryClient.invalidateQueries(`/dishes/view/${id}`)
       }
     }
   )

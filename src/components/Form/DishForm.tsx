@@ -259,7 +259,6 @@ export default function DishForm(props: DishFormParams) {
                 borderRadius={'var(--chakra-radii-md)'}
               >
                 <Input
-                  width={'99%'}
                   display={'flex'}
                   justifyContent={'flex-end'}
                   name={'mainIngredientQuantity'}
@@ -268,16 +267,13 @@ export default function DishForm(props: DishFormParams) {
                   error={errors.mainIngredientQuantity}
                   backgroundColor={'gray.100'}
                   _placeholder={{ color: 'gray.250' }}
-                  border={'none'}
                   borderRadius={'var(--chakra-radii-md) 0 0 var(--chakra-radii-md)'}
                   textAlign="right"
                 />
                 <Select
-                  width={'99%'}
                   name="mainMeasurementUnitId"
                   error={errors.mainMeasurementUnitId}
                   {...register('mainMeasurementUnitId')}
-                  border={'none'}
                   borderRadius={'0 var(--chakra-radii-md) var(--chakra-radii-md) 0'}
                   textAlign="left"
                 >
