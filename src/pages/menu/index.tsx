@@ -177,8 +177,12 @@ export default function Menu() {
         setMenuForChoosenWeekExists(true)
         queryClient.invalidateQueries('menu')
       })
-      .catch(() => {
-        alert.error('Fel vid menygenerering')
+      .catch((error) => {
+        const msg =
+          error.response.data.details === 'generate.menu.error.not.enough.dishes'
+            ? 'No dishes information found'
+            : 'Fel vid menygenerering'
+        alert.error(msg)
       })
   }
 
