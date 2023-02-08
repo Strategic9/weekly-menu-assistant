@@ -34,7 +34,7 @@ export default function Dish({ dish, dishIngredient, onMouseEnter, handleDeleteD
               Ingredienser:
             </Text>
             <Flex flexFlow={'wrap'} mb="4px">
-              {dishIngredient.map((ingredient, i, { length }) => (
+              {dishIngredient.reverse().map((ingredient, i, { length }) => (
                 <Text
                   as="span"
                   key={i}
@@ -42,7 +42,7 @@ export default function Dish({ dish, dishIngredient, onMouseEnter, handleDeleteD
                   fontSize={['14', '16']}
                   py={['2px', '2px', '2px']}
                 >
-                  {length - 1 === i ? ingredient : `${ingredient},\u00A0`}
+                  {length - 1 === i ? ingredient.grocery.name : `${ingredient.grocery.name},\u00A0`}
                 </Text>
               ))}
             </Flex>

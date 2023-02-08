@@ -22,6 +22,10 @@ import {
   RiUser6Line
 } from 'react-icons/ri'
 import { placeholderImage } from '../../../services/utils'
+import {
+  GetMeasurementUnitsResponse,
+  useMeasurementUnits
+} from '../../../services/hooks/useMeasurementUnit'
 
 export default function ViewDishPage() {
   const router = useRouter()
@@ -29,7 +33,17 @@ export default function ViewDishPage() {
   const { data } = useDish(dish_id as string)
   const totalStars = Array.from(Array(4 + 1), (_, i) => i)
 
-  console.log('data => ', data)
+  const { data: useMeasurementUnitsData } = useMeasurementUnits(
+    null,
+    {},
+    {
+      'page[limit]': 1000,
+      'page[offset]': 0
+    }
+  )
+
+  const measurementUnitsData = useMeasurementUnitsData as GetMeasurementUnitsResponse
+
   const [localData, setLocalData] = useState({})
   const [loading, setLoading] = useState(true)
 
@@ -93,6 +107,18 @@ export default function ViewDishPage() {
     </Flex>
   )
 
+  const getMeasurementUnit = (id, measurementUnits) => {
+    const measurementUnit = measurementUnits?.items.find((unitId) => unitId.id === id)
+    return <span>{measurementUnit?.value} </span>
+  }
+
+  const sortIngredients = (ingredients) => {
+    const sortedIngredients = ingredients.sort((a, b) => {
+      return a.isMain - b.isMain
+    })
+    return sortedIngredients.reverse()
+  }
+
   const DesktopView = ({ data }) => (
     <Flex display={['none', 'none', 'flex']} width="100%">
       <Flex flexDirection="column" mr={4} bgColor="white" borderRadius={8} padding={4}>
@@ -115,10 +141,10 @@ export default function ViewDishPage() {
           Ingredients
         </Heading>
         <UnorderedList>
-          {data?.dish?.ingredients.reverse().map((ingredient) => (
+          {sortIngredients(data?.dish?.ingredients).map((ingredient) => (
             <ListItem _first={{ fontWeight: '700' }} key={ingredient.grocery.id}>
               <span>{ingredient.quantity}</span>
-              <span>{ingredient.grocery.measurementUnits.at(-1).measurementUnit.value} </span>
+              {getMeasurementUnit(ingredient.measurementUnitId, measurementUnitsData)}
               {ingredient.grocery.name}
             </ListItem>
           ))}
@@ -196,9 +222,10 @@ export default function ViewDishPage() {
             Ingredients
           </Heading>
           <UnorderedList>
-            {data?.dish?.ingredients.map((ingredient) => (
+            {sortIngredients(data?.dish?.ingredients).map((ingredient) => (
               <ListItem _first={{ fontWeight: '700' }} key={ingredient.grocery.id}>
-                <span>{ingredient.quantity} </span>
+                <span>{ingredient.quantity}</span>
+                {getMeasurementUnit(ingredient.measurementUnitId, measurementUnitsData)}
                 {ingredient.grocery.name}
               </ListItem>
             ))}
