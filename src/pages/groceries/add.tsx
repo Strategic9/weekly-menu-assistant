@@ -20,7 +20,12 @@ export default function CreateGrocery() {
           name: grocery.name,
           category: {
             id: grocery.categoryId
-          }
+          },
+          measurementUnits: [
+            {
+              id: grocery.measurementUnitId
+            }
+          ]
         })
         alert.success('Ingrediens tillagd')
         router.push('.')

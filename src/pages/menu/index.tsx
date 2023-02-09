@@ -177,8 +177,12 @@ export default function Menu() {
         setMenuForChoosenWeekExists(true)
         queryClient.invalidateQueries('menu')
       })
-      .catch(() => {
-        alert.error('Fel vid menygenerering')
+      .catch((error) => {
+        const msg =
+          error.response.data.details === 'generate.menu.error.not.enough.dishes'
+            ? 'No dishes information found'
+            : 'Fel vid menygenerering'
+        alert.error(msg)
       })
   }
 
@@ -197,13 +201,15 @@ export default function Menu() {
             Veckomeny
           </Heading>
         </Flex>
-        <WeekPicker setWeek={setWeek} />
         {!menuForChoosenWeekExists ? (
-          <Flex>
-            <Button mt="20px" onClick={() => generateMenu()}>
-              Generera Veckomeny
-            </Button>
-          </Flex>
+          <>
+            <WeekPicker definedWeek={week} setWeek={setWeek} />
+            <Flex>
+              <Button mt="20px" onClick={() => generateMenu()}>
+                Generera Veckomeny
+              </Button>
+            </Flex>
+          </>
         ) : isLoading || isFetching || !localData ? (
           <Box w="100%" m="auto">
             <Spinner size="lg" color="gray.500" ml="4" />
@@ -219,13 +225,11 @@ export default function Menu() {
                   <Controller
                     name="startDate"
                     control={control}
-                    render={({ field: { onChange, value } }) => (
-                      <DatePicker isDisabled selected={value} onChange={(date) => onChange(date)} />
-                    )}
+                    render={() => <WeekPicker definedWeek={week} setWeek={setWeek} />}
                   />
                 </Box>
 
-                <Box>
+                <Box ml="10px">
                   <Text mb="5px" fontSize={['sm', 'md']}>
                     Till
                   </Text>

@@ -73,16 +73,22 @@ export async function getMenu(): Promise<any> {
       'page[offset]': 0
     }
   })
-  const items = JSON.parse(JSON.stringify(data.items))
+  const items = JSON.parse(JSON.stringify(data?.items))
   if (items.length) {
     const menu = data.items.find(
       (menu) => new Date() >= new Date(menu.startDate) && new Date() <= new Date(menu.endDate)
     ) as Menu
 
-    menu.startDate = new Date(menu.startDate)
-    menu.endDate = new Date(menu.endDate)
+    if (menu) {
+      menu.startDate = new Date(menu.startDate)
+      menu.endDate = new Date(menu.endDate)
 
-    menu.dishes.forEach((dish) => (dish.selectionDate = new Date(dish.selectionDate)))
+      menu.dishes.forEach((dish) => (dish.selectionDate = new Date(dish.selectionDate)))
+
+      const updatedDishes = checkDishesAndDays(menu)
+
+      menu.dishes = updatedDishes
+    }
 
     const shoppingList = generateShopList(menu)
 
@@ -106,9 +112,6 @@ export async function getMenu(): Promise<any> {
 
     const shopList = shopListData()
 
-    const updatedDishes = checkDishesAndDays(menu)
-
-    menu.dishes = updatedDishes
     return {
       items,
       shopList

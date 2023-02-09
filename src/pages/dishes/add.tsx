@@ -15,7 +15,7 @@ type CreateDishFormData = {
   temperature?: string
   cookingTime?: string
   ingredients: { id: string; quantity: string }[]
-  mainIngredient: { id: string; quantity: string }
+  mainIngredient: { id: string; quantity: string; measurementUnitId: string }
   recipe: string
   description: string
 }
@@ -26,6 +26,7 @@ type FormData = {
   ingredients: any[]
   mainIngredientId: string
   mainIngredientQuantity: string
+  mainMeasurementUnitId: string
   recipe: string
   image?: string
   portions?: string
@@ -36,14 +37,16 @@ type FormData = {
 export default function CreateDish() {
   const router = useRouter()
   const alert = useAlert()
+  let id = ''
   const createDish = useMutation(
     async (dish: CreateDishFormData) => {
       await HTTPHandler.post('dishes', {
         ...dish
       })
-        .then(() => {
+        .then((response) => {
+          id = response.data.id
           alert.success('Maträtt tillagd')
-          router.push('.')
+          router.push(`/dishes/view/${id}`)
         })
         .catch(({ response }) => {
           alert.error(response.data.message)
@@ -51,7 +54,7 @@ export default function CreateDish() {
     },
     {
       onSuccess: () => {
-        queryClient.invalidateQueries('dishes')
+        queryClient.invalidateQueries(`/dishes/view/${id}`)
       }
     }
   )
@@ -62,6 +65,7 @@ export default function CreateDish() {
     ingredients,
     mainIngredientId,
     mainIngredientQuantity,
+    mainMeasurementUnitId,
     recipe,
     image,
     cookingTime,
@@ -74,8 +78,16 @@ export default function CreateDish() {
       image: image || '',
       ingredients: ingredients
         .filter((i) => i.id !== mainIngredientId)
-        .map(({ id, quantity }) => ({ id: id, quantity: quantity })),
-      mainIngredient: { id: mainIngredientId, quantity: mainIngredientQuantity },
+        .map(({ id, quantity, measurementUnitId }) => ({
+          id: id,
+          quantity: quantity,
+          measurementUnitId: measurementUnitId
+        })),
+      mainIngredient: {
+        id: mainIngredientId,
+        quantity: mainIngredientQuantity,
+        measurementUnitId: mainMeasurementUnitId
+      },
       recipe: recipe || '',
       cookingTime: cookingTime || '',
       portions: portions || '',
