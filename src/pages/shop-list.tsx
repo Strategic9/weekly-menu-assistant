@@ -134,7 +134,7 @@ export default function ShopList() {
           </Flex>
         ) : (
           <Box mt="8">
-            {error || !menuData.shopList ? (
+            {error || !menuData?.shopList ? (
               <Flex justify="center">
                 <Text>Fel vid hämtning av Inköpslistor.</Text>
               </Flex>
