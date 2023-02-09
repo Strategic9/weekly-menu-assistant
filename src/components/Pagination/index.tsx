@@ -45,7 +45,7 @@ export function Pagination({
     if (action === 'firstPage') {
       setOffset(0)
     }
-    if (action === 'nextPage') {
+    if (action === 'nextPage' && previousPages === null) {
       setOffset((prev: number) => prev + registersPerPage)
     }
     if (action === 'previousPage') {
