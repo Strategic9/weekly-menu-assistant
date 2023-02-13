@@ -20,14 +20,14 @@ import {
   TableCaption,
   Tfoot
 } from '@chakra-ui/react'
+
 import { RiEditLine, RiDeleteBinLine } from 'react-icons/ri'
-import Link from 'next/link'
+import { useRouter } from 'next/router'
 import { Pagination } from '../../components/Pagination'
 import { useEffect, useState } from 'react'
 
 import { queryClient } from '../../services/queryClient'
-import { api, HTTPHandler } from '../../services/api'
-import TooltipButton from '../../components/TooltipButton'
+import { HTTPHandler } from '../../services/api'
 import { useAlert } from 'react-alert'
 import PageWrapper from '../page-wrapper'
 import { GetUserPermissions, useUserPermissions } from '../../services/hooks/usePermissions'
@@ -38,6 +38,7 @@ type UsePermissionData = {
 }
 
 export default function AdminPage() {
+  const router = useRouter()
   const [users, setUsers] = useState([])
   const [page, setPage] = useState(1)
   const [offset, setOffset] = useState(0)
@@ -71,11 +72,11 @@ export default function AdminPage() {
 
   const getUserDetails = async (id: string) => {
     await HTTPHandler.get(`users/${id}`)
-      .then(async () => {
-        await queryClient.invalidateQueries(['users', page])
+      .then((res) => {
+        console.log(res.data)
+        queryClient.invalidateQueries(['users', page])
         alert.success('Användare hämtad')
       })
-      .then(() => {})
       .catch(() => alert.error('Fel vid hämtning av användare'))
   }
 
