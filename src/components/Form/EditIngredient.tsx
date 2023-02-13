@@ -24,7 +24,7 @@ const EditIngredient = ({
       w={['100%', '65%', '100%']}
     >
       <Wrap maxWidth={['400px', '100%']}>
-        <Flex pb="14px" alignItems={'flex-end'} flexDirection="column">
+        <Flex pb="14px" alignItems={'flex-end'} flexDirection="column" width="100%">
           <Input
             mr="10px"
             w={'100%'}
@@ -33,7 +33,7 @@ const EditIngredient = ({
             readOnly
             {...register('ingredientName')}
           />
-          <Flex flexDirection={'column'}>
+          <Flex flexDirection={'column'} width="100%">
             <Text m={'var(--chakra-space-4) 0 var(--chakra-space-2) 0'}>Antal/volym</Text>
             <Flex
               justifyContent={'center'}
