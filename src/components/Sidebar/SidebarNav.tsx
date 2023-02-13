@@ -31,6 +31,9 @@ export function SidebarNav() {
       <NavLink className="sidebar-text" icon={RiListCheck} href="/shop-list">
         Inköpslistor
       </NavLink>
+      <NavSection title="Admin" icon={BiCategory} activePath="/admin">
+        <NavLink href="/admin">Admin</NavLink>
+      </NavSection>
     </Stack>
   )
 }
