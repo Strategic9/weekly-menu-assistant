@@ -1,10 +1,12 @@
 import { Wrap, Flex, Box, Button, Icon, Text } from '@chakra-ui/react'
+import { useState } from 'react'
 import { RiDeleteBinLine } from 'react-icons/ri'
 import { Input } from './Input'
 import { Select } from './Select'
 
 const EditIngredient = ({
   register,
+  trigger,
   setShowEditIngredient,
   errors,
   addIngredient,
@@ -22,7 +24,7 @@ const EditIngredient = ({
       w={['100%', '65%', '100%']}
     >
       <Wrap maxWidth={['400px', '100%']}>
-        <Flex pb="14px" alignItems={'flex-end'} flexDirection="column">
+        <Flex pb="14px" alignItems={'flex-end'} flexDirection="column" width="100%">
           <Input
             mr="10px"
             w={'100%'}
@@ -31,12 +33,13 @@ const EditIngredient = ({
             readOnly
             {...register('ingredientName')}
           />
-          <Flex flexDirection={'column'}>
+          <Flex flexDirection={'column'} width="100%">
             <Text m={'var(--chakra-space-4) 0 var(--chakra-space-2) 0'}>Antal/volym</Text>
             <Flex
               justifyContent={'center'}
-              backgroundColor={'gray.100'}
               borderRadius={'var(--chakra-radii-md)'}
+              backgroundColor="gray.200"
+              alignItems={'flex-start'}
             >
               <Input
                 width={'99%'}
@@ -55,10 +58,12 @@ const EditIngredient = ({
               />
               <Select
                 width={'99%'}
-                id="unit-select"
                 name="measurementUnitId"
                 error={errors.measurementUnitId}
                 {...register('measurementUnitId')}
+                onClick={async () => {
+                  await trigger('measurementUnitId')
+                }}
                 border={'none'}
                 borderRadius={'0 var(--chakra-radii-md) var(--chakra-radii-md) 0'}
                 textAlign="left"
@@ -94,7 +99,16 @@ const EditIngredient = ({
             >
               Avbryt
             </Button>
-            <Button size={['sm', 'md']} onClick={addIngredient} colorScheme="oxblood" px="35px">
+            <Button
+              size={['sm', 'md']}
+              onClick={async () => {
+                await trigger(['measurementUnitId', 'ingredientQuantity']).then(
+                  (isFilled) => isFilled && addIngredient()
+                )
+              }}
+              colorScheme="oxblood"
+              px="35px"
+            >
               Spara
             </Button>
           </Box>

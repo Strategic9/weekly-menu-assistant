@@ -11,7 +11,6 @@ import {
   ButtonProps,
   Tag,
   Text,
-  Textarea,
   TagLabel,
   Icon
 } from '@chakra-ui/react'
@@ -37,6 +36,7 @@ import {
   GetMeasurementUnitsResponse,
   useMeasurementUnits
 } from '../../services/hooks/useMeasurementUnit'
+import { Textarea } from './TextArea'
 
 export type CreateDishFormData = {
   id?: string
@@ -65,12 +65,12 @@ const createDishFormSchema = yup.object({
   name: yup.string().required('Namn är obligatoriskt'),
   description: yup.string().required('Beskrivning är obligatorisk'),
   ingredients: yup.array().min(1, 'Ingredienser är obligatoriska'),
-  ingredientQuantity: yup.string(),
+  ingredientQuantity: yup.string().required('Mängd/volym är obligatorisk'),
   mainIngredientId: yup.string().required('Huvudingrediens är obligatoriskt'),
   mainIngredientQuantity: yup.string().required('Mängd/volym är obligatorisk'),
-  mainMeasurementUnitId: yup.string(),
-  measurementUnitId: yup.string(),
-  recipe: yup.string(),
+  mainMeasurementUnitId: yup.string().required('Mängd/volym är obligatorisk'),
+  measurementUnitId: yup.string().required('Mängd/volym är obligatorisk'),
+  recipe: yup.string().required('recept är obligatorisk'),
   portions: yup.string().nullable(),
   temperature: yup.string().nullable(),
   cookingTime: yup.string().nullable(),
@@ -129,6 +129,7 @@ export default function DishForm(props: DishFormParams) {
   const {
     register,
     control,
+    trigger,
     handleSubmit,
     formState: { errors },
     getValues,
@@ -144,6 +145,11 @@ export default function DishForm(props: DishFormParams) {
   })
 
   const ingredientGroceryId = ingredients?.map((item) => item.grocery.id)
+
+  const setSelectedMeasurementUnit = (data, id) => {
+    const unitName = data?.items.find((item) => item.id === id)
+    return unitName?.value
+  }
 
   const openIngredientTag = (ingredient, index) => {
     setShowEditIngredient(true)
@@ -167,13 +173,13 @@ export default function DishForm(props: DishFormParams) {
     setIndexIngredient(null)
   }
 
-  const addNewIngredient = () => {
+  const addNewIngredient = async () => {
     const quantity = getValues('ingredientQuantity')
     const name = getValues('ingredientName')
     const quantityExists = !!quantity && quantity > 0
     const mUnit = getValues('measurementUnitId')
-
-    if (quantityExists) {
+    await trigger('measurementUnitId')
+    if (quantityExists && mUnit) {
       append({ id: ingredientId, name: name, quantity: quantity, measurementUnitId: mUnit })
 
       setAddIngredient(false)
@@ -181,13 +187,14 @@ export default function DishForm(props: DishFormParams) {
     }
   }
 
-  const updateIngredient = () => {
+  const updateIngredient = async () => {
     const quantity = getValues('ingredientQuantity')
     const name = getValues('ingredientName')
     const quantityExists = !!quantity && quantity > 0
     const mUnit = getValues('measurementUnitId')
+    await trigger('measurementUnitId')
 
-    if (quantityExists) {
+    if (quantityExists && mUnit) {
       update(indexIngredient, {
         id: ingredientId,
         name: name,
@@ -238,7 +245,7 @@ export default function DishForm(props: DishFormParams) {
             <Input name="name" label="Namn" error={errors.name} {...register('name')} />
           </Box>
           {useGroceriesData && (
-            <Flex flexDirection={'column'}>
+            <Flex flexDirection={'column'} bgColor="grain">
               <Select
                 w={'100%'}
                 name="mainIngredientId"
@@ -254,9 +261,10 @@ export default function DishForm(props: DishFormParams) {
               </Select>
               <Text m={'var(--chakra-space-4) 0 var(--chakra-space-2) 0'}>Antal/volym</Text>
               <Flex
-                justifyContent={'center'}
-                backgroundColor={'gray.100'}
+                justifyContent="center"
+                backgroundColor="grain"
                 borderRadius={'var(--chakra-radii-md)'}
+                alignItems={'flex-start'}
               >
                 <Input
                   display={'flex'}
@@ -274,6 +282,9 @@ export default function DishForm(props: DishFormParams) {
                   name="mainMeasurementUnitId"
                   error={errors.mainMeasurementUnitId}
                   {...register('mainMeasurementUnitId')}
+                  onClick={async () => {
+                    await trigger('mainMeasurementUnitId')
+                  }}
                   borderRadius={'0 var(--chakra-radii-md) var(--chakra-radii-md) 0'}
                   textAlign="left"
                 >
@@ -337,6 +348,7 @@ export default function DishForm(props: DishFormParams) {
                 }}
                 measurementUnitsData={measurementUnitsData}
                 register={register}
+                trigger={trigger}
                 setShowEditIngredient={setShowEditIngredient}
                 addIngredient={addIngredient ? addNewIngredient : updateIngredient}
                 errors={errors}
@@ -344,7 +356,15 @@ export default function DishForm(props: DishFormParams) {
             )}
             <Wrap mt="15px">
               {fields.map(
-                (ingredient: { id: string; name: string; quantity: string }, index: number) => (
+                (
+                  ingredient: {
+                    id: string
+                    name: string
+                    quantity: string
+                    measurementUnitId: string
+                  },
+                  index: number
+                ) => (
                   <Tag
                     p="0.4em"
                     onClick={() => handleAddorUpdate(ingredient)}
@@ -358,6 +378,10 @@ export default function DishForm(props: DishFormParams) {
                   >
                     <TagLabel>
                       {ingredient.name} x {ingredient.quantity}
+                      {setSelectedMeasurementUnit(
+                        measurementUnitsData,
+                        ingredient?.measurementUnitId
+                      )}
                     </TagLabel>
                     <Icon as={RiEditLine} ml="8px" color="gray.200" fontSize={['14', '16']} />
                   </Tag>
@@ -369,8 +393,8 @@ export default function DishForm(props: DishFormParams) {
 
         <Flex flexDirection="column" gap="15px" flex={['50%']}>
           <Box>
-            <Text mb="2">Information</Text>
             <Textarea
+              label="Information"
               height="8.8em"
               resize="none"
               border="1px solid"
@@ -381,11 +405,10 @@ export default function DishForm(props: DishFormParams) {
               {...register('description')}
             />
           </Box>
-
           <Box>
-            <Text mb="2">Recept</Text>
             <Textarea
-              height="8.8em"
+              label="Recept"
+              height="9.5em"
               resize="none"
               border="1px solid"
               borderColor="gray.200"
