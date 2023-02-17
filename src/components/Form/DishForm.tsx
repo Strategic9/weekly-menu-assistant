@@ -122,7 +122,8 @@ export default function DishForm(props: DishFormParams) {
       }),
       mainIngredientId: mainIngredient?.grocery?.id,
       mainIngredientQuantity: mainIngredient?.quantity,
-      mainMeasurementUnitId: mainIngredient?.measurementUnitId
+      mainMeasurementUnitId: mainIngredient?.measurementUnitId,
+      temperature: '180'
     }
   }
 
@@ -299,10 +300,11 @@ export default function DishForm(props: DishFormParams) {
           <HStack spacing="2">
             <Input
               w={['100%']}
-              name="image"
-              label="bildlänk"
-              error={errors.name}
-              {...register('image')}
+              name={'portions'}
+              label={'portioner'}
+              placeholder="4 portioner"
+              error={errors.portions}
+              {...register('portions')}
             />
             <Input
               w={['100%']}
@@ -317,19 +319,10 @@ export default function DishForm(props: DishFormParams) {
           <HStack spacing="2">
             <Input
               w={['100%']}
-              name={'portions'}
-              label={'portioner'}
-              placeholder="4 portioner"
-              error={errors.portions}
-              {...register('portions')}
-            />
-            <Input
-              w={['100%']}
-              name={'temperature'}
-              label={'temperatur'}
-              placeholder="180°c"
-              error={errors.temperature}
-              {...register('temperature')}
+              name="image"
+              label="bildlänk"
+              error={errors.name}
+              {...register('image')}
             />
           </HStack>
 
@@ -492,7 +485,8 @@ export function DishFormModal({
           mainMeasurementUnitId: null,
           recipe: '',
           createdAt: null,
-          image: null
+          image: null,
+          temperature: '180'
         }}
         title={''}
         isEdit={false}

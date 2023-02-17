@@ -1,5 +1,5 @@
 import { Stack } from '@chakra-ui/react'
-import { RiDashboardLine, RiListCheck } from 'react-icons/ri'
+import { RiListCheck } from 'react-icons/ri'
 import { BiFoodMenu, BiRestaurant, BiCategory } from 'react-icons/bi'
 import { FaShoppingBasket } from 'react-icons/fa'
 import { NavLink } from './NavLink'
@@ -8,9 +8,6 @@ import { NavSection } from './NavSection'
 export function SidebarNav() {
   return (
     <Stack spacing="6">
-      <NavLink className="sidebar-text" icon={RiDashboardLine} href="/dashboard">
-        Instrumentpanel
-      </NavLink>
       <NavSection title="Menyer" icon={BiFoodMenu} activePath="/menu">
         <NavLink href="/menu">Veckomeny</NavLink>
         <NavLink href="/menu/history">Meny historik</NavLink>

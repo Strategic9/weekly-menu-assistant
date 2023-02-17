@@ -13,14 +13,7 @@ import { useRouter } from 'next/router'
 import { useDish } from '../../../services/hooks/useDishes'
 import PageWrapper from '../../page-wrapper'
 import React, { useEffect, useState } from 'react'
-import {
-  RiStarFill,
-  RiStarHalfFill,
-  RiStarLine,
-  RiTempColdLine,
-  RiTimer2Line,
-  RiUser6Line
-} from 'react-icons/ri'
+import { RiStarFill, RiStarHalfFill, RiStarLine, RiTimer2Line, RiUser6Line } from 'react-icons/ri'
 import { placeholderImage } from '../../../services/utils'
 import {
   GetMeasurementUnitsResponse,
@@ -86,15 +79,6 @@ export default function ViewDishPage() {
       <Box display="flex" alignItems="center">
         <Icon as={RiUser6Line} mr={1} fontSize={['16', '16', '20']} />
         <Text fontSize={['14', '14', '16']}>{dish.dish?.portions ? dish.dish.portions : '--'}</Text>
-      </Box>
-      <Box mr={2} ml={2}>
-        |
-      </Box>
-      <Box display="flex" alignItems="center">
-        <Icon as={RiTempColdLine} fontSize={['16', '16', '20']} mr={1} />
-        <Text fontSize={['14', '14', '16']}>
-          {dish.dish?.temperature ? dish.dish.temperature : '--'}
-        </Text>
       </Box>
       <Box mr={2} ml={2}>
         |
