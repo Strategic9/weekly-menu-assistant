@@ -19,7 +19,7 @@ export default function UploadDish() {
   const handleUploadFile = async (values: UploadDishData) => {
     const formData = new FormData()
     formData.append('file', values.dishFile, values.dishFile.name)
-    await HTTPHandler.postBlob(`dishes/upload`, formData, 'plain/text')
+    await HTTPHandler.postBlob(`dishes/tasty`, formData, 'plain/text')
       .then(() => {
         queryClient.invalidateQueries('dishes')
         alert.success('Maträtt sparad')
