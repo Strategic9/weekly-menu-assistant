@@ -44,7 +44,9 @@ const ShoppingLists = ({ urlId }: { urlId?: string | string[] }) => {
         alignItems="center"
         onClick={() => loadShoppingList(shoppingList.id)}
       >
-        <Text noOfLines={[1, 2, 5]}>{shoppingList.name}</Text>
+        <Text style={{ display: 'inline-block' }} noOfLines={[1, 2, 5]}>
+          {shoppingList.name}
+        </Text>
         <MdArrowForwardIos size="16" />
       </Button>
     )
