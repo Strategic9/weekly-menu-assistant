@@ -1,9 +1,9 @@
 import { setCookie, parseCookies } from 'nookies'
 import { useQuery, UseQueryOptions } from 'react-query'
-import ShopList from '../../pages/shop-list'
 import { Dish } from './useDishes'
 import { HTTPHandler } from '../api'
-import { getDays } from '../utils'
+import { longDate, getDays } from '../utils'
+import { addShoppingList } from './useShoppingList'
 
 export type Menu = {
   user: User
@@ -33,11 +33,11 @@ export type ShopList = {
       bought: boolean
     }[]
   }
+  name: string
 }
 
 export type GetMenuResponse = {
   menu: Menu[]
-  shopList: ShopList
 }
 
 export type GetMenuHistoryResponse = {
@@ -66,7 +66,7 @@ const checkDishesAndDays = (menu) => {
 }
 
 export async function getMenu(): Promise<any> {
-  const { 'menu.shopList': cookieShopList } = parseCookies()
+  const { shopList: cookieShopList } = parseCookies()
   const { data } = await HTTPHandler.get('menus', {
     params: {
       'page[limit]': 1000,
@@ -90,39 +90,34 @@ export async function getMenu(): Promise<any> {
       menu.dishes = updatedDishes
     }
 
-    const shoppingList = generateShopList(menu)
-
-    const shopListData = () => {
-      if (!cookieShopList) {
-        setShopListCookie(shoppingList)
-        return shoppingList
-      }
-
-      if (menu && cookieShopList) {
-        if (menu.id !== JSON.parse(cookieShopList).id) {
-          setShopListCookie(shoppingList)
-          return shoppingList
-        }
-      }
-
-      if (cookieShopList) {
-        return JSON.parse(cookieShopList)
-      }
-    }
-
-    const shopList = shopListData()
+    setShoppingLists(cookieShopList, items)
 
     return {
-      items,
-      shopList
+      items
     }
   } else {
     return null
   }
 }
 
+// compare if there is a new week menu generated and returns an Array with the new shopping lists
+export const setShoppingLists = (cookieShopList, items) => {
+  const cookiesListParsed = cookieShopList ? JSON.parse(cookieShopList) : []
+  const shoppingLists = []
+  items.map((item) => {
+    if (!cookieShopList) {
+      shoppingLists.push(generateShopList(item))
+    } else {
+      const isAlreadyAdded = cookiesListParsed.find((cookie) => cookie.id === item.id)
+      !isAlreadyAdded && shoppingLists.push(generateShopList(item))
+    }
+  })
+  const newShopList = cookiesListParsed.concat(shoppingLists)
+  addShoppingList(newShopList)
+}
+
 export function setShopListCookie(shopList: ShopList) {
-  setCookie(null, 'menu.shopList', JSON.stringify(shopList), {
+  setCookie(null, 'menu.shopList', JSON.stringify([shopList]), {
     maxAge: 60 * 60 * 24 * 7, // 1 week
     path: '/'
   })
@@ -152,7 +147,11 @@ function generateShopList(menu: Menu) {
       })
       return shopList
     },
-    { id: menu.id, categories: {} }
+    {
+      id: menu.id,
+      categories: {},
+      name: `From ${longDate(menu.startDate)} to ${longDate(menu.endDate)}`
+    }
   )
   return shopList
 }
