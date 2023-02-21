@@ -10,10 +10,14 @@ import {
   Box
 } from '@chakra-ui/react'
 import { useRouter } from 'next/router'
+import { useMutation } from 'react-query'
+import { HTTPHandler } from '../../../services/api'
+import { queryClient } from '../../../services/queryClient'
+import { useAlert } from 'react-alert'
 import { useDish } from '../../../services/hooks/useDishes'
 import PageWrapper from '../../page-wrapper'
 import React, { useEffect, useState } from 'react'
-import { RiStarFill, RiStarHalfFill, RiStarLine, RiTimer2Line, RiUser6Line } from 'react-icons/ri'
+import { RiStarFill, RiStarLine, RiTimer2Line, RiUser6Line } from 'react-icons/ri'
 import { placeholderImage } from '../../../services/utils'
 import {
   GetMeasurementUnitsResponse,
@@ -24,7 +28,9 @@ export default function ViewDishPage() {
   const router = useRouter()
   const { dish: dish_id } = router.query
   const { data } = useDish(dish_id as string)
-  const totalStars = Array.from(Array(4 + 1), (_, i) => i)
+  const totalStars = Array.from(Array(5), (_, i) => i)
+
+  const alert = useAlert()
 
   const { data: useMeasurementUnitsData } = useMeasurementUnits(
     null,
@@ -40,6 +46,15 @@ export default function ViewDishPage() {
   const [localData, setLocalData] = useState({})
   const [loading, setLoading] = useState(true)
 
+  const storedRate = data?.dish?.rate
+
+  const [rate, setRate] = useState(storedRate || 0)
+
+  useEffect(() => {
+    setRate(storedRate)
+  }, [storedRate])
+
+
   useEffect(() => {
     if (data) {
       setLocalData(data)
@@ -49,14 +64,34 @@ export default function ViewDishPage() {
     }
   }, [data])
 
-  const Stars = ({ rate, index }) => {
-    if (index < rate && rate < index + 1) {
-      return <Icon color={'oxblood.300'} as={RiStarHalfFill} />
-    } else if (index < rate) {
-      return <Icon color={'oxblood.300'} as={RiStarFill} />
-    } else {
-      return <Icon color={'oxblood.300'} as={RiStarLine} />
+  const updateDishRate = useMutation(
+    async (rate: string) => {
+      await HTTPHandler.patch(`dishes/${dish_id}`, {
+        rate: rate
+      })
+        .then(() => {
+          alert.success('Betyg registrerat')
+        })
+        .catch(({ response }) => {
+          alert.error(response.data.message)
+        })
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(`/dishes/view/${dish_id}`)
+      }
     }
+  )
+
+  const handleUpdateDishRate = async (newRate) => {
+    setRate(newRate)
+    const rateInString = newRate.toString()
+    await updateDishRate.mutateAsync(rateInString)
+  }
+
+  const rateDish = async (index, rate) => {
+    const newRate = index === 0 && rate === 1 ? 0 : index + 1
+    handleUpdateDishRate(newRate)
   }
 
   const Information = ({ dish }) => (
@@ -85,7 +120,12 @@ export default function ViewDishPage() {
       </Box>
       <Box display="flex" alignItems="center">
         {totalStars.map((arr, index) => (
-          <Stars key={index} index={index} rate={dish.dish?.rate} />
+          <Icon
+            key={index}
+            color={'oxblood.300'}
+            onClick={() => rateDish(index, rate)}
+            as={index < rate ? RiStarFill : rate === index ? RiStarLine : RiStarLine}
+          />
         ))}
       </Box>
     </Flex>
