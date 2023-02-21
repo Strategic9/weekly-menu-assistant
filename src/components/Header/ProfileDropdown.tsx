@@ -10,7 +10,6 @@ import {
 } from '@chakra-ui/react'
 import { HTTPHandler } from '../../services/api'
 import { localStorage } from '../../services/localstorage'
-import { useRouter } from 'next/router'
 import { signOut } from 'next-auth/react'
 
 export const ProfileDropdown = ({ children }) => {
