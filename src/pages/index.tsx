@@ -1,4 +1,4 @@
-import { Flex, Button, Stack, Text, Link } from '@chakra-ui/react'
+import { Flex, Button, Stack, Text, Link, Spinner } from '@chakra-ui/react'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup'
@@ -7,9 +7,8 @@ import { api } from '../services/api'
 import { localStorage } from '../services/localstorage'
 import { useRouter } from 'next/router'
 import { useAlert } from 'react-alert'
-import { GoogleLogin } from 'react-google-login'
-import { useEffect } from 'react'
 import { Logo } from '../components/Header/Logo'
+import { useSession, signIn } from 'next-auth/react'
 
 type SignInFormData = {
   email: string
@@ -31,56 +30,37 @@ export default function SignIn() {
   })
   const router = useRouter()
   const alert = useAlert()
-  const clientId = process.env.NEXT_PUBLIC_GOOGLE_SIGNIN_CLIENT_ID
+  const { data: session } = useSession()
 
-  const useGapi = async () => {
-    const gapi = await import('gapi-script').then((pack) => pack.gapi)
-    const initClient = () => {
-      gapi.client.init({
-        clientId: clientId,
-        scope: ''
-      })
-    }
-    gapi.load('client:auth2', initClient)
-  }
-
-  useEffect(() => {
-    useGapi()
-  })
-
-  const onSuccess = async (res) => {
-    console.log('success:', res)
+  const onSuccess = async () => {
     await api
       .post('users/login', {
-        email: res.profileObj.email,
-        password: res.googleId
+        email: session.user.email,
+        password: session.user.id
       })
       .then((res) => {
         onLoginSucess(res)
       })
       .catch((error) => {
         if (error.response.status === 404) {
-          signUp(res)
+          signUp(session.user)
         } else {
           alert.error('Vänligen kontrollera angiven information')
         }
       })
   }
 
-  const onFailure = (err) => {
-    console.log('failed:', err)
-  }
-
-  const signUp = async (gisRes) => {
+  const signUp = async (user) => {
+    const username = user.name.split(' ')
     await api
       .post('users', {
-        email: gisRes.profileObj.email,
-        password: gisRes.googleId,
-        firstName: gisRes.profileObj.givenName,
-        lastName: gisRes.profileObj.familyName
+        email: user.email,
+        password: user.id,
+        firstName: username[0],
+        lastName: username[1] || null
       })
       .then(() => {
-        handleSignIn({ email: gisRes.profileObj.email, password: gisRes.googleId })
+        handleSignIn({ email: user.email, password: user.id })
       })
       .catch(() => {
         alert.error('Vänligen kontrollera angiven information')
@@ -109,50 +89,55 @@ export default function SignIn() {
     router.push('menu')
   }
 
+  if (session) {
+    onSuccess()
+  }
+
   return (
     <Flex w="100vw" h="100vh" align="center" justify="center" bg="grain">
       <Flex
-        as="form"
         w="100%"
         maxW={360}
         bg="white"
         p="8"
         borderRadius={8}
         flexDir="column"
-        onSubmit={handleSubmit(handleSignIn)}
         boxShadow="xl"
         rounded="md"
       >
         <Logo linkTo={'/'} />
-        <Stack mt={10} spacing="4">
-          <Input type="email" label="E-post" error={errors.email} {...register('email')} />
-          <Input
-            type="password"
-            label="Lösenord"
-            error={errors.password}
-            {...register('password')}
-          />
-        </Stack>
+        {session ? (
+          <Flex mt="6" w="100%" justifyContent="center">
+            <Spinner />
+          </Flex>
+        ) : (
+          <>
+            <Flex as="form" onSubmit={handleSubmit(handleSignIn)} flexDir="column">
+              <Stack mt={10} spacing="4">
+                <Input type="email" label="E-post" error={errors.email} {...register('email')} />
+                <Input
+                  type="password"
+                  label="Lösenord"
+                  error={errors.password}
+                  {...register('password')}
+                />
+              </Stack>
+              <Button type="submit" mt="6" colorScheme="oxblood">
+                Logga in
+              </Button>
+            </Flex>
 
-        <Button type="submit" mt="6" colorScheme="oxblood">
-          Logga in
-        </Button>
-        <Flex mt="6" w="100%" justifyContent="center">
-          <GoogleLogin
-            clientId={clientId}
-            buttonText="Logga in med Google"
-            onSuccess={onSuccess}
-            onFailure={onFailure}
-            cookiePolicy={'single_host_origin'}
-            isSignedIn={false}
-          />
-        </Flex>
-        <Text mt={8} fontSize={14}>
-          Har du inget konto?
-          <Link ml={1} textDecorationLine="underline" color="oxblood.400" href="/signup">
-            Skapa ett här!
-          </Link>
-        </Text>
+            <Flex mt="6" w="100%" justifyContent="center">
+              <button onClick={() => signIn('google')}>Sign in</button>
+            </Flex>
+            <Text mt={8} fontSize={14}>
+              Har du inget konto?
+              <Link ml={1} textDecorationLine="underline" color="oxblood.400" href="/signup">
+                Skapa ett här!
+              </Link>
+            </Text>
+          </>
+        )}
       </Flex>
     </Flex>
   )

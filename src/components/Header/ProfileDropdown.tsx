@@ -11,9 +11,9 @@ import {
 import { HTTPHandler } from '../../services/api'
 import { localStorage } from '../../services/localstorage'
 import { useRouter } from 'next/router'
+import { signOut } from 'next-auth/react'
 
 export const ProfileDropdown = ({ children }) => {
-  const router = useRouter()
   const token = localStorage.get('token')
 
   const handleLogOut = async (token: string) => {
@@ -23,7 +23,7 @@ export const ProfileDropdown = ({ children }) => {
       localStorage.delete('username')
       localStorage.delete('email')
       localStorage.delete('user-id')
-      router.push('/')
+      signOut()
     } catch (err) {
       console.error(err)
     }

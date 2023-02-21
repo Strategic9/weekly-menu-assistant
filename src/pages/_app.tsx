@@ -4,11 +4,12 @@ import { theme } from '../styles/theme'
 import type { AppProps } from 'next/app'
 import { queryClient } from '../services/queryClient'
 import { Provider as AlertProvider, positions, transitions, AlertProviderProps } from 'react-alert'
+import { SessionProvider } from 'next-auth/react'
 import { Alert } from '../components/Alert'
 import '../styles/DatePicker.css'
 
 const options: AlertProviderProps = {
-  position: positions.MIDDLE,
+  position: positions.BOTTOM_CENTER,
   timeout: 3000,
   offset: '30px',
   transition: transitions.SCALE,
@@ -17,13 +18,15 @@ const options: AlertProviderProps = {
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <QueryClientProvider client={queryClient}>
-      <ChakraProvider theme={theme}>
-        <AlertProvider {...options}>
-          <Component {...pageProps} />
-        </AlertProvider>
-      </ChakraProvider>
-    </QueryClientProvider>
+    <SessionProvider session={pageProps.session}>
+      <QueryClientProvider client={queryClient}>
+        <ChakraProvider theme={theme}>
+          <AlertProvider {...options}>
+            <Component {...pageProps} />
+          </AlertProvider>
+        </ChakraProvider>
+      </QueryClientProvider>
+    </SessionProvider>
   )
 }
 
