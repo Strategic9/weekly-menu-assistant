@@ -116,10 +116,10 @@ export default function Menu() {
                           flexDirection="column"
                         >
                           <Text fontSize={[14, 18]}>
-                            {getDayName(menuDish.selectionDate, 'se')}
+                            {getDayName(menuDish.selectionDate, 'sv')}
                           </Text>
                           <Text fontSize={[10, 14]} color="oxblood.100">
-                            {getMonthName(menuDish.selectionDate, 'se')}
+                            {getMonthName(menuDish.selectionDate, 'sv')}
                           </Text>
                         </Flex>
                       </VStack>
