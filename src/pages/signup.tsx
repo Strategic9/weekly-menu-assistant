@@ -52,7 +52,11 @@ export default function SignUp() {
         handleSignIn(values)
       })
       .catch((er) => {
-        alert.error('Kontrollera angiven information')
+        if (er.response.data.details.includes('duplicate key')) {
+          alert.error('Denna e-post är redan i bruk')
+        } else {
+          alert.error('Kontrollera angiven information')
+        }
       })
   }
 
