@@ -18,7 +18,7 @@ import { yupResolver } from '@hookform/resolvers/yup/dist/yup'
 import { useMutation } from 'react-query'
 
 import { Input } from '../../../components/Form/Input'
-import { api } from '../../../services/api'
+import { HTTPHandler } from '../../../services/api'
 import { queryClient } from '../../../services/queryClient'
 import { Category, getCategoryById } from '../../../services/hooks/useCategories'
 import { useRouter } from 'next/router'
@@ -72,8 +72,7 @@ export default function CategoryPage() {
 
   const editCategory = useMutation(
     async (category: CreateCategoryFormData) => {
-      await api
-        .patch(`categories/${categoryId}`, { ...category })
+      await HTTPHandler.patch(`categories/${categoryId}`, { ...category })
         .then(() => {
           alert.success('Kategori ändrad')
           router.push('..')
