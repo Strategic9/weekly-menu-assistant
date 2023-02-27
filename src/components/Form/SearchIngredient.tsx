@@ -1,20 +1,19 @@
 import { forwardRef, ForwardRefRenderFunction, useEffect, useState } from 'react'
 import {
   InputProps as ChakraInputProps,
-  useDisclosure,
   Box,
   Spinner,
   Button,
   ButtonProps,
-  Icon
+  Icon,
+  useDisclosure
 } from '@chakra-ui/react'
-import { Popover, PopoverTrigger, PopoverContent } from '@chakra-ui/react'
+import { Input } from './Input'
 import { BiPlus } from 'react-icons/bi'
 import { FieldError } from 'react-hook-form'
 import { GetGroceriesResponse, Grocery, useGroceries } from '../../services/hooks/useGroceries'
-import { Input } from './Input'
-import { GroceryFormModal } from './GroceryForm'
 import Modal from '../Modal'
+import { GroceryFormModal } from './GroceryForm'
 
 interface SearchIngredientProps extends ChakraInputProps {
   name: string
@@ -27,9 +26,9 @@ const SearchIngredientBase: ForwardRefRenderFunction<HTMLInputElement, SearchIng
   { name, label, w, minW, error = null, onAddIngredient, ...rest },
   ref
 ) => {
-  const { onOpen, onClose, isOpen } = useDisclosure()
   const [results, setResults] = useState([])
   const [newIngredient, setNewIngredient] = useState()
+  const [open, setOpen] = useState(false)
   const { data: useGroceriesData } = useGroceries(
     null,
     {},
@@ -57,28 +56,24 @@ const SearchIngredientBase: ForwardRefRenderFunction<HTMLInputElement, SearchIng
   }, [itemsList])
 
   return (
-    <div>
-      <Popover
-        isOpen={isOpen}
-        onOpen={onOpen}
-        onClose={onClose}
-        placement="bottom-start"
-        autoFocus={false}
+    <Box>
+      <Input
+        h="53"
+        w={w}
+        minW={minW}
+        name={name}
+        label={label}
+        error={error}
+        onBlur={(e) => e.relatedTarget === null && setOpen(false)}
+        placeholder="Sök ingrediens"
+        onFocus={() => setOpen(true)}
+        onChange={(e) => {
+          filterResults(e)
+        }}
         {...rest}
-      >
-        <PopoverTrigger>
-          <Input
-            h="53"
-            w={w}
-            minW={minW}
-            name={name}
-            label={label}
-            error={error}
-            placeholder="Sök ingrediens"
-            onChange={(e) => filterResults(e)}
-          />
-        </PopoverTrigger>
-        <PopoverContent maxW={['160px', '100%']} borderRadius="none">
+      />
+      {open && (
+        <>
           {!!newIngredient && (
             <GroceryFormModal
               buttonProps={{
@@ -104,7 +99,7 @@ const SearchIngredientBase: ForwardRefRenderFunction<HTMLInputElement, SearchIng
                   fontSize={['sm', 'md']}
                   onClick={() => {
                     onAddIngredient(el)
-                    onClose()
+                    setOpen(false)
                   }}
                 >
                   {el.name}
@@ -116,9 +111,9 @@ const SearchIngredientBase: ForwardRefRenderFunction<HTMLInputElement, SearchIng
               <Spinner />
             </Box>
           )}
-        </PopoverContent>
-      </Popover>
-    </div>
+        </>
+      )}
+    </Box>
   )
 }
 
