@@ -26,7 +26,7 @@ const SearchDishBase: ForwardRefRenderFunction<HTMLInputElement, SearchDishProps
   { name, label, error = null, onSelectDish, ...rest },
   ref
 ) => {
-  const [open, setOpen] = useState(false)
+  const [openSearchInput, handleOpenSearchInput] = useState(false)
   const [results, setResults] = useState([])
   const { data: useDishesData } = useDishes(null, {})
   const dishesData = useDishesData as GetDishesResponse
@@ -51,14 +51,14 @@ const SearchDishBase: ForwardRefRenderFunction<HTMLInputElement, SearchDishProps
         name={name}
         label={label}
         error={error}
-        onBlur={(e) => e.relatedTarget === null && setOpen(false)}
+        onBlur={(e) => e.relatedTarget === null && handleOpenSearchInput(false)}
         placeholder="Sök maträtt"
         onChange={(e) => {
-          setOpen(true)
+          handleOpenSearchInput(true)
           filterResults(e)
         }}
       />
-      {open && (
+      {openSearchInput && (
         <Box bg="white">
           {results ? (
             results.map((el) => (

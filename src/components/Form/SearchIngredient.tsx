@@ -28,7 +28,7 @@ const SearchIngredientBase: ForwardRefRenderFunction<HTMLInputElement, SearchIng
 ) => {
   const [results, setResults] = useState([])
   const [newIngredient, setNewIngredient] = useState()
-  const [open, setOpen] = useState(false)
+  const [openSearchInput, handleOpenSearchInput] = useState(false)
   const { data: useGroceriesData } = useGroceries(
     null,
     {},
@@ -64,15 +64,15 @@ const SearchIngredientBase: ForwardRefRenderFunction<HTMLInputElement, SearchIng
         name={name}
         label={label}
         error={error}
-        onBlur={(e) => e.relatedTarget === null && setOpen(false)}
+        onBlur={(e) => e.relatedTarget === null && handleOpenSearchInput(false)}
         placeholder="Sök ingrediens"
-        onFocus={() => setOpen(true)}
         onChange={(e) => {
+          handleOpenSearchInput(true)
           filterResults(e)
         }}
         {...rest}
       />
-      {open && (
+      {openSearchInput && (
         <>
           {!!newIngredient && (
             <GroceryFormModal
@@ -85,6 +85,7 @@ const SearchIngredientBase: ForwardRefRenderFunction<HTMLInputElement, SearchIng
               }}
               buttonLabel={newIngredient}
               onAddIngredient={onAddIngredient}
+              handleOpenSearchInput={handleOpenSearchInput}
               newIngredient={newIngredient}
             />
           )}
@@ -99,7 +100,7 @@ const SearchIngredientBase: ForwardRefRenderFunction<HTMLInputElement, SearchIng
                   fontSize={['sm', 'md']}
                   onClick={() => {
                     onAddIngredient(el)
-                    setOpen(false)
+                    handleOpenSearchInput(false)
                   }}
                 >
                   {el.name}
