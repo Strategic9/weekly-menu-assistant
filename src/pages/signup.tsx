@@ -110,7 +110,7 @@ export default function SignUp() {
           />
         </Stack>
 
-        <Button type="submit" mt="6" colorScheme="oxblood">
+        <Button aria-label="registrera konto" type="submit" mt="6" colorScheme="oxblood">
           Registrera konto
         </Button>
 

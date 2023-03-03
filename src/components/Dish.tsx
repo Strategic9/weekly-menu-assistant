@@ -14,13 +14,15 @@ export default function Dish({ dish, dishIngredient, onMouseEnter, handleDeleteD
       onMouseEnter={onMouseEnter}
       direction={{ base: 'column', sm: 'row' }}
       overflow="hidden"
+      aria-label={`${dish.name} dish`}
+      tabIndex={0}
     >
       <Image
         objectFit="cover"
         w={['100%', '180px']}
         src={dish?.image ? dish?.image : placeholderImage}
         maxH={['140px', '140px', '140px']}
-        alt="dish"
+        alt={`a close-up photo of ${dish.name} dish`}
         borderRadius={5}
       />
 
@@ -52,6 +54,7 @@ export default function Dish({ dish, dishIngredient, onMouseEnter, handleDeleteD
         <Box>
           <HStack>
             <Button
+              aria-label="delete dish"
               size="sm"
               bg="red.100"
               color="white"
@@ -63,6 +66,7 @@ export default function Dish({ dish, dishIngredient, onMouseEnter, handleDeleteD
             ></Button>
             <Link href={`/dishes/edit/${dish.id}`} passHref>
               <Button
+                aria-label="edit dish"
                 size="sm"
                 bg="gray.200"
                 leftIcon={<Icon as={RiEditLine} fontSize="16" />}
@@ -71,6 +75,7 @@ export default function Dish({ dish, dishIngredient, onMouseEnter, handleDeleteD
             </Link>
             <Link href={`/dishes/view/${dish.id}`} passHref>
               <Button
+                aria-label="view dish"
                 size="sm"
                 bg="gray.200"
                 leftIcon={<Icon as={FaEye} fontSize="16" />}

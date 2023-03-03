@@ -129,13 +129,14 @@ export default function SignIn() {
                   {...register('password')}
                 />
               </Stack>
-              <Button type="submit" mt="6" colorScheme="oxblood">
+              <Button aria-label="logga in" type="submit" mt="6" colorScheme="oxblood">
                 Logga in
               </Button>
             </Flex>
 
             <Flex mt="6" w="100%" justifyContent="center">
               <Button
+                aria-label="Logga in med Google"
                 borderRadius={8}
                 p={'22px 12px'}
                 width="100%"
@@ -177,7 +178,13 @@ export default function SignIn() {
             </Flex>
             <Text mt={8} fontSize={14}>
               Har du inget konto?
-              <Link ml={1} textDecorationLine="underline" color="oxblood.400" href="/signup">
+              <Link
+                aria-label="Har du inget konto? Skapa ett här!"
+                ml={1}
+                textDecorationLine="underline"
+                color="oxblood.400"
+                href="/signup"
+              >
                 Skapa ett här!
               </Link>
             </Text>

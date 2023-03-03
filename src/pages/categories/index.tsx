@@ -29,6 +29,7 @@ import { useAlert } from 'react-alert'
 import { useCategories } from '../../services/hooks/useCategories'
 import PageWrapper from '../page-wrapper'
 import { MenuDishOptions } from '../../components/Options'
+import Head from 'next/head'
 
 type Category = {
   id: string
@@ -79,6 +80,9 @@ export default function CategoryList() {
 
   return (
     <PageWrapper>
+      <Head>
+        <title>Kategorier | Forkify</title>
+      </Head>
       <Box flex="1" borderRadius={8} bg="grain" p={[4, 8]}>
         <Flex mb="8" justify="space-between" align="center">
           <Heading size="lg" fontWeight="normal">
@@ -136,6 +140,7 @@ export default function CategoryList() {
                         <HStack>
                           <Tooltip label="Remove" bg="red.100" color="white" placement="top-start">
                             <Button
+                              aria-label="delete"
                               size={['xs', 'sm']}
                               bg="red.100"
                               color="white"
@@ -146,7 +151,11 @@ export default function CategoryList() {
                               onClick={() => handleDelete(category.id)}
                             />
                           </Tooltip>
-                          <Link href={`/categories/edit/${category.id}`} passHref>
+                          <Link
+                            aria-label="edit category"
+                            href={`/categories/edit/${category.id}`}
+                            passHref
+                          >
                             <TooltipButton
                               tooltipLabel="Redigera"
                               size={['xs', 'sm']}

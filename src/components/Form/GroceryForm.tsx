@@ -145,15 +145,17 @@ export default function GroceryForm(props: GroceryFormParams) {
       <Flex mt="8" justify="flex-end">
         <HStack spacing="4">
           {props.handleCancel ? (
-            <Button colorScheme="gray" onClick={props.handleCancel}>
+            <Button aria-label="cancel" colorScheme="gray" onClick={props.handleCancel}>
               Avbryt
             </Button>
           ) : (
             <Link href="/groceries" passHref>
-              <Button colorScheme="gray">Avbryt</Button>
+              <Button aria-label="cancel" colorScheme="gray">
+                Avbryt
+              </Button>
             </Link>
           )}
-          <Button type="submit" colorScheme="oxblood">
+          <Button aria-label="save ingredient" type="submit" colorScheme="oxblood">
             Spara
           </Button>
         </HStack>

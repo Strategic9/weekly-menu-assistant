@@ -130,9 +130,11 @@ export default function CategoryPage() {
           <Flex mt="8" justify="flex-end">
             <HStack spacing="4">
               <Link href="/categories" passHref>
-                <Button colorScheme="gray">Avbryt</Button>
+                <Button aria-label="avbryt" colorScheme="gray">
+                  Avbryt
+                </Button>
               </Link>
-              <Button type="submit" colorScheme="oxblood">
+              <Button aria-label="spara" type="submit" colorScheme="oxblood">
                 Spara
               </Button>
             </HStack>

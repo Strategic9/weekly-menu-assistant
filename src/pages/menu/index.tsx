@@ -205,7 +205,7 @@ export default function Menu() {
           <>
             <WeekPicker definedWeek={week} setWeek={setWeek} />
             <Flex>
-              <Button mt="20px" onClick={() => generateMenu()}>
+              <Button aria-label="Generera Veckomeny" mt="20px" onClick={() => generateMenu()}>
                 Generera Veckomeny
               </Button>
             </Flex>
@@ -319,7 +319,7 @@ export default function Menu() {
             {hasUpdates && (
               <Flex mt="8" justify="flex-end">
                 <HStack spacing="4">
-                  <Button type="submit" colorScheme="oxblood">
+                  <Button aria-label="spara" type="submit" colorScheme="oxblood">
                     Spara
                   </Button>
                 </HStack>

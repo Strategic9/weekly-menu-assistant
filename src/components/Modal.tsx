@@ -21,7 +21,7 @@ export default function Modal({ disclosureProps, children, buttonProps, buttonLa
 
   return (
     <Box>
-      <Button onClick={onOpen} {...buttonProps}>
+      <Button aria-label="open modal with information" onClick={onOpen} {...buttonProps}>
         {buttonLabel}
       </Button>
       <ChakraModal blockScrollOnMount={false} isOpen={isOpen} onClose={onClose}>

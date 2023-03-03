@@ -97,6 +97,7 @@ const SearchIngredientBase: ForwardRefRenderFunction<HTMLInputElement, SearchIng
             results.map((el) => (
               <Box key={el.id}>
                 <Button
+                  aria-label={`add ${el.name}`}
                   width="100%"
                   justifyContent="left"
                   borderRadius="none"
