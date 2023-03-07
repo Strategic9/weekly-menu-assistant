@@ -15,7 +15,7 @@ export const MenuItem = ({
 }) => {
   const deleteDish = () => {
     const emptyDish = {
-      id: '0'
+      id: `empty-${new Date()}`
     }
 
     const index = data.menu.dishes.findIndex((dish) => dish.dish.id === menuDish.dish.id)
