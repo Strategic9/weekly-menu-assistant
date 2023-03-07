@@ -57,7 +57,7 @@ const checkDishesAndDays = (menu) => {
       id: i.toString(),
       selectionDate: object,
       dish: {
-        id: '0'
+        id: `empty-${new Date()}`
       }
     })
   )
