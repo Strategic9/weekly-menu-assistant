@@ -2,6 +2,7 @@ import {
   Spinner,
   Flex,
   Image,
+  Button,
   ListItem,
   UnorderedList,
   Heading,
@@ -11,6 +12,8 @@ import {
 } from '@chakra-ui/react'
 import { useRouter } from 'next/router'
 import { useDish } from '../../../services/hooks/useDishes'
+import { RiEditLine } from 'react-icons/ri'
+import Link from 'next/link'
 import PageWrapper from '../../page-wrapper'
 import React, { useEffect, useState } from 'react'
 import { RiStarFill, RiStarHalfFill, RiStarLine, RiTimer2Line, RiUser6Line } from 'react-icons/ri'
@@ -73,9 +76,7 @@ export default function ViewDishPage() {
           {dish.dish?.cookingTime ? dish.dish.cookingTime : '--'}
         </Text>
       </Box>
-      <Box mr={2} ml={2}>
-        |
-      </Box>
+      <Box mr={2} ml={2}></Box>
       <Box display="flex" alignItems="center">
         <Icon as={RiUser6Line} mr={1} fontSize={['16', '16', '20']} />
         <Text fontSize={['14', '14', '16']}>{dish.dish?.portions ? dish.dish.portions : '--'}</Text>
@@ -134,7 +135,14 @@ export default function ViewDishPage() {
           ))}
         </UnorderedList>
       </Flex>
-      <Flex bgColor="white" borderRadius={8} padding={4} width="70%" flexDirection="column">
+      <Flex
+        justifyContent="space-between"
+        bgColor="white"
+        borderRadius={8}
+        padding={4}
+        width="70%"
+        flexDirection="column"
+      >
         <Heading
           as="h1"
           size="lg"
@@ -144,7 +152,20 @@ export default function ViewDishPage() {
           borderBottomWidth="thin"
           pb={2}
         >
-          {data?.dish?.name}
+          <Flex justifyContent="space-between">
+            {data?.dish?.name}
+
+            <Link href={`/dishes/edit/${data?.dish?.id}`} passHref>
+              <Button
+                pl={4}
+                aria-label="edit dish"
+                size="sm"
+                bg="gray.200"
+                leftIcon={<Icon as={RiEditLine} fontSize="16" />}
+                iconSpacing="0"
+              />
+            </Link>
+          </Flex>
         </Heading>
         <Text as="i" fontSize={14} mb={4}>
           {data?.dish?.description ? data?.dish?.description : null}
@@ -180,7 +201,18 @@ export default function ViewDishPage() {
           borderBottomWidth="thin"
           pb={2}
         >
-          {data?.dish?.name}
+          <Flex justifyContent="space-between">
+            {data?.dish?.name}{' '}
+            <Link href={`/dishes/edit/${data?.dish?.id}`} passHref>
+              <Button
+                aria-label="edit dish"
+                size="sm"
+                bg="gray.200"
+                leftIcon={<Icon as={RiEditLine} fontSize="16" />}
+                iconSpacing="0"
+              />
+            </Link>
+          </Flex>
         </Heading>
         <Text as="i" fontSize={14} mb={4}>
           {data?.dish?.description ? data?.dish?.description : null}
