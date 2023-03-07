@@ -5,6 +5,7 @@ import type { AppProps } from 'next/app'
 import { queryClient } from '../services/queryClient'
 import { Provider as AlertProvider, positions, transitions, AlertProviderProps } from 'react-alert'
 import { SessionProvider } from 'next-auth/react'
+import Head from 'next/head'
 import { Alert } from '../components/Alert'
 import '../styles/DatePicker.css'
 
@@ -18,15 +19,20 @@ const options: AlertProviderProps = {
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <SessionProvider session={pageProps.session}>
-      <QueryClientProvider client={queryClient}>
-        <ChakraProvider theme={theme}>
-          <AlertProvider {...options}>
-            <Component {...pageProps} />
-          </AlertProvider>
-        </ChakraProvider>
-      </QueryClientProvider>
-    </SessionProvider>
+    <>
+      <Head>
+        <title>Your AI menu assistant | Forkify</title>
+      </Head>
+      <SessionProvider session={pageProps.session}>
+        <QueryClientProvider client={queryClient}>
+          <ChakraProvider theme={theme}>
+            <AlertProvider {...options}>
+              <Component {...pageProps} />
+            </AlertProvider>
+          </ChakraProvider>
+        </QueryClientProvider>
+      </SessionProvider>
+    </>
   )
 }
 

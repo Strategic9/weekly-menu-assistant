@@ -31,6 +31,7 @@ const ShoppingLists = ({ urlId }: { urlId?: string | string[] }) => {
   const ListItem = ({ shoppingList }) => {
     return (
       <Button
+        aria-label="load shopping list"
         p="6"
         bgColor={['white', 'white', 'gray.100']}
         borderRadius={8}

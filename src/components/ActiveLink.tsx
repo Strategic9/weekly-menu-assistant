@@ -28,7 +28,7 @@ export function ActiveLink({ children, shouldMatchExactHref = false, ...rest }: 
     <Flex>
       <Link {...rest}>
         {cloneElement(children, {
-          color: isActive ? 'oxblood.300' : 'gray.300'
+          color: isActive ? 'oxblood.300' : 'gray.400'
         })}
       </Link>
       {isActive && <Box ml="auto" h="8" borderRight="4px solid" borderColor="oxblood.300" />}

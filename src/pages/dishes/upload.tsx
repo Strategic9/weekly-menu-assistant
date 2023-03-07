@@ -84,9 +84,11 @@ export default function UploadDishesFile() {
         <Flex mt="8" justify="flex-end">
           <HStack spacing="4">
             <Link href="/dishes" passHref>
-              <Button colorScheme="gray">Cancel</Button>
+              <Button aria-label="cancel" colorScheme="gray">
+                Cancel
+              </Button>
             </Link>
-            <Button type="submit" colorScheme="oxblood">
+            <Button aria-label="save" type="submit" colorScheme="oxblood">
               Save
             </Button>
           </HStack>

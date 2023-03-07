@@ -417,9 +417,11 @@ export default function DishForm(props: DishFormParams) {
       <Flex mt="8" justify="flex-end">
         <HStack spacing="4">
           <Link href="/dishes" passHref>
-            <Button colorScheme="gray">Avbryt</Button>
+            <Button aria-label="cancel changes" colorScheme="gray">
+              Avbryt
+            </Button>
           </Link>
-          <Button type="submit" colorScheme="oxblood">
+          <Button aria-label="save changes" type="submit" colorScheme="oxblood">
             Spara
           </Button>
         </HStack>

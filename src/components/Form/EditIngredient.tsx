@@ -78,6 +78,7 @@ const EditIngredient = ({
         <Flex justifyContent="space-between" w="100%">
           {isAdded ? (
             <Button
+              aria-label="delete ingredient"
               size={['sm', 'md']}
               bg="red.100"
               color="white"
@@ -91,6 +92,7 @@ const EditIngredient = ({
           )}
           <Box>
             <Button
+              aria-label="cancel"
               _hover={{ bg: 'white' }}
               size={['sm', 'md']}
               onClick={() => setShowEditIngredient(false)}
@@ -100,6 +102,7 @@ const EditIngredient = ({
               Avbryt
             </Button>
             <Button
+              aria-label="save ingredient"
               size={['sm', 'md']}
               onClick={async () => {
                 await trigger(['measurementUnitId', 'ingredientQuantity']).then(

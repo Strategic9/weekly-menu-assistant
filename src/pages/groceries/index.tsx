@@ -142,6 +142,7 @@ export default function GroceryList() {
                         <HStack>
                           <Tooltip label="Remove" bg="red.200" color="white" placement="top-start">
                             <Button
+                              aria-label="delete"
                               size="sm"
                               bg="red.100"
                               color="white"
@@ -152,7 +153,7 @@ export default function GroceryList() {
                               onClick={() => handleDelete(grocery.id)}
                             />
                           </Tooltip>
-                          <Link href={`/groceries/edit/${grocery.id}`} passHref>
+                          <Link aria-label="edit" href={`/groceries/edit/${grocery.id}`} passHref>
                             <TooltipButton
                               tooltipLabel="Redigera"
                               size="sm"
