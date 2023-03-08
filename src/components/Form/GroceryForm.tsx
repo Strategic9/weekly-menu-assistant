@@ -41,7 +41,7 @@ interface GroceryFormParams {
   handleSubmit: SubmitHandler<CreateGroceryFormData>
   handleCancel?: () => void
   initialData?: Grocery
-  handleOpenSearchInput: (arg: boolean) => void
+  handleOpenSearchInput?: (arg: boolean) => void
 }
 
 const createGroceryFormSchema = yup.object({
