@@ -98,9 +98,17 @@ export default function GroceryForm(props: GroceryFormParams) {
     handleSubmit(props.handleSubmit)(e)
   }
 
+  const handleSearchInput = (e: React.FocusEvent<HTMLDivElement | HTMLFormElement>) => {
+    if (e.relatedTarget === null) {
+      if (props.handleOpenSearchInput) {
+        props.handleOpenSearchInput(false)
+      } else return null
+    }
+  }
+
   return (
     <Box
-      onBlur={(e) => e.relatedTarget === null && props.handleOpenSearchInput(false)}
+      onBlur={handleSearchInput}
       as="form"
       flex="1"
       borderRadius={8}
