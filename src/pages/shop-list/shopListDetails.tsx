@@ -133,7 +133,7 @@ export default function ShopListPage({ id, setId }) {
   return (
     <Box flex="1" borderRadius={8} bg="grain">
       <Flex justifyContent="space-between" mb="8">
-        <Button onClick={() => goBack()} variant="none">
+        <Button ria-label="go to shopping list" onClick={() => goBack()} variant="none">
           <Heading
             cursor="pointer"
             display="flex"

@@ -1,4 +1,4 @@
-import { Box, Flex, Text, Stack, Icon, Collapse, Link as ChakraLink } from '@chakra-ui/react'
+import { Box, Flex, Text, Stack, Icon, Collapse, Button } from '@chakra-ui/react'
 import { useRouter } from 'next/router'
 import { ElementType, ReactNode, useState } from 'react'
 import { MdOutlineKeyboardArrowDown, MdOutlineKeyboardArrowUp } from 'react-icons/md'
@@ -25,19 +25,15 @@ export function NavSection({ title, icon, activePath, children }: NavSectionProp
   return (
     <Box w="100%">
       <ActiveSection isActive={isActive}>
-        <ChakraLink onClick={() => setToggle(!toggle)}>
-          <Flex>
+        <Button px="10px" width="100%" onClick={() => setToggle(!toggle)}>
+          <Flex width="100%" justifyContent="space-between">
             <Icon as={icon} fontSize="20" />
             <Text className="sidebar-text" ml="4" fontWeight="medium">
               {title}
             </Text>
-            <Icon
-              as={toggle ? MdOutlineKeyboardArrowUp : MdOutlineKeyboardArrowDown}
-              ml="auto"
-              mr="4"
-            />
+            <Icon as={toggle ? MdOutlineKeyboardArrowUp : MdOutlineKeyboardArrowDown} ml="auto" />
           </Flex>
-        </ChakraLink>
+        </Button>
       </ActiveSection>
 
       <Collapse in={toggle} animateOpacity>

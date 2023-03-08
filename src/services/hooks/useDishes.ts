@@ -42,7 +42,7 @@ export async function getDishes(page: number, pageLimit = {}): Promise<GetDishes
       rate: dish.rate,
       portions: dish.portions,
       cookingTime: dish.cookingTime,
-      createdAt: new Date(dish.createdAt).toLocaleDateString('se', {
+      createdAt: new Date(dish.createdAt).toLocaleDateString('sv', {
         day: '2-digit',
         month: 'long',
         year: 'numeric'

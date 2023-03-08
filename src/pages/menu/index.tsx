@@ -11,7 +11,7 @@ import {
   FormErrorMessage
 } from '@chakra-ui/react'
 import { useBoolean } from '@chakra-ui/hooks'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { DragDropContext, Droppable, DropResult } from 'react-beautiful-dnd'
 import { Controller, useForm } from 'react-hook-form'
 import * as yup from 'yup'
@@ -58,7 +58,6 @@ export default function Menu() {
   const endDateWeek = week && convertDateToString(week[1])
 
   const [menuForChoosenWeekExists, setMenuForChoosenWeekExists] = useState(false)
-
   const [localData, setLocalData] = useState({ ...data })
 
   const {
@@ -107,7 +106,7 @@ export default function Menu() {
     const dishesIds = []
 
     values.dishes.map((dish) => {
-      dish.dish.id !== '0' &&
+      !dish.dish.id.includes('empty') &&
         dishesIds.push({
           id: dish.dish.id,
           selectionDate: dish.selectionDate
@@ -142,7 +141,44 @@ export default function Menu() {
       (menu) =>
         menu.startDate.split('T')[0] === startDateWeek && menu.endDate.split('T')[0] === endDateWeek
     )
+
   if (menuWeek) {
+    const backendweekdays = menuWeek?.dishes?.map((dish) => {
+      return new Date(dish.selectionDate)
+    })
+
+    const days = []
+
+    for (
+      let date = new Date(week[0]);
+      date <= new Date(week[1]);
+      date.setDate(date.getDate() + 1)
+    ) {
+      days.push(new Date(date))
+    }
+
+    const missingDates = days.filter((day) => {
+      return !backendweekdays?.some((backendDay) => {
+        return day.toDateString() === backendDay.toDateString()
+      })
+    })
+
+    const emptyDishes = missingDates.map((date, i) => {
+      return {
+        // id: i.toString(),
+        selectionDate: date,
+        dish: {
+          id: `empty-${Date.now()}`
+        }
+      }
+    })
+
+    const currentMenu = menuWeek?.dishes
+
+    const concatenatedDishes = [...currentMenu, ...emptyDishes]
+
+    menuWeek.dishes = concatenatedDishes
+
     menuCurrentWeek = { menu: menuWeek }
   }
 
@@ -151,6 +187,7 @@ export default function Menu() {
       if (menuWeek) {
         setMenuForChoosenWeekExists(true)
         setLocalData({ ...menuCurrentWeek })
+
         organizeByDate(menuCurrentWeek)
       } else {
         setMenuForChoosenWeekExists(false)
@@ -205,7 +242,7 @@ export default function Menu() {
           <>
             <WeekPicker definedWeek={week} setWeek={setWeek} />
             <Flex>
-              <Button mt="20px" onClick={() => generateMenu()}>
+              <Button aria-label="Generera Veckomeny" mt="20px" onClick={() => generateMenu()}>
                 Generera Veckomeny
               </Button>
             </Flex>
@@ -260,9 +297,9 @@ export default function Menu() {
               <HStack spacing={0}>
                 <VStack w={['90px', '170px']}>
                   {localData?.menu &&
-                    localData.menu.dishes.map((menuDish) => (
+                    localData.menu.dishes.map((menuDish, i) => (
                       <Flex
-                        key={menuDish.id.toString()}
+                        key={menuDish.id?.toString()}
                         w="100%"
                         h={16}
                         p={['10px']}
@@ -286,7 +323,7 @@ export default function Menu() {
                     <VStack flex={1} ref={provided.innerRef} {...provided.droppableProps}>
                       {localData?.menu &&
                         localData.menu.dishes.map((menuDish, index) =>
-                          menuDish.dish.id === '0' ? (
+                          menuDish.dish.id.includes('empty') ? (
                             <EmptyMenuItem
                               key={menuDish.id}
                               menuDish={menuDish}
@@ -310,6 +347,7 @@ export default function Menu() {
                             />
                           )
                         )}
+
                       {provided.placeholder}
                     </VStack>
                   )}
@@ -319,7 +357,7 @@ export default function Menu() {
             {hasUpdates && (
               <Flex mt="8" justify="flex-end">
                 <HStack spacing="4">
-                  <Button type="submit" colorScheme="oxblood">
+                  <Button aria-label="spara" type="submit" colorScheme="oxblood">
                     Spara
                   </Button>
                 </HStack>

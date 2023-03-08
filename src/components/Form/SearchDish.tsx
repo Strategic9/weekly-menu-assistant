@@ -9,7 +9,6 @@ import {
   Image,
   HStack
 } from '@chakra-ui/react'
-import { Popover, PopoverTrigger, PopoverContent } from '@chakra-ui/react'
 import { FieldError } from 'react-hook-form'
 import { Input } from './Input'
 import Modal from '../Modal'
@@ -27,7 +26,7 @@ const SearchDishBase: ForwardRefRenderFunction<HTMLInputElement, SearchDishProps
   { name, label, error = null, onSelectDish, ...rest },
   ref
 ) => {
-  const { onOpen, onClose, isOpen } = useDisclosure()
+  const [openSearchInput, handleOpenSearchInput] = useState(false)
   const [results, setResults] = useState([])
   const { data: useDishesData } = useDishes(null, {})
   const dishesData = useDishesData as GetDishesResponse
@@ -47,56 +46,53 @@ const SearchDishBase: ForwardRefRenderFunction<HTMLInputElement, SearchDishProps
   }, [itemsList])
 
   return (
-    <Popover
-      isOpen={isOpen}
-      onOpen={onOpen}
-      onClose={onClose}
-      placement="bottom-start"
-      autoFocus={false}
-      {...rest}
-    >
-      <PopoverTrigger>
-        <Input
-          name={name}
-          label={label}
-          error={error}
-          placeholder="Sök maträtt"
-          onChange={(e) => filterResults(e)}
-        />
-      </PopoverTrigger>
-      <PopoverContent borderRadius="none">
-        {results ? (
-          results.map((el) => (
-            <HStack
-              width="100%"
-              justifyContent="left"
-              borderRadius="none"
-              onClick={() => onSelectDish(el)}
-              key={el.id}
-              _hover={{ bgColor: 'gray.200' }}
-              cursor="pointer"
-            >
-              <Image
-                w="70px"
-                borderRadius={6}
-                m={2}
-                h="50"
-                mb="5px"
-                src={el.image || placeholderImage}
-                alt="dish"
-                objectFit="cover"
-              />
+    <Box>
+      <Input
+        name={name}
+        label={label}
+        error={error}
+        onBlur={(e) => e.relatedTarget === null && handleOpenSearchInput(false)}
+        placeholder="Sök maträtt"
+        onChange={(e) => {
+          handleOpenSearchInput(true)
+          filterResults(e)
+        }}
+      />
+      {openSearchInput && (
+        <Box bg="white">
+          {results ? (
+            results.map((el) => (
+              <HStack
+                width="100%"
+                justifyContent="left"
+                borderRadius="none"
+                onClick={() => onSelectDish(el)}
+                key={el.id}
+                _hover={{ bgColor: 'gray.200' }}
+                cursor="pointer"
+              >
+                <Image
+                  w="70px"
+                  borderRadius={6}
+                  m={2}
+                  h="50"
+                  mb="5px"
+                  src={el.image || placeholderImage}
+                  alt="dish"
+                  objectFit="cover"
+                />
 
-              <Text>{el.name}</Text>
-            </HStack>
-          ))
-        ) : (
-          <Box py="4" mx="auto">
-            <Spinner />
-          </Box>
-        )}
-      </PopoverContent>
-    </Popover>
+                <Text>{el.name}</Text>
+              </HStack>
+            ))
+          ) : (
+            <Box py="4" mx="auto">
+              <Spinner />
+            </Box>
+          )}
+        </Box>
+      )}
+    </Box>
   )
 }
 

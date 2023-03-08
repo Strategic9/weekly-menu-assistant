@@ -14,8 +14,8 @@ export const Logo = ({ linkTo }: LogoProps) => {
       me="0"
       color="white"
     >
-      <Link href={linkTo ? linkTo : '/dashboard'}>
-        <Image src="/assets/logo.svg" alt="Forkify Logo" />
+      <Link href={linkTo ? linkTo : '/menu'}>
+        <Image src="/assets/logo.svg" alt="Welcome to Forkify" />
       </Link>
     </Container>
   )

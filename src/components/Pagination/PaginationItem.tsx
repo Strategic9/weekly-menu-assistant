@@ -27,6 +27,7 @@ export function PaginationItem({
         _disabled={{
           cursor: 'default'
         }}
+        aria-label={`you are on page ${number}`}
       >
         {number}
       </Button>
@@ -34,7 +35,14 @@ export function PaginationItem({
   }
 
   return (
-    <Button size="sm" fontSize="xs" width="4" colorScheme="oxblood" onClick={onClick}>
+    <Button
+      aria-label={`go to page ${number}`}
+      size="sm"
+      fontSize="xs"
+      width="4"
+      colorScheme="oxblood"
+      onClick={onClick}
+    >
       {number}
     </Button>
   )

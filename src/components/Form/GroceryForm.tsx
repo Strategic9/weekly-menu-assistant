@@ -41,6 +41,7 @@ interface GroceryFormParams {
   handleSubmit: SubmitHandler<CreateGroceryFormData>
   handleCancel?: () => void
   initialData?: Grocery
+  handleOpenSearchInput?: (arg: boolean) => void
 }
 
 const createGroceryFormSchema = yup.object({
@@ -99,6 +100,7 @@ export default function GroceryForm(props: GroceryFormParams) {
 
   return (
     <Box
+      onBlur={(e) => e.relatedTarget === null && props.handleOpenSearchInput(false)}
       as="form"
       flex="1"
       borderRadius={8}
@@ -145,15 +147,17 @@ export default function GroceryForm(props: GroceryFormParams) {
       <Flex mt="8" justify="flex-end">
         <HStack spacing="4">
           {props.handleCancel ? (
-            <Button colorScheme="gray" onClick={props.handleCancel}>
+            <Button aria-label="cancel" colorScheme="gray" onClick={props.handleCancel}>
               Avbryt
             </Button>
           ) : (
             <Link href="/groceries" passHref>
-              <Button colorScheme="gray">Avbryt</Button>
+              <Button aria-label="cancel" colorScheme="gray">
+                Avbryt
+              </Button>
             </Link>
           )}
-          <Button type="submit" colorScheme="oxblood">
+          <Button aria-label="save ingredient" type="submit" colorScheme="oxblood">
             Spara
           </Button>
         </HStack>
@@ -167,13 +171,15 @@ interface GroceryFormModalProps {
   buttonLabel: string
   onAddIngredient: (ingredient: Grocery) => void
   newIngredient?: string
+  handleOpenSearchInput: (arg: boolean) => void
 }
 
 export function GroceryFormModal({
   buttonProps,
   buttonLabel,
   onAddIngredient,
-  newIngredient
+  newIngredient,
+  handleOpenSearchInput
 }: GroceryFormModalProps) {
   const modalDisclosure = useDisclosure()
   const alert = useAlert()
@@ -195,6 +201,7 @@ export function GroceryFormModal({
           onAddIngredient(response.data)
           alert.success('Ingrediens tillagd')
 
+          handleOpenSearchInput(false)
           modalDisclosure.onClose()
         })
         .catch(({ response }) => {
@@ -216,8 +223,12 @@ export function GroceryFormModal({
     <>
       <Modal disclosureProps={modalDisclosure} buttonProps={buttonProps} buttonLabel={buttonLabel}>
         <GroceryForm
+          handleOpenSearchInput={handleOpenSearchInput}
           handleSubmit={handleCreateGrocery}
-          handleCancel={modalDisclosure.onClose}
+          handleCancel={() => {
+            modalDisclosure.onClose()
+            handleOpenSearchInput(false)
+          }}
           initialData={{
             id: '',
             name: newIngredient,

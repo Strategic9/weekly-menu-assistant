@@ -40,7 +40,7 @@ export function addDays(date: Date, days: number) {
 }
 
 export const setDate = (data) =>
-  new Date(data.createdAt).toLocaleDateString('se', {
+  new Date(data.createdAt).toLocaleDateString('sv', {
     day: '2-digit',
     month: 'long',
     year: 'numeric'

@@ -35,7 +35,12 @@ export const ProfileDropdown = ({ children }) => {
         <PopoverContent width={'150px'}>
           <PopoverArrow />
           <PopoverBody alignContent={'center'}>
-            <Button onClick={() => handleLogOut(token)} variant="unstyled" color="red.200">
+            <Button
+              aria-label="logga ut"
+              onClick={() => handleLogOut(token)}
+              variant="unstyled"
+              color="red.200"
+            >
               Logga ut
             </Button>
           </PopoverBody>
