@@ -28,7 +28,7 @@ const EditIngredient = ({
           <Input
             mr="10px"
             w={'100%'}
-            name={'ingrediens'}
+            name={'ingredients'}
             label={'Ingrediens'}
             readOnly
             {...register('ingredientName')}
@@ -61,9 +61,9 @@ const EditIngredient = ({
                 name="measurementUnitId"
                 error={errors.measurementUnitId}
                 {...register('measurementUnitId')}
-                onClick={async () => {
-                  await trigger('measurementUnitId')
-                }}
+                // onClick={async () => {
+                //   await trigger('measurementUnitId')
+                // }}
                 border={'none'}
                 borderRadius={'0 var(--chakra-radii-md) var(--chakra-radii-md) 0'}
                 textAlign="left"
@@ -104,11 +104,7 @@ const EditIngredient = ({
             <Button
               aria-label="save ingredient"
               size={['sm', 'md']}
-              onClick={async () => {
-                await trigger(['measurementUnitId', 'ingredientQuantity']).then(
-                  (isFilled) => isFilled && addIngredient()
-                )
-              }}
+              onClick={async () => addIngredient()}
               colorScheme="oxblood"
               px="35px"
             >

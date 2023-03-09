@@ -64,12 +64,13 @@ interface DishFormParams {
 const createDishFormSchema = yup.object({
   name: yup.string().required('Namn är obligatoriskt'),
   description: yup.string().required('Beskrivning är obligatorisk'),
+
   ingredients: yup.array().min(1, 'Ingredienser är obligatoriska'),
-  ingredientQuantity: yup.string().required('Mängd/volym är obligatorisk'),
+
   mainIngredientId: yup.string().required('Huvudingrediens är obligatoriskt'),
   mainIngredientQuantity: yup.string().required('Mängd/volym är obligatorisk'),
   mainMeasurementUnitId: yup.string().required('Mängd/volym är obligatorisk'),
-  measurementUnitId: yup.string().required('Mängd/volym är obligatorisk'),
+
   recipe: yup.string().required('recept är obligatorisk'),
   portions: yup.string().nullable(),
   temperature: yup.string().nullable(),
@@ -179,7 +180,7 @@ export default function DishForm(props: DishFormParams) {
     const name = getValues('ingredientName')
     const quantityExists = !!quantity && quantity > 0
     const mUnit = getValues('measurementUnitId')
-    await trigger('measurementUnitId')
+    // await trigger('measurementUnitId')
     if (quantityExists && mUnit) {
       append({ id: ingredientId, name: name, quantity: quantity, measurementUnitId: mUnit })
 
@@ -188,12 +189,11 @@ export default function DishForm(props: DishFormParams) {
     }
   }
 
-  const updateIngredient = async () => {
+  const updateIngredient = () => {
     const quantity = getValues('ingredientQuantity')
     const name = getValues('ingredientName')
     const quantityExists = !!quantity && quantity > 0
     const mUnit = getValues('measurementUnitId')
-    await trigger('measurementUnitId')
 
     if (quantityExists && mUnit) {
       update(indexIngredient, {
@@ -203,7 +203,6 @@ export default function DishForm(props: DishFormParams) {
         measurementUnitId: mUnit
       })
     }
-
     setShowEditIngredient(false)
   }
 
@@ -283,9 +282,9 @@ export default function DishForm(props: DishFormParams) {
                   name="mainMeasurementUnitId"
                   error={errors.mainMeasurementUnitId}
                   {...register('mainMeasurementUnitId')}
-                  onClick={async () => {
-                    await trigger('mainMeasurementUnitId')
-                  }}
+                  // onClick={async () => {
+                  //   await trigger('mainMeasurementUnitId')
+                  // }}
                   borderRadius={'0 var(--chakra-radii-md) var(--chakra-radii-md) 0'}
                   textAlign="left"
                 >
@@ -343,7 +342,7 @@ export default function DishForm(props: DishFormParams) {
                 register={register}
                 trigger={trigger}
                 setShowEditIngredient={setShowEditIngredient}
-                addIngredient={addIngredient ? addNewIngredient : updateIngredient}
+                addIngredient={addIngredient ? addNewIngredient : handleSubmit(updateIngredient)}
                 errors={errors}
               />
             )}
