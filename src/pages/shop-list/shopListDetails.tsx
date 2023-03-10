@@ -81,7 +81,7 @@ export default function ShopListPage({ id, setId }) {
 
   function handleChange(
     event: ChangeEvent<HTMLInputElement>,
-    listItem: { name: string; amount: number; bought: boolean },
+    listItem: { name: string; amount: number; bought: boolean; measurementUnit: string },
     category: string
   ) {
     listItem.bought = event.target.checked
@@ -179,7 +179,7 @@ export default function ShopListPage({ id, setId }) {
                     <ListItem
                       as={Flex}
                       key={listItem.name}
-                      h="12"
+                      h="14"
                       my="3"
                       bg="gray.100"
                       borderRadius="4"
@@ -194,11 +194,22 @@ export default function ShopListPage({ id, setId }) {
                           onChange={(event) => handleChange(event, listItem, key)}
                         />
                         <Text
-                          fontSize={[15, 16]}
+                          mr="2"
                           pl="4"
+                          lineHeight={'initial'}
+                          fontSize={[14, 15]}
+                          color="gray.400"
+                        >
+                          {listItem.amount}x
+                        </Text>
+                        <Text
+                          fontSize={[15, 16]}
                           textDecoration={listItem.bought && 'line-through'}
                         >
-                          {listItem.name} x{listItem.amount}
+                          {listItem.name}
+                        </Text>
+                        <Text ml="2" lineHeight={'initial'} fontSize={[14, 15]} color="gray.400">
+                          {listItem.measurementUnit}
                         </Text>
                       </Flex>
                       <AlertDialog

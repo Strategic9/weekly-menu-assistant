@@ -1,9 +1,9 @@
-import { setCookie, parseCookies } from 'nookies'
 import { useQuery, UseQueryOptions } from 'react-query'
 import { Dish } from './useDishes'
 import { HTTPHandler } from '../api'
 import { longDate, getDays } from '../utils'
 import { addShoppingList } from './useShoppingList'
+import { localStorage } from '../localstorage'
 
 export type Menu = {
   user: User
@@ -31,6 +31,7 @@ export type ShopList = {
       name: string
       amount: number
       bought: boolean
+      measurementUnit: string
     }[]
   }
   name: string
@@ -66,7 +67,8 @@ const checkDishesAndDays = (menu) => {
 }
 
 export async function getMenu(): Promise<any> {
-  const { shopList: cookieShopList } = parseCookies()
+  //const { shopList: cookieShopList } = parseCookies()
+  const cookieShopList = localStorage.get('shopList')
   const { data } = await HTTPHandler.get('menus', {
     params: {
       'page[limit]': 1000,
@@ -117,10 +119,7 @@ export const setShoppingLists = (cookieShopList, items) => {
 }
 
 export function setShopListCookie(shopList: ShopList) {
-  setCookie(null, 'menu.shopList', JSON.stringify([shopList]), {
-    maxAge: 60 * 60 * 24 * 7, // 1 week
-    path: '/'
-  })
+  localStorage.set('menu.shopList', JSON.stringify([shopList]))
 }
 
 function generateShopList(menu: Menu) {
@@ -129,17 +128,20 @@ function generateShopList(menu: Menu) {
       menuDish.dish.ingredients.map((ingredient) => {
         const category = ingredient.grocery.category ? ingredient.grocery.category.name : 'övrigt'
         const hasEntry = !!shopList.categories[category]
+        const productMeasurement = `${ingredient.quantity} ${ingredient.grocery?.measurementUnits[0]?.measurementUnit?.name}`
         if (!hasEntry) {
           shopList.categories[category] = []
         }
         const grocery = shopList.categories[category].find(
           (grocery) => grocery.name === ingredient.grocery.name
         )
+
         if (!grocery) {
           shopList.categories[category].push({
             name: ingredient.grocery.name,
             amount: 1,
-            bought: false
+            bought: false,
+            measurementUnit: productMeasurement
           })
         } else {
           grocery.amount++
