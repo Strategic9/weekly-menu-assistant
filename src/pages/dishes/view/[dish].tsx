@@ -110,7 +110,7 @@ export default function ViewDishPage() {
         <Image
           src={data?.dish?.image ? data?.dish?.image : placeholderImage}
           alt="Dish Image"
-          width="300px"
+          maxH={['140px', '140px', '140px']}
           borderRadius={8}
           mb={6}
         />

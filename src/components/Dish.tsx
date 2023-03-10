@@ -17,6 +17,7 @@ export default function Dish({ dish, dishIngredient, onMouseEnter, handleDeleteD
         overflow="hidden"
         aria-label={`${dish.name} dish`}
         tabIndex={0}
+        cursor="pointer"
       >
         <Image
           objectFit="cover"
