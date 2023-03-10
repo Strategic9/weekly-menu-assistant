@@ -110,6 +110,8 @@ export default function DishForm(props: DishFormParams) {
   const [showEditIngredient, setShowEditIngredient] = useState<boolean>()
   const [ingredientExists, setIngredientExists] = useState<boolean>()
 
+  const [ingredientsError, setIngredientsError] = useState({ quantity: '', measurement: '' })
+
   const defaultValues = {
     ...props.initialData,
     ...{
@@ -180,12 +182,17 @@ export default function DishForm(props: DishFormParams) {
     const name = getValues('ingredientName')
     const quantityExists = !!quantity && quantity > 0
     const mUnit = getValues('measurementUnitId')
-    // await trigger('measurementUnitId')
     if (quantityExists && mUnit) {
       append({ id: ingredientId, name: name, quantity: quantity, measurementUnitId: mUnit })
 
       setAddIngredient(false)
+      setIngredientsError({})
       setShowEditIngredient(false)
+    } else if (!quantityExists || !mUnit) {
+      setIngredientsError({
+        quantity: !quantityExists ? 'Mängd/volym är obligatorisk' : '',
+        measurement: !mUnit ? 'Mängd/volym är obligatorisk' : ''
+      })
     }
   }
 
@@ -202,8 +209,14 @@ export default function DishForm(props: DishFormParams) {
         quantity: quantity,
         measurementUnitId: mUnit
       })
+      setIngredientsError({})
+      setShowEditIngredient(false)
+    } else if (!quantityExists || !mUnit) {
+      setIngredientsError({
+        quantity: !quantityExists ? 'Mängd/volym är obligatorisk' : '',
+        measurement: !mUnit ? 'Mängd/volym är obligatorisk' : ''
+      })
     }
-    setShowEditIngredient(false)
   }
 
   const handleAddorUpdate = (el) => {
@@ -282,9 +295,6 @@ export default function DishForm(props: DishFormParams) {
                   name="mainMeasurementUnitId"
                   error={errors.mainMeasurementUnitId}
                   {...register('mainMeasurementUnitId')}
-                  // onClick={async () => {
-                  //   await trigger('mainMeasurementUnitId')
-                  // }}
                   borderRadius={'0 var(--chakra-radii-md) var(--chakra-radii-md) 0'}
                   textAlign="left"
                 >
@@ -334,15 +344,17 @@ export default function DishForm(props: DishFormParams) {
             {showEditIngredient && (
               <EditIngredient
                 isAdded={ingredientExists}
+                setIngredientsError={setIngredientsError}
                 handleDeleteDish={() => {
                   remove(indexIngredient)
                   setShowEditIngredient(false)
                 }}
                 measurementUnitsData={measurementUnitsData}
+                ingredientsError={ingredientsError}
                 register={register}
                 trigger={trigger}
                 setShowEditIngredient={setShowEditIngredient}
-                addIngredient={addIngredient ? addNewIngredient : handleSubmit(updateIngredient)}
+                addIngredient={addIngredient ? addNewIngredient : updateIngredient}
                 errors={errors}
               />
             )}
