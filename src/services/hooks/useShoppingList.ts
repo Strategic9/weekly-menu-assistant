@@ -1,4 +1,4 @@
-import { parseCookies, setCookie } from 'nookies'
+import { localStorage } from '../localstorage'
 import { ShopList } from './useMenu'
 
 const returnParsedData = (cookieShopList: string) => {
@@ -10,25 +10,25 @@ const returnParsedData = (cookieShopList: string) => {
 }
 
 export const getShoppingLists = async () => {
-  const { shopList: cookieShopList } = parseCookies()
+  const cookieShopList = localStorage.get('shopList')
   const shoppinglists = await returnParsedData(cookieShopList)
   return shoppinglists
 }
 
 export const getShoppingListByID = (id: string) => {
-  const { shopList: cookieShopList } = parseCookies()
+  const cookieShopList = localStorage.get('shopList')
   return JSON.parse(cookieShopList).find((listId) => listId.id === id)
 }
 
 export const addShoppingList = (newShoppingList: ShopList[]) => {
-  setCookie(null, 'shopList', JSON.stringify(newShoppingList))
+  localStorage.set('shopList', JSON.stringify(newShoppingList))
 }
 
 export const updateShoppingList = (updatedList) => {
-  const { shopList: cookieShopList } = parseCookies()
+  const cookieShopList = localStorage.get('shopList')
   const arrayList = JSON.parse(cookieShopList)
   const index = arrayList.findIndex((list) => list.id === updatedList.id)
   arrayList[index] = updatedList
 
-  setCookie(null, 'shopList', JSON.stringify(arrayList))
+  localStorage.set('shopList', JSON.stringify(arrayList))
 }
