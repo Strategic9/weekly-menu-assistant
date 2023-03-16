@@ -64,12 +64,13 @@ interface DishFormParams {
 const createDishFormSchema = yup.object({
   name: yup.string().required('Namn är obligatoriskt'),
   description: yup.string().required('Beskrivning är obligatorisk'),
+
   ingredients: yup.array().min(1, 'Ingredienser är obligatoriska'),
-  ingredientQuantity: yup.string().required('Mängd/volym är obligatorisk'),
+
   mainIngredientId: yup.string().required('Huvudingrediens är obligatoriskt'),
   mainIngredientQuantity: yup.string().required('Mängd/volym är obligatorisk'),
   mainMeasurementUnitId: yup.string().required('Mängd/volym är obligatorisk'),
-  measurementUnitId: yup.string().required('Mängd/volym är obligatorisk'),
+
   recipe: yup.string().required('recept är obligatorisk'),
   portions: yup.string().nullable(),
   temperature: yup.string().nullable(),
@@ -108,6 +109,8 @@ export default function DishForm(props: DishFormParams) {
   const [addIngredient, setAddIngredient] = useState<boolean>()
   const [showEditIngredient, setShowEditIngredient] = useState<boolean>()
   const [ingredientExists, setIngredientExists] = useState<boolean>()
+
+  const [ingredientsError, setIngredientsError] = useState({ quantity: '', measurement: '' })
 
   const defaultValues = {
     ...props.initialData,
@@ -179,21 +182,25 @@ export default function DishForm(props: DishFormParams) {
     const name = getValues('ingredientName')
     const quantityExists = !!quantity && quantity > 0
     const mUnit = getValues('measurementUnitId')
-    await trigger('measurementUnitId')
     if (quantityExists && mUnit) {
       append({ id: ingredientId, name: name, quantity: quantity, measurementUnitId: mUnit })
 
       setAddIngredient(false)
+      setIngredientsError({})
       setShowEditIngredient(false)
+    } else if (!quantityExists || !mUnit) {
+      setIngredientsError({
+        quantity: !quantityExists ? 'Mängd/volym är obligatorisk' : '',
+        measurement: !mUnit ? 'Mängd/volym är obligatorisk' : ''
+      })
     }
   }
 
-  const updateIngredient = async () => {
+  const updateIngredient = () => {
     const quantity = getValues('ingredientQuantity')
     const name = getValues('ingredientName')
     const quantityExists = !!quantity && quantity > 0
     const mUnit = getValues('measurementUnitId')
-    await trigger('measurementUnitId')
 
     if (quantityExists && mUnit) {
       update(indexIngredient, {
@@ -202,9 +209,14 @@ export default function DishForm(props: DishFormParams) {
         quantity: quantity,
         measurementUnitId: mUnit
       })
+      setIngredientsError({})
+      setShowEditIngredient(false)
+    } else if (!quantityExists || !mUnit) {
+      setIngredientsError({
+        quantity: !quantityExists ? 'Mängd/volym är obligatorisk' : '',
+        measurement: !mUnit ? 'Mängd/volym är obligatorisk' : ''
+      })
     }
-
-    setShowEditIngredient(false)
   }
 
   const handleAddorUpdate = (el) => {
@@ -283,9 +295,6 @@ export default function DishForm(props: DishFormParams) {
                   name="mainMeasurementUnitId"
                   error={errors.mainMeasurementUnitId}
                   {...register('mainMeasurementUnitId')}
-                  onClick={async () => {
-                    await trigger('mainMeasurementUnitId')
-                  }}
                   borderRadius={'0 var(--chakra-radii-md) var(--chakra-radii-md) 0'}
                   textAlign="left"
                 >
@@ -335,11 +344,13 @@ export default function DishForm(props: DishFormParams) {
             {showEditIngredient && (
               <EditIngredient
                 isAdded={ingredientExists}
+                setIngredientsError={setIngredientsError}
                 handleDeleteDish={() => {
                   remove(indexIngredient)
                   setShowEditIngredient(false)
                 }}
                 measurementUnitsData={measurementUnitsData}
+                ingredientsError={ingredientsError}
                 register={register}
                 trigger={trigger}
                 setShowEditIngredient={setShowEditIngredient}
