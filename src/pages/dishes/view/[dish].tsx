@@ -22,12 +22,15 @@ import {
   GetMeasurementUnitsResponse,
   useMeasurementUnits
 } from '../../../services/hooks/useMeasurementUnit'
+import { useContext } from 'react'
+import { AppContext } from '../../../cotexts/AppContext'
 
 export default function ViewDishPage() {
   const router = useRouter()
   const { dish: dish_id } = router.query
   const { data } = useDish(dish_id as string)
   const totalStars = Array.from(Array(4 + 1), (_, i) => i)
+  const { role } = useContext(AppContext)
 
   const { data: useMeasurementUnitsData } = useMeasurementUnits(
     null,
@@ -155,16 +158,18 @@ export default function ViewDishPage() {
           <Flex justifyContent="space-between">
             {data?.dish?.name}
 
-            <Link href={`/dishes/edit/${data?.dish?.id}`} passHref>
-              <Button
-                pl={4}
-                aria-label="edit dish"
-                size="sm"
-                bg="gray.200"
-                leftIcon={<Icon as={RiEditLine} fontSize="16" />}
-                iconSpacing="0"
-              />
-            </Link>
+            {role === 'admin' && (
+              <Link href={`/dishes/edit/${data?.dish?.id}`} passHref>
+                <Button
+                  pl={4}
+                  aria-label="edit dish"
+                  size="sm"
+                  bg="gray.200"
+                  leftIcon={<Icon as={RiEditLine} fontSize="16" />}
+                  iconSpacing="0"
+                />
+              </Link>
+            )}
           </Flex>
         </Heading>
         <Text as="i" fontSize={14} mb={4}>

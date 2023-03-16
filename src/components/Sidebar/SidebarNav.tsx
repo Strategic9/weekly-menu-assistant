@@ -4,8 +4,27 @@ import { BiFoodMenu, BiRestaurant, BiCategory } from 'react-icons/bi'
 import { FaShoppingBasket } from 'react-icons/fa'
 import { NavLink } from './NavLink'
 import { NavSection } from './NavSection'
+import { useContext, useEffect } from 'react'
+import { AppContext } from '../../cotexts/AppContext'
+import { getUser } from '../../services/hooks/useUser'
+import { localStorage } from '../../services/localstorage'
 
 export function SidebarNav() {
+  const { role, setRole } = useContext(AppContext)
+
+  const fetchData = async () => {
+    try {
+      const response = await getUser(localStorage.get('user-id'))
+      setRole(response.data.role)
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  useEffect(() => {
+    fetchData()
+  }, [])
+
   return (
     <Stack spacing="6">
       <NavSection title="Menyer" icon={BiFoodMenu} activePath="/menu">
@@ -14,16 +33,16 @@ export function SidebarNav() {
       </NavSection>
       <NavSection title="Ingredienser" icon={FaShoppingBasket} activePath="/groceries">
         <NavLink href="/groceries">Ingredienser</NavLink>
-        <NavLink href="/groceries/add">Lägg till ingredienser</NavLink>
+        {role === 'admin' && <NavLink href="/groceries/add">Lägg till ingredienser</NavLink>}
       </NavSection>
       <NavSection title="Maträtter" icon={BiRestaurant} activePath="/dishes">
         <NavLink href="/dishes">Maträtter</NavLink>
-        <NavLink href="/dishes/add">Lägg till maträtt</NavLink>
+        {role === 'admin' && <NavLink href="/dishes/add">Lägg till maträtt</NavLink>}
         {/* <NavLink href="/dishes/upload">Add Multiple Dishes</NavLink> */}
       </NavSection>
       <NavSection title="Kategorier" icon={BiCategory} activePath="/categories">
         <NavLink href="/categories">Kategorier</NavLink>
-        <NavLink href="/categories/add">Lägg till kategori</NavLink>
+        {role === 'admin' && <NavLink href="/categories/add">Lägg till kategori</NavLink>}
       </NavSection>
       <NavLink className="sidebar-text" icon={RiListCheck} href="/shop-list">
         Inköpslistor
