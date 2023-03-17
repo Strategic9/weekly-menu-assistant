@@ -1,10 +1,13 @@
 import { Box, Flex, Text, Button, Icon, HStack, Stack, Heading, Image } from '@chakra-ui/react'
 import { RiEditLine, RiDeleteBinLine } from 'react-icons/ri'
-import { FaEye } from 'react-icons/fa'
 import Link from 'next/link'
 import { placeholderImage } from '../services/utils'
+import { useContext } from 'react'
+import { AppContext } from '../cotexts/AppContext'
 
 export default function Dish({ dish, dishIngredient, onMouseEnter, handleDeleteDish }) {
+  const { role } = useContext(AppContext)
+
   return (
     <Link href={`/dishes/view/${dish.id}`} passHref>
       <Flex
@@ -17,6 +20,7 @@ export default function Dish({ dish, dishIngredient, onMouseEnter, handleDeleteD
         overflow="hidden"
         aria-label={`${dish.name} dish`}
         tabIndex={0}
+        cursor="pointer"
       >
         <Image
           objectFit="cover"
@@ -54,30 +58,32 @@ export default function Dish({ dish, dishIngredient, onMouseEnter, handleDeleteD
             </Flex>
           </Box>
 
-          <Box>
-            <HStack>
-              <Button
-                aria-label="delete dish"
-                size="sm"
-                bg="red.100"
-                color="white"
-                justifyContent="center"
-                leftIcon={<Icon as={RiDeleteBinLine} fontSize="16" />}
-                iconSpacing="0"
-                _hover={{ bg: 'red.200' }}
-                onClick={handleDeleteDish}
-              ></Button>
-              <Link href={`/dishes/edit/${dish.id}`} passHref>
+          {role === 'admin' && (
+            <Box>
+              <HStack>
                 <Button
-                  aria-label="edit dish"
+                  aria-label="delete dish"
                   size="sm"
-                  bg="gray.200"
-                  leftIcon={<Icon as={RiEditLine} fontSize="16" />}
+                  bg="red.100"
+                  color="white"
+                  justifyContent="center"
+                  leftIcon={<Icon as={RiDeleteBinLine} fontSize="16" />}
                   iconSpacing="0"
-                />
-              </Link>
-            </HStack>
-          </Box>
+                  _hover={{ bg: 'red.200' }}
+                  onClick={handleDeleteDish}
+                ></Button>
+                <Link href={`/dishes/edit/${dish.id}`} passHref>
+                  <Button
+                    aria-label="edit dish"
+                    size="sm"
+                    bg="gray.200"
+                    leftIcon={<Icon as={RiEditLine} fontSize="16" />}
+                    iconSpacing="0"
+                  />
+                </Link>
+              </HStack>
+            </Box>
+          )}
         </Stack>
       </Flex>
     </Link>

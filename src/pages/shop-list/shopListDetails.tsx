@@ -53,9 +53,6 @@ export default function ShopListPage({ id, setId }) {
   )
   const categoryData = useCategoriesData as GetCategoriesResponse
 
-  /*   const { data: useMenuData, isLoading, error } = useMenu({})
-  const menuData = useMenuData as GetMenuResponse */
-
   const alert = useAlert()
 
   const goBack = () => {
@@ -130,6 +127,36 @@ export default function ShopListPage({ id, setId }) {
     alert.success('Ingrediens borttagen')
   }
 
+  const CalculateAmount = ({
+    grocery
+  }: {
+    grocery: {
+      name: string
+      amount: number
+      bought: boolean
+      measurementUnit: string
+    }
+  }) => {
+    const localGrocery = { ...grocery }
+    if (!shopList || isLoading) {
+      return null
+    } else {
+      const ingredientValue = parseInt(localGrocery.measurementUnit?.match(/^\d+/)[0])
+      const updatedValue = ingredientValue * localGrocery.amount
+
+      localGrocery.measurementUnit = localGrocery.measurementUnit.replace(
+        `${ingredientValue}`,
+        `${updatedValue}`
+      )
+
+      return (
+        <Text ml="2" lineHeight={'initial'} fontSize={[14, 15]} color="gray.400">
+          {localGrocery.measurementUnit}
+        </Text>
+      )
+    }
+  }
+
   return (
     <Box flex="1" borderRadius={8} bg="grain">
       <Flex justifyContent="space-between" mb="8">
@@ -194,23 +221,13 @@ export default function ShopListPage({ id, setId }) {
                           onChange={(event) => handleChange(event, listItem, key)}
                         />
                         <Text
-                          mr="2"
-                          pl="4"
-                          lineHeight={'initial'}
-                          fontSize={[14, 15]}
-                          color="gray.400"
-                        >
-                          {listItem.amount}x
-                        </Text>
-                        <Text
+                          pl={2}
                           fontSize={[15, 16]}
                           textDecoration={listItem.bought && 'line-through'}
                         >
                           {listItem.name}
                         </Text>
-                        <Text ml="2" lineHeight={'initial'} fontSize={[14, 15]} color="gray.400">
-                          {listItem.measurementUnit}
-                        </Text>
+                        <CalculateAmount grocery={listItem} />
                       </Flex>
                       <AlertDialog
                         buttonProps={{

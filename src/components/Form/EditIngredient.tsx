@@ -1,17 +1,16 @@
 import { Wrap, Flex, Box, Button, Icon, Text } from '@chakra-ui/react'
-import { useState } from 'react'
 import { RiDeleteBinLine } from 'react-icons/ri'
 import { Input } from './Input'
 import { Select } from './Select'
 
 const EditIngredient = ({
   register,
-  trigger,
+  setIngredientsError,
   setShowEditIngredient,
-  errors,
   addIngredient,
   handleDeleteDish,
   isAdded,
+  ingredientsError,
   measurementUnitsData
 }) => {
   return (
@@ -28,7 +27,7 @@ const EditIngredient = ({
           <Input
             mr="10px"
             w={'100%'}
-            name={'ingrediens'}
+            name={'ingredients'}
             label={'Ingrediens'}
             readOnly
             {...register('ingredientName')}
@@ -41,37 +40,44 @@ const EditIngredient = ({
               backgroundColor="gray.200"
               alignItems={'flex-start'}
             >
-              <Input
-                width={'99%'}
-                display={'flex'}
-                justifyContent={'flex-end'}
-                name={'ingredientQuantity'}
-                {...register('ingredientQuantity')}
-                type={'number'}
-                error={errors.ingredientQuantity}
-                backgroundColor={'gray.100'}
-                _placeholder={{ color: 'gray.250' }}
-                border={'none'}
-                borderRadius={'var(--chakra-radii-md) 0 0 var(--chakra-radii-md)'}
-                textAlign="right"
-                autoFocus
-              />
-              <Select
-                width={'99%'}
-                name="measurementUnitId"
-                error={errors.measurementUnitId}
-                {...register('measurementUnitId')}
-                onClick={async () => {
-                  await trigger('measurementUnitId')
-                }}
-                border={'none'}
-                borderRadius={'0 var(--chakra-radii-md) var(--chakra-radii-md) 0'}
-                textAlign="left"
-              >
-                {measurementUnitsData?.items.map((unit) => (
-                  <option label={unit.name} key={unit.id} value={unit.id} />
-                ))}
-              </Select>
+              <Box>
+                <Input
+                  width={'99%'}
+                  display={'flex'}
+                  justifyContent={'flex-end'}
+                  name={'ingredientQuantity'}
+                  {...register('ingredientQuantity')}
+                  error={ingredientsError.quantity || ''}
+                  type={'number'}
+                  backgroundColor={'gray.100'}
+                  _placeholder={{ color: 'gray.250' }}
+                  border={'none'}
+                  borderRadius={'var(--chakra-radii-md) 0 0 var(--chakra-radii-md)'}
+                  textAlign="right"
+                  autoFocus
+                />
+                {ingredientsError.quantity && (
+                  <p style={{ color: 'red', fontSize: 16 }}>{ingredientsError.quantity}</p>
+                )}
+              </Box>
+              <Box>
+                <Select
+                  width={'99%'}
+                  name="measurementUnitId"
+                  {...register('measurementUnitId')}
+                  error={ingredientsError.measurement || ''}
+                  border={'none'}
+                  borderRadius={'0 var(--chakra-radii-md) var(--chakra-radii-md) 0'}
+                  textAlign="left"
+                >
+                  {measurementUnitsData?.items.map((unit) => (
+                    <option label={unit.name} key={unit.id} value={unit.id} />
+                  ))}
+                </Select>
+                {ingredientsError.measurement && (
+                  <p style={{ color: 'red', fontSize: 16 }}>{ingredientsError.measurement}</p>
+                )}
+              </Box>
             </Flex>
           </Flex>
         </Flex>
@@ -95,7 +101,10 @@ const EditIngredient = ({
               aria-label="cancel"
               _hover={{ bg: 'white' }}
               size={['sm', 'md']}
-              onClick={() => setShowEditIngredient(false)}
+              onClick={() => {
+                setIngredientsError({})
+                setShowEditIngredient(false)
+              }}
               mr="2"
               px="35px"
             >
@@ -104,11 +113,7 @@ const EditIngredient = ({
             <Button
               aria-label="save ingredient"
               size={['sm', 'md']}
-              onClick={async () => {
-                await trigger(['measurementUnitId', 'ingredientQuantity']).then(
-                  (isFilled) => isFilled && addIngredient()
-                )
-              }}
+              onClick={async () => addIngredient()}
               colorScheme="oxblood"
               px="35px"
             >

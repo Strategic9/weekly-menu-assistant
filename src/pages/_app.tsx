@@ -8,6 +8,7 @@ import { SessionProvider } from 'next-auth/react'
 import Head from 'next/head'
 import { Alert } from '../components/Alert'
 import '../styles/DatePicker.css'
+import { AppProvider } from '../cotexts/AppContext'
 
 const options: AlertProviderProps = {
   position: positions.BOTTOM_CENTER,
@@ -25,11 +26,13 @@ function MyApp({ Component, pageProps }: AppProps) {
       </Head>
       <SessionProvider session={pageProps.session}>
         <QueryClientProvider client={queryClient}>
-          <ChakraProvider theme={theme}>
-            <AlertProvider {...options}>
-              <Component {...pageProps} />
-            </AlertProvider>
-          </ChakraProvider>
+          <AppProvider>
+            <ChakraProvider theme={theme}>
+              <AlertProvider {...options}>
+                <Component {...pageProps} />
+              </AlertProvider>
+            </ChakraProvider>
+          </AppProvider>
         </QueryClientProvider>
       </SessionProvider>
     </>

@@ -21,7 +21,7 @@ import {
 import { RiEditLine, RiDeleteBinLine } from 'react-icons/ri'
 import Link from 'next/link'
 import { Pagination } from '../../components/Pagination'
-import { useState } from 'react'
+import { useState, useContext } from 'react'
 import { Grocery, useGroceries } from '../../services/hooks/useGroceries'
 import { queryClient } from '../../services/queryClient'
 import { HTTPHandler } from '../../services/api'
@@ -29,6 +29,7 @@ import TooltipButton from '../../components/TooltipButton'
 import { useAlert } from 'react-alert'
 import PageWrapper from '../page-wrapper'
 import { MenuDishOptions } from '../../components/Options'
+import { AppContext } from '../../cotexts/AppContext'
 
 type UseGroceryData = {
   items: Grocery[]
@@ -39,6 +40,8 @@ export default function GroceryList() {
   const [page, setPage] = useState(1)
   const [offset, setOffset] = useState(0)
   const registersPerPage = 10
+
+  const { role } = useContext(AppContext)
 
   const {
     data: useGroceriesData,
@@ -97,9 +100,11 @@ export default function GroceryList() {
                   <Show breakpoint="(min-width: 400px)">
                     <Th fontSize={[14, 15, 18]}>kategori</Th>
                   </Show>
-                  <Th fontSize={[14, 16, 18]} width="8">
-                    händelser
-                  </Th>
+                  {role === 'admin' && (
+                    <Th fontSize={[14, 16, 18]} width="8">
+                      händelser
+                    </Th>
+                  )}
                 </Tr>
               </Thead>
               <Tbody>
@@ -121,50 +126,57 @@ export default function GroceryList() {
                         )}
                       </Td>
                     </Show>
-                    <Td>
-                      <Show breakpoint="(max-width: 400px)">
-                        <MenuDishOptions
-                          replace={
-                            <Link href={`/groceries/edit/${grocery.id}`} passHref>
-                              <MenuItem
-                                fontSize="16"
-                                color="gray.700"
-                                icon={<RiEditLine size={16} />}
-                              >
-                                Redigera
-                              </MenuItem>
-                            </Link>
-                          }
-                          deleteDish={() => handleDelete(grocery.id)}
-                        />
-                      </Show>
-                      <Show breakpoint="(min-width: 400px)">
-                        <HStack>
-                          <Tooltip label="Remove" bg="red.200" color="white" placement="top-start">
-                            <Button
-                              aria-label="delete"
-                              size="sm"
-                              bg="red.100"
+                    {role === 'admin' && (
+                      <Td>
+                        <Show breakpoint="(max-width: 400px)">
+                          <MenuDishOptions
+                            replace={
+                              <Link href={`/groceries/edit/${grocery.id}`} passHref>
+                                <MenuItem
+                                  fontSize="16"
+                                  color="gray.700"
+                                  icon={<RiEditLine size={16} />}
+                                >
+                                  Redigera
+                                </MenuItem>
+                              </Link>
+                            }
+                            deleteDish={() => handleDelete(grocery.id)}
+                          />
+                        </Show>
+                        <Show breakpoint="(min-width: 400px)">
+                          <HStack>
+                            <Tooltip
+                              label="Remove"
+                              bg="red.200"
                               color="white"
-                              justifyContent="center"
-                              leftIcon={<Icon as={RiDeleteBinLine} fontSize="16" />}
-                              iconSpacing="0"
-                              _hover={{ bg: 'red.200' }}
-                              onClick={() => handleDelete(grocery.id)}
-                            />
-                          </Tooltip>
-                          <Link aria-label="edit" href={`/groceries/edit/${grocery.id}`} passHref>
-                            <TooltipButton
-                              tooltipLabel="Redigera"
-                              size="sm"
-                              bg="gray.200"
-                              leftIcon={<Icon as={RiEditLine} fontSize="16" />}
-                              iconSpacing="0"
-                            />
-                          </Link>
-                        </HStack>
-                      </Show>
-                    </Td>
+                              placement="top-start"
+                            >
+                              <Button
+                                aria-label="delete"
+                                size="sm"
+                                bg="red.100"
+                                color="white"
+                                justifyContent="center"
+                                leftIcon={<Icon as={RiDeleteBinLine} fontSize="16" />}
+                                iconSpacing="0"
+                                _hover={{ bg: 'red.200' }}
+                                onClick={() => handleDelete(grocery.id)}
+                              />
+                            </Tooltip>
+                            <Link aria-label="edit" href={`/groceries/edit/${grocery.id}`} passHref>
+                              <TooltipButton
+                                tooltipLabel="Redigera"
+                                size="sm"
+                                bg="gray.200"
+                                leftIcon={<Icon as={RiEditLine} fontSize="16" />}
+                                iconSpacing="0"
+                              />
+                            </Link>
+                          </HStack>
+                        </Show>
+                      </Td>
+                    )}
                   </Tr>
                 ))}
               </Tbody>

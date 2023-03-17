@@ -30,6 +30,8 @@ import { useCategories } from '../../services/hooks/useCategories'
 import PageWrapper from '../page-wrapper'
 import { MenuDishOptions } from '../../components/Options'
 import Head from 'next/head'
+import { useContext } from 'react'
+import { AppContext } from '../../cotexts/AppContext'
 
 type Category = {
   id: string
@@ -46,6 +48,7 @@ type UseCategoryData = {
 export default function CategoryList() {
   const [page, setPage] = useState(1)
   const [offset, setOffset] = useState(0)
+  const { role } = useContext(AppContext)
   const registersPerPage = 10
   const {
     data: useCategoriesData,
@@ -104,9 +107,11 @@ export default function CategoryList() {
               <Thead bg="gray.200" fontSize="14px" color="black">
                 <Tr fontSize="14px">
                   <Th fontSize={[14, 15, 18]}>Kategori</Th>
-                  <Th fontSize={[14, 15, 18]} width="8">
-                    händelser
-                  </Th>
+                  {role === 'admin' && (
+                    <Th fontSize={[14, 15, 18]} width="8">
+                      händelser
+                    </Th>
+                  )}
                 </Tr>
               </Thead>
               <Tbody>
@@ -119,54 +124,61 @@ export default function CategoryList() {
                         </Text>
                       </Box>
                     </Td>
-                    <Td>
-                      <Show breakpoint="(max-width: 400px)">
-                        <MenuDishOptions
-                          replace={
-                            <Link href={`/categories/edit/${category.id}`} passHref>
-                              <MenuItem
-                                fontSize="16"
-                                color="gray.700"
-                                icon={<RiEditLine size={16} />}
-                              >
-                                Redigera
-                              </MenuItem>
-                            </Link>
-                          }
-                          deleteDish={() => handleDelete(category.id)}
-                        />
-                      </Show>
-                      <Show breakpoint="(min-width: 400px)">
-                        <HStack>
-                          <Tooltip label="Remove" bg="red.100" color="white" placement="top-start">
-                            <Button
-                              aria-label="delete"
-                              size={['xs', 'sm']}
+                    {role === 'admin' && (
+                      <Td>
+                        <Show breakpoint="(max-width: 400px)">
+                          <MenuDishOptions
+                            replace={
+                              <Link href={`/categories/edit/${category.id}`} passHref>
+                                <MenuItem
+                                  fontSize="16"
+                                  color="gray.700"
+                                  icon={<RiEditLine size={16} />}
+                                >
+                                  Redigera
+                                </MenuItem>
+                              </Link>
+                            }
+                            deleteDish={() => handleDelete(category.id)}
+                          />
+                        </Show>
+                        <Show breakpoint="(min-width: 400px)">
+                          <HStack>
+                            <Tooltip
+                              label="Remove"
                               bg="red.100"
                               color="white"
-                              justifyContent="center"
-                              leftIcon={<Icon as={RiDeleteBinLine} fontSize="16" />}
-                              iconSpacing="0"
-                              _hover={{ bg: 'red.200' }}
-                              onClick={() => handleDelete(category.id)}
-                            />
-                          </Tooltip>
-                          <Link
-                            aria-label="edit category"
-                            href={`/categories/edit/${category.id}`}
-                            passHref
-                          >
-                            <TooltipButton
-                              tooltipLabel="Redigera"
-                              size={['xs', 'sm']}
-                              bg="gray.200"
-                              leftIcon={<Icon as={RiEditLine} fontSize="16" />}
-                              iconSpacing="0"
-                            />
-                          </Link>
-                        </HStack>
-                      </Show>
-                    </Td>
+                              placement="top-start"
+                            >
+                              <Button
+                                aria-label="delete"
+                                size={['xs', 'sm']}
+                                bg="red.100"
+                                color="white"
+                                justifyContent="center"
+                                leftIcon={<Icon as={RiDeleteBinLine} fontSize="16" />}
+                                iconSpacing="0"
+                                _hover={{ bg: 'red.200' }}
+                                onClick={() => handleDelete(category.id)}
+                              />
+                            </Tooltip>
+                            <Link
+                              aria-label="edit category"
+                              href={`/categories/edit/${category.id}`}
+                              passHref
+                            >
+                              <TooltipButton
+                                tooltipLabel="Redigera"
+                                size={['xs', 'sm']}
+                                bg="gray.200"
+                                leftIcon={<Icon as={RiEditLine} fontSize="16" />}
+                                iconSpacing="0"
+                              />
+                            </Link>
+                          </HStack>
+                        </Show>
+                      </Td>
+                    )}
                   </Tr>
                 ))}
               </Tbody>
