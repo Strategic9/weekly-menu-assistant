@@ -52,7 +52,11 @@ export default function SignUp() {
         handleSignIn(values)
       })
       .catch((er) => {
-        alert.error('Kontrollera angiven information')
+        if (er.response.data.details.includes('duplicate key')) {
+          alert.error('Denna e-post är redan i bruk')
+        } else {
+          alert.error('Kontrollera angiven information')
+        }
       })
   }
 
@@ -106,7 +110,7 @@ export default function SignUp() {
           />
         </Stack>
 
-        <Button type="submit" mt="6" colorScheme="oxblood">
+        <Button aria-label="registrera konto" type="submit" mt="6" colorScheme="oxblood">
           Registrera konto
         </Button>
 

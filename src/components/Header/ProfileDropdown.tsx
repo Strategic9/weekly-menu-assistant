@@ -10,10 +10,9 @@ import {
 } from '@chakra-ui/react'
 import { HTTPHandler } from '../../services/api'
 import { localStorage } from '../../services/localstorage'
-import { useRouter } from 'next/router'
+import { signOut } from 'next-auth/react'
 
 export const ProfileDropdown = ({ children }) => {
-  const router = useRouter()
   const token = localStorage.get('token')
 
   const handleLogOut = async (token: string) => {
@@ -23,7 +22,7 @@ export const ProfileDropdown = ({ children }) => {
       localStorage.delete('username')
       localStorage.delete('email')
       localStorage.delete('user-id')
-      router.push('/')
+      signOut()
     } catch (err) {
       console.error(err)
     }
@@ -36,7 +35,12 @@ export const ProfileDropdown = ({ children }) => {
         <PopoverContent width={'150px'}>
           <PopoverArrow />
           <PopoverBody alignContent={'center'}>
-            <Button onClick={() => handleLogOut(token)} variant="unstyled" color="red.200">
+            <Button
+              aria-label="logga ut"
+              onClick={() => handleLogOut(token)}
+              variant="unstyled"
+              color="red.200"
+            >
               Logga ut
             </Button>
           </PopoverBody>

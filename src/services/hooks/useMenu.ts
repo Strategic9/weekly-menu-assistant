@@ -1,9 +1,9 @@
-import { setCookie, parseCookies } from 'nookies'
 import { useQuery, UseQueryOptions } from 'react-query'
-import ShopList from '../../pages/shop-list'
 import { Dish } from './useDishes'
 import { HTTPHandler } from '../api'
-import { getDays } from '../utils'
+import { longDate, getDays } from '../utils'
+import { addShoppingList } from './useShoppingList'
+import { localStorage } from '../localstorage'
 
 export type Menu = {
   user: User
@@ -31,13 +31,14 @@ export type ShopList = {
       name: string
       amount: number
       bought: boolean
+      measurementUnit: string
     }[]
   }
+  name: string
 }
 
 export type GetMenuResponse = {
   menu: Menu[]
-  shopList: ShopList
 }
 
 export type GetMenuHistoryResponse = {
@@ -57,7 +58,7 @@ const checkDishesAndDays = (menu) => {
       id: i.toString(),
       selectionDate: object,
       dish: {
-        id: '0'
+        id: `empty-${new Date()}`
       }
     })
   )
@@ -66,63 +67,59 @@ const checkDishesAndDays = (menu) => {
 }
 
 export async function getMenu(): Promise<any> {
-  const { 'menu.shopList': cookieShopList } = parseCookies()
+  //const { shopList: cookieShopList } = parseCookies()
+  const cookieShopList = localStorage.get('shopList')
   const { data } = await HTTPHandler.get('menus', {
     params: {
       'page[limit]': 1000,
       'page[offset]': 0
     }
   })
-  const items = JSON.parse(JSON.stringify(data.items))
+  const items = JSON.parse(JSON.stringify(data?.items))
   if (items.length) {
     const menu = data.items.find(
       (menu) => new Date() >= new Date(menu.startDate) && new Date() <= new Date(menu.endDate)
     ) as Menu
 
-    menu.startDate = new Date(menu.startDate)
-    menu.endDate = new Date(menu.endDate)
+    if (menu) {
+      menu.startDate = new Date(menu.startDate)
+      menu.endDate = new Date(menu.endDate)
 
-    menu.dishes.forEach((dish) => (dish.selectionDate = new Date(dish.selectionDate)))
+      menu.dishes.forEach((dish) => (dish.selectionDate = new Date(dish.selectionDate)))
 
-    const shoppingList = generateShopList(menu)
+      const updatedDishes = checkDishesAndDays(menu)
 
-    const shopListData = () => {
-      if (!cookieShopList) {
-        setShopListCookie(shoppingList)
-        return shoppingList
-      }
-
-      if (menu && cookieShopList) {
-        if (menu.id !== JSON.parse(cookieShopList).id) {
-          setShopListCookie(shoppingList)
-          return shoppingList
-        }
-      }
-
-      if (cookieShopList) {
-        return JSON.parse(cookieShopList)
-      }
+      menu.dishes = updatedDishes
     }
 
-    const shopList = shopListData()
+    setShoppingLists(cookieShopList, items)
 
-    const updatedDishes = checkDishesAndDays(menu)
-
-    menu.dishes = updatedDishes
     return {
-      items,
-      shopList
+      items
     }
   } else {
     return null
   }
 }
 
-export function setShopListCookie(shopList: ShopList) {
-  setCookie(null, 'menu.shopList', JSON.stringify(shopList), {
-    maxAge: 60 * 60 * 24 * 7, // 1 week
-    path: '/'
+// compare if there is a new week menu generated and returns an Array with the new shopping lists
+export const setShoppingLists = (cookieShopList, items) => {
+  const cookiesListParsed = cookieShopList ? JSON.parse(cookieShopList) : []
+  const shoppingLists = []
+  items.map((item) => {
+    if (!cookieShopList) {
+      shoppingLists.push(generateShopList(item))
+    } else {
+      const isAlreadyAdded = cookiesListParsed.find((cookie) => cookie.id === item.id)
+      !isAlreadyAdded && shoppingLists.push(generateShopList(item))
+    }
   })
+  const newShopList = cookiesListParsed.concat(shoppingLists)
+  addShoppingList(newShopList)
+}
+
+export function setShopListCookie(shopList: ShopList) {
+  localStorage.set('menu.shopList', JSON.stringify([shopList]))
 }
 
 function generateShopList(menu: Menu) {
@@ -131,17 +128,20 @@ function generateShopList(menu: Menu) {
       menuDish.dish.ingredients.map((ingredient) => {
         const category = ingredient.grocery.category ? ingredient.grocery.category.name : 'övrigt'
         const hasEntry = !!shopList.categories[category]
+        const productMeasurement = `${ingredient.quantity} ${ingredient.grocery?.measurementUnits[0]?.measurementUnit?.name}`
         if (!hasEntry) {
           shopList.categories[category] = []
         }
         const grocery = shopList.categories[category].find(
           (grocery) => grocery.name === ingredient.grocery.name
         )
+
         if (!grocery) {
           shopList.categories[category].push({
             name: ingredient.grocery.name,
             amount: 1,
-            bought: false
+            bought: false,
+            measurementUnit: productMeasurement
           })
         } else {
           grocery.amount++
@@ -149,7 +149,11 @@ function generateShopList(menu: Menu) {
       })
       return shopList
     },
-    { id: menu.id, categories: {} }
+    {
+      id: menu.id,
+      categories: {},
+      name: `From ${longDate(menu.startDate)} to ${longDate(menu.endDate)}`
+    }
   )
   return shopList
 }

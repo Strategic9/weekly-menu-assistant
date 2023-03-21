@@ -12,6 +12,7 @@ import { queryClient } from '../../services/queryClient'
 import { useAlert } from 'react-alert'
 import { useRouter } from 'next/router'
 import PageWrapper from '../page-wrapper'
+import Head from 'next/head'
 
 type CreateCategoryFormData = {
   name: string
@@ -58,6 +59,9 @@ export default function CreateCategory() {
 
   return (
     <PageWrapper>
+      <Head>
+        <title>Lägg till kategori | Forkify</title>
+      </Head>
       <Box
         as="form"
         flex="1"
@@ -81,9 +85,11 @@ export default function CreateCategory() {
         <Flex mt="8" justify="flex-end">
           <HStack spacing="4">
             <Link href="/categories" passHref>
-              <Button colorScheme="gray">Avbryt</Button>
+              <Button aria-label="Avbryt" colorScheme="gray">
+                Avbryt
+              </Button>
             </Link>
-            <Button type="submit" colorScheme="oxblood">
+            <Button aria-label="Spara" type="submit" colorScheme="oxblood">
               Spara
             </Button>
           </HStack>

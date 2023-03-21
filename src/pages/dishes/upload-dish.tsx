@@ -19,7 +19,7 @@ export default function UploadDish() {
   const handleUploadFile = async (values: UploadDishData) => {
     const formData = new FormData()
     formData.append('file', values.dishFile, values.dishFile.name)
-    await HTTPHandler.postBlob(`dishes/upload`, formData, 'plain/text')
+    await HTTPHandler.postBlob(`dishes/tasty`, formData, 'plain/text')
       .then(() => {
         queryClient.invalidateQueries('dishes')
         alert.success('Maträtt sparad')
@@ -73,9 +73,11 @@ export default function UploadDish() {
         <Flex mt="8" justify="flex-end">
           <HStack spacing="4">
             <Link href="/dishes" passHref>
-              <Button colorScheme="gray">Cancel</Button>
+              <Button aria-label="cancel" colorScheme="gray">
+                Cancel
+              </Button>
             </Link>
-            <Button type="submit" colorScheme="oxblood">
+            <Button aria-label="spara" type="submit" colorScheme="oxblood">
               Spara
             </Button>
           </HStack>

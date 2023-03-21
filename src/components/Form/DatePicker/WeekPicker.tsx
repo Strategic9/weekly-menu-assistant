@@ -1,15 +1,24 @@
-import { useEffect, useState } from 'react'
-import DatePicker from 'react-datepicker'
+import { Input } from '@chakra-ui/react'
+import { Dispatch, useEffect, useState } from 'react'
+import ReactDatePicker from 'react-datepicker'
 
-export const WeekPicker = ({ setWeek }) => {
+export const WeekPicker = ({
+  setWeek,
+  definedWeek
+}: {
+  setWeek: Dispatch<object>
+  definedWeek?: object
+}) => {
   const [startDate, setStartDate] = useState(null)
   const [endDate, setEndDate] = useState(null)
+
   const onChange = (date) => {
     const week = getWeekRange(date)
 
     const [startDay, endDay] = week
 
     setWeek([startDay, endDay])
+
     setStartDate(startDay)
     setEndDate(endDay)
   }
@@ -39,18 +48,24 @@ export const WeekPicker = ({ setWeek }) => {
   }
 
   useEffect(() => {
-    onChange(new Date())
+    const selectedWeek = definedWeek ? new Date(definedWeek[0]) : new Date()
+    onChange(selectedWeek)
   }, [])
 
   return (
-    <DatePicker
+    <Input
+      as={ReactDatePicker}
       id="weekly-date-picker"
       selected={startDate}
       onChange={onChange}
       startDate={startDate}
-      endDate={endDate}
+      endDate={definedWeek ? definedWeek[1] : endDate}
       minDate={new Date()}
       calendarStartDay={1}
+      fontSize={['sm', 'md']}
+      size={['sm', 'md']}
+      backgroundColor="white"
+      w={['95%']}
       onKeyDown={(e) => {
         e.preventDefault()
       }}

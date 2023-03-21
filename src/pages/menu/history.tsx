@@ -99,56 +99,61 @@ export default function Menu() {
                     </Flex>
                   </Box>
 
-                  {menu.dishes.map((menuDish) => (
-                    <Flex key={menuDish.dish.id} mb="10px">
-                      <VStack key={menuDish.dish.id} w={['90px', '170px']}>
-                        <Flex
-                          key={menuDish.id.toString()}
-                          w="100%"
-                          h={16}
-                          p={['10px']}
-                          pr={['9px', '20px']}
-                          bg="oxblood.500"
-                          color="white"
-                          borderLeftRadius={8}
-                          justifyContent="center"
-                          align="flex-end"
-                          flexDirection="column"
-                        >
-                          <Text fontSize={[14, 18]}>
-                            {getDayName(menuDish.selectionDate, 'se')}
-                          </Text>
-                          <Text fontSize={[10, 14]} color="oxblood.100">
-                            {getMonthName(menuDish.selectionDate, 'se')}
-                          </Text>
-                        </Flex>
-                      </VStack>
-
-                      <VStack flex={1}>
-                        <HStack
-                          key={menuDish.dish.id}
-                          w="100%"
-                          h={16}
-                          px={4}
-                          py={2}
-                          bg="gray.100"
-                          borderRightRadius={8}
-                          justifyContent="space-between"
-                        >
-                          <Flex direction="column">
-                            <Text fontSize={[14, 18]} fontWeight="bold">
-                              {menuDish.dish.name}
-                            </Text>
-                            {isWideVersion && (
-                              <Text overflowWrap="anywhere" fontSize={14}>
-                                {menuDish.dish.ingredients.map((i) => i.grocery.name).join(', ')}
+                  {menu.dishes.map(
+                    (menuDish) =>
+                      !menuDish.dish.id.includes('empty') && (
+                        <Flex key={menuDish.dish.id} mb="10px">
+                          <VStack key={menuDish.dish.id} w={['90px', '170px']}>
+                            <Flex
+                              key={menuDish.id.toString()}
+                              w="100%"
+                              h={16}
+                              p={['10px']}
+                              pr={['9px', '20px']}
+                              bg="oxblood.500"
+                              color="white"
+                              borderLeftRadius={8}
+                              justifyContent="center"
+                              align="flex-end"
+                              flexDirection="column"
+                            >
+                              <Text fontSize={[14, 18]}>
+                                {getDayName(menuDish.selectionDate, 'sv')}
                               </Text>
-                            )}
-                          </Flex>
-                        </HStack>
-                      </VStack>
-                    </Flex>
-                  ))}
+                              <Text fontSize={[10, 14]} color="oxblood.100">
+                                {getMonthName(menuDish.selectionDate, 'sv')}
+                              </Text>
+                            </Flex>
+                          </VStack>
+
+                          <VStack flex={1}>
+                            <HStack
+                              key={menuDish.dish.id}
+                              w="100%"
+                              h={16}
+                              px={4}
+                              py={2}
+                              bg="gray.100"
+                              borderRightRadius={8}
+                              justifyContent="space-between"
+                            >
+                              <Flex direction="column">
+                                <Text fontSize={[14, 18]} fontWeight="bold">
+                                  {menuDish.dish.name}
+                                </Text>
+                                {isWideVersion && (
+                                  <Text overflowWrap="anywhere" fontSize={14}>
+                                    {menuDish.dish.ingredients
+                                      .map((i) => i.grocery.name)
+                                      .join(', ')}
+                                  </Text>
+                                )}
+                              </Flex>
+                            </HStack>
+                          </VStack>
+                        </Flex>
+                      )
+                  )}
                 </>
               ))}
           </div>

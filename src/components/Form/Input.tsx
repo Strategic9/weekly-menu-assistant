@@ -15,14 +15,20 @@ interface InputProps extends ChakraInputProps {
 }
 
 const InputBase: ForwardRefRenderFunction<HTMLInputElement, InputProps> = (
-  { name, label, error = null, ...rest },
+  { name, label, error = null, justifyContent, display, ...rest },
   ref
 ) => {
   return (
-    <FormControl isInvalid={!!error}>
+    <FormControl
+      justifyContent={justifyContent}
+      display={display}
+      flexDirection="column"
+      isInvalid={!!error}
+    >
       {!!label && <FormLabel htmlFor={name}>{label}</FormLabel>}
       <ChakraInput
         name={name}
+        autoComplete="off"
         id={name}
         focusBorderColor="oxblood.500"
         _placeholder={{ color: 'gray.250' }}

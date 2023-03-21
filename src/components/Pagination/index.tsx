@@ -42,7 +42,7 @@ export function Pagination({
     (currentPage === lastPage ? totalCountOfRegisters - initialRegister : registersPerPage - 1)
 
   const onChangeOffset = (action: string) => {
-    if (action === 'firstPage') {
+    if (action === 'firstPage' || currentPage === 1) {
       setOffset(0)
     }
     if (action === 'nextPage') {

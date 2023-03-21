@@ -40,7 +40,7 @@ export function addDays(date: Date, days: number) {
 }
 
 export const setDate = (data) =>
-  new Date(data.createdAt).toLocaleDateString('se', {
+  new Date(data.createdAt).toLocaleDateString('sv', {
     day: '2-digit',
     month: 'long',
     year: 'numeric'
@@ -56,6 +56,14 @@ export const getMonthName = (dateStr, locale) =>
 
 export const convertDateToString = (date) => {
   return new Date(date).toISOString().split('T')[0]
+}
+
+export const longDate = (date) => {
+  return new Date(date).toLocaleDateString('en-US', {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric'
+  })
 }
 
 export const placeholderImage =
