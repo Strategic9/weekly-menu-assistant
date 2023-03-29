@@ -91,7 +91,7 @@ export default function GroceryForm(props: GroceryFormParams) {
         data?.measurementUnits && data?.measurementUnits[0]?.measurementUnit.id
       )
     }
-  }, [props.initialData, setValue])
+  }, [])
 
   const handleSubmitGroceryForm = (e: any) => {
     e.stopPropagation()
