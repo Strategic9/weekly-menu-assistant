@@ -4,26 +4,23 @@ import { HTTPHandler } from '../api'
 
 export type User = {
   id: string
-  email: string
-  firstName: string
-  lastName: string
   role: string
-  createdAt: number
-  updatedAt: number
 }
 
 export type GetUserResponse = {
+  data: any
   items: User
   count: number
 }
 
 export async function getUserById(id): Promise<GetUserResponse> {
   const { data } = await HTTPHandler.get('users', {})
-  const items = data.items.map((user) => {
-    console.log('here')
+
+  const user = data.items.map((user) => {
+    console.log(user.id)
 
     return {
-      id: user.id,
+      id: id,
       firstName: user.firstName,
       lastName: user.lastName,
       role: user.role,
@@ -31,7 +28,8 @@ export async function getUserById(id): Promise<GetUserResponse> {
       updatedAt: number
     }
   })
-  return items
+
+  return user
 }
 let currentPage: number
 

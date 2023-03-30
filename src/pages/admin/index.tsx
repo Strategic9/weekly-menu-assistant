@@ -13,53 +13,27 @@ import {
   Tooltip,
   Tbody,
   Td,
-  useBreakpointValue,
-  Spinner,
-  MenuItem,
-  Show,
-  TableCaption,
-  Tfoot
+  Stack,
+  Show
 } from '@chakra-ui/react'
 
 import { RiEditLine, RiDeleteBinLine } from 'react-icons/ri'
 import { useRouter } from 'next/router'
-import { Pagination } from '../../components/Pagination'
 import { useEffect, useState } from 'react'
 
 import { queryClient } from '../../services/queryClient'
 import { HTTPHandler } from '../../services/api'
 import { useAlert } from 'react-alert'
 import PageWrapper from '../page-wrapper'
-import { GetUserPermissions, useUserPermissions } from '../../services/hooks/usePermissions'
-
-type UsePermissionData = {
-  count: number
-  items: Permissions[]
-}
+import { getUserById, User } from '../../services/hooks/useUsers'
 
 export default function AdminPage() {
   const router = useRouter()
   const [users, setUsers] = useState([])
+  const [user, setUser] = useState<User>()
   const [page, setPage] = useState(1)
-  const [offset, setOffset] = useState(0)
-  const registersPerPage = 10
 
   const alert = useAlert()
-
-  const {
-    data: useUserPermissionData,
-    isLoading,
-    isFetching,
-    error
-  } = useUserPermissions(
-    page,
-    {},
-    {
-      'page[limit]': registersPerPage,
-      'page[offset]': offset
-    }
-  )
-  const data = useUserPermissionData as UsePermissionData
 
   useEffect(() => {
     HTTPHandler.get('/users')
@@ -73,9 +47,33 @@ export default function AdminPage() {
   const getUserDetails = async (id: string) => {
     await HTTPHandler.get(`users/${id}`)
       .then((res) => {
-        console.log(res.data)
+        const currentUser = users.map((user) => {
+          return <dialog>{currentUser}</dialog>
+        })
         queryClient.invalidateQueries(['users', page])
         alert.success('Användare hämtad')
+        getUserById(id)
+        setUser(res.data)
+
+        users.map((user) => {
+          if (user.id === id) {
+            return <p {...user.id} />
+          }
+
+          return user
+        })
+        router.push(`admin/user`)
+        return (
+          <Flex>
+            <Stack ml="10px">
+              <Box>
+                <Heading py={['8px', '6px']} size={['sm', 'md']}>
+                  {user}
+                </Heading>
+              </Box>
+            </Stack>
+          </Flex>
+        )
       })
       .catch(() => alert.error('Fel vid hämtning av användare'))
   }
@@ -96,72 +94,62 @@ export default function AdminPage() {
         <Flex mb="8" justify="space-between" align="center">
           <Heading size="lg" fontWeight="normal">
             Admin
-            {!isLoading && isFetching && <Spinner size="sm" color="gray.500" ml="4" />}
           </Heading>
         </Flex>
-        {isLoading ? (
-          <Flex justify="center">
-            <Spinner />
-          </Flex>
-        ) : error ? (
-          <Flex justify="center">
-            <Text>Fel vid hämtning av användare.</Text>
-          </Flex>
-        ) : (
-          <Flex direction="column" justify="center" align="center">
-            <Table colorScheme="whiteAlpha" color="gray.700">
-              <Thead bg="gray.200" fontSize="14px" color="black">
-                <Tr fontSize="14px">
-                  <Th fontSize={[14, 15, 18]}>Användare</Th>
-                  <Th fontSize={[14, 15, 18]} width="8">
-                    händelser
-                  </Th>
+        <Flex direction="column" justify="center" align="center">
+          <Table colorScheme="whiteAlpha" color="gray.700">
+            <Thead bg="gray.200" fontSize="14px" color="black">
+              <Tr fontSize="14px">
+                <Th fontSize={[14, 15, 18]}>Användare</Th>
+                <Th fontSize={[14, 15, 18]} width="8">
+                  händelser
+                </Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {users.map((user, i) => (
+                <Tr key={i}>
+                  <Td>
+                    <Text fontSize={[16, 16, 20]} fontWeight="bold" textTransform="capitalize">
+                      {user.firstName} {user.lastName}
+                    </Text>
+                    <Text>{user.email}</Text>
+                  </Td>
+                  <Td>
+                    <Show breakpoint="(min-width: 400px)">
+                      <HStack>
+                        <Tooltip label="View" bg="red.100" color="white" placement="top-start">
+                          <Button
+                            size={['xs', 'sm']}
+                            bg="white.100"
+                            color="black"
+                            justifyContent="center"
+                            leftIcon={<Icon as={RiEditLine} fontSize="16" />}
+                            iconSpacing="0"
+                            onClick={() => getUserDetails(user.id)}
+                            _hover={{ bg: 'red.200' }}
+                          />
+                        </Tooltip>
+                        <Tooltip label="Remove" bg="red.100" color="white" placement="top-start">
+                          <Button
+                            size={['xs', 'sm']}
+                            bg="red.100"
+                            color="white"
+                            justifyContent="center"
+                            leftIcon={<Icon as={RiDeleteBinLine} fontSize="16" />}
+                            iconSpacing="0"
+                            onClick={() => handleDelete(user.id)}
+                            _hover={{ bg: 'red.200' }}
+                          />
+                        </Tooltip>
+                      </HStack>
+                    </Show>
+                  </Td>
                 </Tr>
-              </Thead>
-              <Tbody>
-                {users.map((user, i) => (
-                  <Tr key={i}>
-                    <Td>
-                      <Text fontSize={[16, 16, 20]} fontWeight="bold" textTransform="capitalize">
-                        {user.firstName} {user.lastName}
-                      </Text>
-                    </Td>
-                    <Td>
-                      <Show breakpoint="(min-width: 400px)">
-                        <HStack>
-                          <Tooltip label="View" bg="red.100" color="white" placement="top-start">
-                            <Button
-                              size={['xs', 'sm']}
-                              bg="white.100"
-                              color="black"
-                              justifyContent="center"
-                              leftIcon={<Icon as={RiEditLine} fontSize="16" />}
-                              iconSpacing="0"
-                              onClick={() => getUserDetails(user.id)}
-                              _hover={{ bg: 'red.200' }}
-                            />
-                          </Tooltip>
-                          <Tooltip label="Remove" bg="red.100" color="white" placement="top-start">
-                            <Button
-                              size={['xs', 'sm']}
-                              bg="red.100"
-                              color="white"
-                              justifyContent="center"
-                              leftIcon={<Icon as={RiDeleteBinLine} fontSize="16" />}
-                              iconSpacing="0"
-                              onClick={() => handleDelete(user.id)}
-                              _hover={{ bg: 'red.200' }}
-                            />
-                          </Tooltip>
-                        </HStack>
-                      </Show>
-                    </Td>
-                  </Tr>
-                ))}
-              </Tbody>
-            </Table>
-          </Flex>
-        )}
+              ))}
+            </Tbody>
+          </Table>
+        </Flex>
       </Box>
     </PageWrapper>
   )
