@@ -129,7 +129,7 @@ export default function UserPage() {
           p={['6', '8']}
           onSubmit={handleSubmit(handleEditUser)}
         >
-          <Heading size="lg" fontWeight="normal">
+          <Heading size="s" fontWeight="normal">
             Förändra {user.firstName} {user.lastName}
           </Heading>
 

@@ -54,24 +54,24 @@ export default function AdminPage() {
     <PageWrapper>
       <Box flex="1" borderRadius={8} bg="grain" p={[4, 8]}>
         <Flex mb="8" justify="space-between" align="center">
-          <Heading size="lg" fontWeight="normal">
+          <Heading size="xs" fontWeight="normal">
             Administrera användare
           </Heading>
         </Flex>
         <Flex direction="column" justify="center" align="center">
           <Table colorScheme="whiteAlpha" color="gray.700">
             <Thead bg="gray.200" fontSize="14px" color="black">
-              <Th fontSize={[14, 15, 18]}>Användare</Th>
-              <Th fontSize={[14, 15, 18]}>händelse</Th>
+              <Th fontSize={[10, 12, 14]}>Användare</Th>
+              <Th fontSize={[10, 12, 14]}>händelse</Th>
             </Thead>
             <Tbody>
               {users.map((users, i) => (
                 <Tr key={i}>
                   <Td>
-                    <Text fontSize={[16, 16, 20]} fontWeight="bold" textTransform="capitalize">
+                    <Text fontSize={[12, 12, 14]} fontWeight="bold" textTransform="capitalize">
                       {users.firstName} {users.lastName}
                     </Text>
-                    <Text fontSize="xs">{users.email}</Text>
+                    <Text fontSize="3xs">{users.email}</Text>
                     <Text>{users.role ? users.role : 'user'}</Text>
                   </Td>
                   <Td textAlign="center">
