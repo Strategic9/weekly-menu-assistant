@@ -42,8 +42,6 @@ type UseUserData = {
 export default function AdminPage() {
   const [users, setUsers] = useState([])
 
-  const alert = useAlert()
-
   useEffect(() => {
     HTTPHandler.get('/users')
       .then((res) => {
@@ -63,12 +61,8 @@ export default function AdminPage() {
         <Flex direction="column" justify="center" align="center">
           <Table colorScheme="whiteAlpha" color="gray.700">
             <Thead bg="gray.200" fontSize="14px" color="black">
-              <Tr fontSize="14px">
-                <Th fontSize={[14, 15, 18]}>Användare</Th>
-                <Th fontSize={[14, 15, 18]} width="8">
-                  händelse
-                </Th>
-              </Tr>
+              <Th fontSize={[14, 15, 18]}>Användare</Th>
+              <Th fontSize={[14, 15, 18]}>händelse</Th>
             </Thead>
             <Tbody>
               {users.map((users, i) => (
@@ -77,21 +71,19 @@ export default function AdminPage() {
                     <Text fontSize={[16, 16, 20]} fontWeight="bold" textTransform="capitalize">
                       {users.firstName} {users.lastName}
                     </Text>
-                    <Text>{users.email}</Text>
+                    <Text fontSize="xs">{users.email}</Text>
                     <Text>{users.role ? users.role : 'user'}</Text>
                   </Td>
                   <Td textAlign="center">
-                    <Show breakpoint="(min-width: 400px)">
-                      <Link aria-label="edit user" href={`/admin/user/${users.id}`}>
-                        <TooltipButton
-                          tooltipLabel="Redigera"
-                          size={['xs', 'sm']}
-                          bg="gray.200"
-                          leftIcon={<Icon as={RiEditLine} fontSize="16" />}
-                          iconSpacing="0"
-                        />
-                      </Link>
-                    </Show>
+                    <Link aria-label="edit user" href={`/admin/user/${users.id}`}>
+                      <TooltipButton
+                        tooltipLabel="Redigera"
+                        size={['xs', 'sm']}
+                        bg="gray.200"
+                        leftIcon={<Icon as={RiEditLine} fontSize="16" />}
+                        iconSpacing="0"
+                      />
+                    </Link>
                   </Td>
                 </Tr>
               ))}

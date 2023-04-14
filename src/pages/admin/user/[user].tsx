@@ -58,6 +58,7 @@ export default function UserPage() {
   useEffect(() => {
     const selectedUser = async () => {
       setIsLoading(true)
+
       try {
         const { data } = await getUser(userId as string)
         setUser(data)
