@@ -13,7 +13,6 @@ import {
   Tooltip,
   Tbody,
   Td,
-  Show,
   Link
 } from '@chakra-ui/react'
 
@@ -36,6 +35,7 @@ type User = {
 }
 
 export default function AdminPage() {
+  const router = useRouter()
   const alert = useAlert()
   const [users, setUsers] = useState([])
 
@@ -44,6 +44,7 @@ export default function AdminPage() {
       .then(async () => {
         await queryClient.invalidateQueries(['users'])
         alert.success('Användare borttagen')
+        router.push('menu')
       })
       .catch(() => alert.error('Fel vid borttagning av användare'))
   }

@@ -44,7 +44,6 @@ export default function UserPage() {
   const { user: userId } = router.query
   const [isLoading, setIsLoading] = useState(true)
   const [user, setUser] = useState<User>()
-  const [page, setPage] = useState(1)
   const [error, setError] = useState(false)
   const {
     register,
@@ -96,7 +95,7 @@ export default function UserPage() {
   const handleDelete = async (id: string) => {
     await HTTPHandler.delete(`users/${id}`)
       .then(async () => {
-        await queryClient.invalidateQueries(['users', page])
+        await queryClient.invalidateQueries('users')
         alert.success('Användare borttagen')
       })
       .catch(() => alert.error('Fel vid borttagning av användare'))
