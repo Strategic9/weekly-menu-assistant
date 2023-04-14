@@ -1,6 +1,6 @@
 import { createContext, useState, useMemo } from 'react'
 
-const AppContext = createContext({ role: '', setRole: () => {} })
+const AppContext = createContext({ role: '', setRole: (role) => {} })
 
 const AppProvider = ({ children }) => {
   const [role, setRole] = useState('standard')

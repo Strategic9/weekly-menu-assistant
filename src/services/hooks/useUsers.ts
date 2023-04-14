@@ -1,24 +1,25 @@
-import { useQuery, UseQueryOptions } from 'react-query'
+import { useQuery } from 'react-query'
 import { number } from 'yup'
 import { HTTPHandler } from '../api'
 
 export type User = {
   id: string
+  firstName: string
+  lastName: string
   role: string
+  createdAt: number
+  updatedAt: number
 }
 
 export type GetUserResponse = {
-  data: any
-  items: User
-  count: number
+  userId: string
+  role: string
 }
 
-export async function getUserById(id): Promise<GetUserResponse> {
+export async function getUsersById(id): Promise<GetUserResponse> {
   const { data } = await HTTPHandler.get('users', {})
 
-  const user = data.items.map((user) => {
-    console.log(user.id)
-
+  const users = data.items.map((user) => {
     return {
       id: id,
       firstName: user.firstName,
@@ -29,10 +30,10 @@ export async function getUserById(id): Promise<GetUserResponse> {
     }
   })
 
-  return user
+  return users
 }
 let currentPage: number
 
 export function useUser(user_id: string) {
-  return useQuery(['users'], () => getUserById(user_id))
+  return useQuery(['users'], () => getUsersById(user_id))
 }

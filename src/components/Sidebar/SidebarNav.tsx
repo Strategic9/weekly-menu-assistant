@@ -14,8 +14,8 @@ export function SidebarNav() {
 
   const fetchData = async () => {
     try {
-      const response = await getUser(localStorage.get('user-id'))
-      setRole(response.data.role)
+      const { data } = await getUser(localStorage.get('user-id'))
+      setRole(data.role)
     } catch (error) {
       console.error(error)
     }
@@ -45,8 +45,8 @@ export function SidebarNav() {
         {role === 'admin' && <NavLink href="/categories/add">Lägg till kategori</NavLink>}
       </NavSection>
       {role === 'admin' && (
-        <NavSection title="Admin" icon={BiCategory} activePath="/admin">
-          <NavLink href="/admin">Admin</NavLink>
+        <NavSection title="Administrera" icon={BiCategory} activePath="/admin">
+          <NavLink href="/admin">Användare</NavLink>
         </NavSection>
       )}
       <NavLink className="sidebar-text" icon={RiListCheck} href="/shop-list">
