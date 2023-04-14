@@ -8,7 +8,9 @@ import {
   SimpleGrid,
   Text,
   Button,
-  Spinner
+  Spinner,
+  Icon,
+  Tooltip
 } from '@chakra-ui/react'
 import Link from 'next/link'
 
@@ -20,13 +22,13 @@ import { useMutation } from 'react-query'
 import { Input } from '../../../components/Form/Input'
 import { HTTPHandler } from '../../../services/api'
 import { queryClient } from '../../../services/queryClient'
-import { Category, getCategoryById } from '../../../services/hooks/useCategories'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { useAlert } from 'react-alert'
 import PageWrapper from '../../page-wrapper'
-import { getUsersById, User } from '../../../services/hooks/useUsers'
+import { User } from '../../../services/hooks/useUsers'
 import { getUser } from '../../../services/hooks/useUser'
+import { RiDeleteBinLine } from 'react-icons/ri'
 
 type CreateUserFormData = {
   role: string
@@ -42,6 +44,7 @@ export default function UserPage() {
   const { user: userId } = router.query
   const [isLoading, setIsLoading] = useState(true)
   const [user, setUser] = useState<User>()
+  const [page, setPage] = useState(1)
   const [error, setError] = useState(false)
   const {
     register,
@@ -55,8 +58,6 @@ export default function UserPage() {
   useEffect(() => {
     const selectedUser = async () => {
       setIsLoading(true)
-      console.log(user)
-
       try {
         const { data } = await getUser(userId as string)
         setUser(data)
@@ -91,6 +92,14 @@ export default function UserPage() {
       }
     }
   )
+  const handleDelete = async (id: string) => {
+    await HTTPHandler.delete(`users/${id}`)
+      .then(async () => {
+        await queryClient.invalidateQueries(['users', page])
+        alert.success('Användare borttagen')
+      })
+      .catch(() => alert.error('Fel vid borttagning av användare'))
+  }
 
   const handleEditUser: SubmitHandler<CreateUserFormData> = async (values) => {
     await editUser.mutateAsync(values)
@@ -141,6 +150,18 @@ export default function UserPage() {
               <Button aria-label="spara" type="submit" colorScheme="oxblood">
                 Spara
               </Button>
+              <Tooltip label="Remove" bg="red.100" color="white" placement="top-start">
+                <Button
+                  size={['xs', 'sm']}
+                  bg="red.100"
+                  color="white"
+                  justifyContent="center"
+                  leftIcon={<Icon as={RiDeleteBinLine} fontSize="16" />}
+                  iconSpacing="0"
+                  onClick={() => handleDelete(user.id)}
+                  _hover={{ bg: 'red.200' }}
+                />
+              </Tooltip>
             </HStack>
           </Flex>
         </Box>

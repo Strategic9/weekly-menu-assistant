@@ -40,10 +40,7 @@ type UseUserData = {
 }
 
 export default function AdminPage() {
-  const router = useRouter()
   const [users, setUsers] = useState([])
-  const [user, setUser] = useState<User>()
-  const [page, setPage] = useState(1)
 
   const alert = useAlert()
 
@@ -54,16 +51,6 @@ export default function AdminPage() {
       })
       .catch((error) => console.log(error))
   }, [])
-
-  const handleDelete = async (id: string) => {
-    await HTTPHandler.delete(`users/${id}`)
-      .then(async () => {
-        await queryClient.invalidateQueries(['users', page])
-        alert.success('Användare borttagen')
-      })
-      .then(() => {})
-      .catch(() => alert.error('Fel vid borttagning av användare'))
-  }
 
   return (
     <PageWrapper>
@@ -79,7 +66,7 @@ export default function AdminPage() {
               <Tr fontSize="14px">
                 <Th fontSize={[14, 15, 18]}>Användare</Th>
                 <Th fontSize={[14, 15, 18]} width="8">
-                  händelser
+                  händelse
                 </Th>
               </Tr>
             </Thead>
@@ -93,31 +80,17 @@ export default function AdminPage() {
                     <Text>{users.email}</Text>
                     <Text>{users.role ? users.role : 'user'}</Text>
                   </Td>
-                  <Td>
+                  <Td textAlign="center">
                     <Show breakpoint="(min-width: 400px)">
-                      <HStack>
-                        <Tooltip label="Remove" bg="red.100" color="white" placement="top-start">
-                          <Button
-                            size={['xs', 'sm']}
-                            bg="red.100"
-                            color="white"
-                            justifyContent="center"
-                            leftIcon={<Icon as={RiDeleteBinLine} fontSize="16" />}
-                            iconSpacing="0"
-                            onClick={() => handleDelete(user.id)}
-                            _hover={{ bg: 'red.200' }}
-                          />
-                        </Tooltip>
-                        <Link aria-label="edit user" href={`/admin/user/${users.id}`}>
-                          <TooltipButton
-                            tooltipLabel="Redigera"
-                            size={['xs', 'sm']}
-                            bg="gray.200"
-                            leftIcon={<Icon as={RiEditLine} fontSize="16" />}
-                            iconSpacing="0"
-                          />
-                        </Link>
-                      </HStack>
+                      <Link aria-label="edit user" href={`/admin/user/${users.id}`}>
+                        <TooltipButton
+                          tooltipLabel="Redigera"
+                          size={['xs', 'sm']}
+                          bg="gray.200"
+                          leftIcon={<Icon as={RiEditLine} fontSize="16" />}
+                          iconSpacing="0"
+                        />
+                      </Link>
                     </Show>
                   </Td>
                 </Tr>
