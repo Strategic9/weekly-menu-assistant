@@ -2,7 +2,6 @@ import { Flex, Icon, IconButton, Box } from '@chakra-ui/react'
 import { useBreakpointValue } from '@chakra-ui/media-query'
 import { Logo } from './Logo'
 import { Profile } from './Profile'
-import { SearchBox } from './SearchBox'
 import { useSidebarDrawer } from '../../contexts/SidebarDrawerContext'
 import { RiMenuLine } from 'react-icons/ri'
 

@@ -28,7 +28,7 @@ const SearchDishBase: ForwardRefRenderFunction<HTMLInputElement, SearchDishProps
 ) => {
   const [openSearchInput, handleOpenSearchInput] = useState(false)
   const [results, setResults] = useState([])
-  const { data: useDishesData } = useDishes(null, {})
+  const { data: useDishesData } = useDishes(null, {}, {})
   const dishesData = useDishesData as GetDishesResponse
   const itemsList = dishesData?.dishes
 

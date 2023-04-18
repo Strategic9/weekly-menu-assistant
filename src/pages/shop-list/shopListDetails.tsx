@@ -90,7 +90,8 @@ export default function ShopListPage({ id, setId }) {
     const newIngredient = {
       name: grocery.name,
       amount: 1,
-      bought: false
+      bought: false,
+      measurementUnit: ''
     }
 
     const category = categoryData.items.find((category) => category.id === grocery.category.id).name
