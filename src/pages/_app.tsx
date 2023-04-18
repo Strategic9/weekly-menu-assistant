@@ -8,7 +8,7 @@ import { SessionProvider } from 'next-auth/react'
 import Head from 'next/head'
 import { Alert } from '../components/Alert'
 import '../styles/DatePicker.css'
-import { AppProvider } from '../cotexts/AppContext'
+import { AppProvider } from '../contexts/AppContext'
 
 const options: AlertProviderProps = {
   position: positions.BOTTOM_CENTER,

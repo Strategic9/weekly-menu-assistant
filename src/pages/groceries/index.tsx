@@ -29,7 +29,7 @@ import TooltipButton from '../../components/TooltipButton'
 import { useAlert } from 'react-alert'
 import PageWrapper from '../page-wrapper'
 import { MenuDishOptions } from '../../components/Options'
-import { AppContext } from '../../cotexts/AppContext'
+import { AppContext } from '../../contexts/AppContext'
 
 type UseGroceryData = {
   items: Grocery[]

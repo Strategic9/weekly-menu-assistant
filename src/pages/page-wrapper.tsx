@@ -3,7 +3,7 @@ import { useRouter } from 'next/router'
 import { ReactNode, useEffect, useState } from 'react'
 import { Header } from '../components/Header'
 import { Sidebar } from '../components/Sidebar'
-import { SidebarDrawerProvider } from '../cotexts/SidebarDrawerContext'
+import { SidebarDrawerProvider } from '../contexts/SidebarDrawerContext'
 import { localStorage } from '../services/localstorage'
 
 interface PageWrapperProps {

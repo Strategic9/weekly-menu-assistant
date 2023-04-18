@@ -5,7 +5,7 @@ import { FaShoppingBasket } from 'react-icons/fa'
 import { NavLink } from './NavLink'
 import { NavSection } from './NavSection'
 import { useContext, useEffect } from 'react'
-import { AppContext } from '../../cotexts/AppContext'
+import { AppContext } from '../../contexts/AppContext'
 import { getUser } from '../../services/hooks/useUser'
 import { localStorage } from '../../services/localstorage'
 

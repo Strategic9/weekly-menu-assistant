@@ -3,7 +3,7 @@ import { useBreakpointValue } from '@chakra-ui/media-query'
 import { Logo } from './Logo'
 import { Profile } from './Profile'
 import { SearchBox } from './SearchBox'
-import { useSidebarDrawer } from '../../cotexts/SidebarDrawerContext'
+import { useSidebarDrawer } from '../../contexts/SidebarDrawerContext'
 import { RiMenuLine } from 'react-icons/ri'
 
 export function Header() {
