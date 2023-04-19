@@ -44,7 +44,7 @@ export default function AdminPage() {
       .then(async () => {
         await queryClient.invalidateQueries(['users'])
         alert.success('Användare borttagen')
-        router.push('menu')
+        router.reload()
       })
       .catch(() => alert.error('Fel vid borttagning av användare'))
   }
