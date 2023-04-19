@@ -6,7 +6,7 @@ import { useContext } from 'react'
 import { AppContext } from '../contexts/AppContext'
 
 export default function Dish({ dish, dishIngredient, onMouseEnter, handleDeleteDish }) {
-  const { role } = useContext(AppContext)
+  const roleContext = useContext(AppContext)
 
   return (
     <Link href={`/dishes/view/${dish.id}`} passHref>
@@ -58,7 +58,7 @@ export default function Dish({ dish, dishIngredient, onMouseEnter, handleDeleteD
             </Flex>
           </Box>
 
-          {role === 'admin' && (
+          {roleContext === 'admin' && (
             <Box>
               <HStack>
                 <Button

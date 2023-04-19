@@ -1,6 +1,16 @@
-import { createContext, useState, useMemo } from 'react'
+import { Dispatch, SetStateAction, createContext, useMemo, useState } from 'react'
 
-const AppContext = createContext({ role: '', setRole: () => {} })
+type RoleContext = {
+  role: string
+  setRole: Dispatch<SetStateAction<string>>
+}
+
+const AppContext = createContext<RoleContext>({
+  role: '',
+  setRole: () => {
+    /** Empty */
+  }
+})
 
 const AppProvider = ({ children }) => {
   const [role, setRole] = useState('standard')

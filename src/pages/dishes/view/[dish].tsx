@@ -30,7 +30,7 @@ export default function ViewDishPage() {
   const { dish: dish_id } = router.query
   const { data } = useDish(dish_id as string)
   const totalStars = Array.from(Array(4 + 1), (_, i) => i)
-  const { role } = useContext(AppContext)
+  const roleContext = useContext(AppContext)
 
   const { data: useMeasurementUnitsData } = useMeasurementUnits(
     null,
@@ -158,7 +158,7 @@ export default function ViewDishPage() {
           <Flex justifyContent="space-between">
             {data?.dish?.name}
 
-            {role === 'admin' && (
+            {roleContext === 'admin' && (
               <Link href={`/dishes/edit/${data?.dish?.id}`} passHref>
                 <Button
                   pl={4}
