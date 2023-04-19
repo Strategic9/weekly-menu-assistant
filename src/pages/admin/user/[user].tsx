@@ -54,7 +54,7 @@ export default function UserPage() {
   } = useForm({
     resolver: yupResolver(createUserFormSchema)
   })
-  const roles = ['admin', 'user']
+  const roles = ['admin', 'standard']
   useEffect(() => {
     const selectedUser = async () => {
       setIsLoading(true)
