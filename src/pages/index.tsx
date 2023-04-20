@@ -93,6 +93,7 @@ export default function SignIn() {
     localStorage.set('username', res.data?.username)
     localStorage.set('email', res.data?.email)
     localStorage.set('user-id', res.data?.userId)
+    localStorage.set('role', res.data?.role)
     router.push('menu')
   }
 

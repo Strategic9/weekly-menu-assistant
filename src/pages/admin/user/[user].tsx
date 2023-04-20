@@ -19,7 +19,6 @@ import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup'
 import { useMutation } from 'react-query'
 
-import { Input } from '../../../components/Form/Input'
 import { HTTPHandler } from '../../../services/api'
 import { queryClient } from '../../../services/queryClient'
 import { useRouter } from 'next/router'
@@ -29,6 +28,7 @@ import PageWrapper from '../../page-wrapper'
 import { User } from '../../../services/hooks/useUsers'
 import { getUser } from '../../../services/hooks/useUser'
 import { RiDeleteBinLine } from 'react-icons/ri'
+import { Select } from '../../../components/Form/Select'
 
 type CreateUserFormData = {
   role: string
@@ -42,6 +42,7 @@ export default function UserPage() {
   const router = useRouter()
   const alert = useAlert()
   const { user: userId } = router.query
+  const [isSelected, setIsSelected] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [user, setUser] = useState<User>()
   const [error, setError] = useState(false)
@@ -53,7 +54,7 @@ export default function UserPage() {
   } = useForm({
     resolver: yupResolver(createUserFormSchema)
   })
-
+  const roles = ['admin', 'standard']
   useEffect(() => {
     const selectedUser = async () => {
       setIsLoading(true)
@@ -97,6 +98,7 @@ export default function UserPage() {
       .then(async () => {
         await queryClient.invalidateQueries('users')
         alert.success('Användare borttagen')
+        router.push('..')
       })
       .catch(() => alert.error('Fel vid borttagning av användare'))
   }
@@ -136,7 +138,9 @@ export default function UserPage() {
 
           <VStack spacing="8">
             <SimpleGrid minChildWidth="240px" spacing={['6', '8']} w="100%">
-              <Input label="Roll" error={errors.role} {...register('role')} />
+              <Select label="Roll" error={errors.role} {...register('role')}>
+                {roles.map((role, i) => <option value={role} key={i}>{role}</option>)}
+              </Select>
             </SimpleGrid>
           </VStack>
 

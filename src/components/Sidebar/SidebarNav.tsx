@@ -4,26 +4,11 @@ import { BiFoodMenu, BiRestaurant, BiCategory } from 'react-icons/bi'
 import { FaShoppingBasket } from 'react-icons/fa'
 import { NavLink } from './NavLink'
 import { NavSection } from './NavSection'
-import { useContext, useEffect } from 'react'
-import { AppContext } from '../../cotexts/AppContext'
-import { getUser } from '../../services/hooks/useUser'
 import { localStorage } from '../../services/localstorage'
 
 export function SidebarNav() {
-  const { role, setRole } = useContext(AppContext)
+  const role = localStorage.get('role')
 
-  const fetchData = async () => {
-    try {
-      const { data } = await getUser(localStorage.get('user-id'))
-      setRole(data.role)
-    } catch (error) {
-      console.error(error)
-    }
-  }
-
-  useEffect(() => {
-    fetchData()
-  }, [])
 
   return (
     <Stack spacing="6">
