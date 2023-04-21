@@ -139,7 +139,9 @@ export default function UserPage() {
             <SimpleGrid minChildWidth="240px" spacing={['6', '8']} w="100%">
               <Select label="Roll" error={errors.role} {...register('role')}>
                 {roles.map((role, i) => (
-                  <option value={role} key={i}>{role}</option>
+                  <option value={role} key={i}>
+                    {role}
+                    </option>
                 ))}
               </Select>
             </SimpleGrid>
