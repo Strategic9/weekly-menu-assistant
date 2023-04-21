@@ -41,7 +41,7 @@ export default function ShopListPage({ id, setId }) {
       setShopList(list)
       setIsLoading(false)
     }
-  }, [shopListId, shopList])
+  }, [])
 
   const { data: useCategoriesData } = useCategories(
     null,

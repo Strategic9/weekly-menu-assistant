@@ -4,6 +4,7 @@ import { HTTPHandler } from '../api'
 import { longDate, getDays } from '../utils'
 import { addShoppingList } from './useShoppingList'
 import { localStorage } from '../localstorage'
+import { boolean } from 'yup'
 
 export type Menu = {
   user: User
@@ -76,6 +77,7 @@ export async function getMenu(): Promise<any> {
     }
   })
   const items = JSON.parse(JSON.stringify(data?.items))
+
   if (items.length) {
     const menu = data.items.find(
       (menu) => new Date() >= new Date(menu.startDate) && new Date() <= new Date(menu.endDate)
@@ -105,16 +107,15 @@ export async function getMenu(): Promise<any> {
 // compare if there is a new week menu generated and returns an Array with the new shopping lists
 export const setShoppingLists = (cookieShopList, items) => {
   const cookiesListParsed = cookieShopList ? JSON.parse(cookieShopList) : []
-  const shoppingLists = []
-  items.map((item) => {
+  const newShopList = items.map((item) => {
     if (!cookieShopList) {
-      shoppingLists.push(generateShopList(item))
+      return generateShopList(item)
     } else {
-      const isAlreadyAdded = cookiesListParsed.find((cookie) => cookie.id === item.id)
-      !isAlreadyAdded && shoppingLists.push(generateShopList(item))
+      const menuExist = cookiesListParsed.find((cookie) => cookie.id === item.id)
+      const shoppingListItem = !menuExist ? generateShopList(menuExist) : []
+      return { ...generateShopList(item), ...shoppingListItem }
     }
   })
-  const newShopList = cookiesListParsed.concat(shoppingLists)
   addShoppingList(newShopList)
 }
 
