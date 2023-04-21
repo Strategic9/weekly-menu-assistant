@@ -25,15 +25,6 @@ import { useAlert } from 'react-alert'
 import PageWrapper from '../page-wrapper'
 import TooltipButton from '../../components/TooltipButton'
 
-type User = {
-  id: string
-  firstName: string
-  lastName: string
-  role: string
-  createdAt: string
-  updatedAt: string
-}
-
 export default function AdminPage() {
   const router = useRouter()
   const alert = useAlert()

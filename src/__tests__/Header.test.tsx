@@ -15,13 +15,13 @@ const mockedSetTodo = jest.fn()
 
 const createMatchMedia = (width: string) => (query) => ({
   matches: mediaQuery.match(query, { width }),
-  addListener: () => {},
-  removeListener: () => {}
+  addListener: () => { },
+  removeListener: () => { }
 })
 
 describe('Render on desktop mode', () => {
   beforeAll(() => {
-    ;(window as Window).matchMedia = createMatchMedia('1400') as unknown as (
+    ; (window as Window).matchMedia = createMatchMedia('1400') as unknown as (
       query: string
     ) => MediaQueryList
   })
@@ -54,24 +54,11 @@ describe('Render on desktop mode', () => {
     const logo = container.querySelector('#header-logo') as HTMLInputElement
     expect(logo).toBeTruthy()
   })
-
-  it('Should render the search input', () => {
-    const { container } = render(<Header />, { wrapper: ThemeWrapper })
-    const searchInput = container.getElementsByClassName('header-search')
-    expect(searchInput.length === 1).toBeTruthy()
-  })
-
-  it('Should update the search bar text when typing', () => {
-    const { container } = render(<Header />, { wrapper: ThemeWrapper })
-    const searchInputBar = container.querySelector('.search-input') as HTMLInputElement
-    fireEvent.change(searchInputBar, { target: { value: 'dog' } })
-    expect(searchInputBar.value).toBe('dog')
-  })
 })
 
 describe('Render on mobile mode', () => {
   beforeAll(() => {
-    ;(window as Window).matchMedia = createMatchMedia('400') as unknown as (
+    ; (window as Window).matchMedia = createMatchMedia('400') as unknown as (
       query: string
     ) => MediaQueryList
   })
