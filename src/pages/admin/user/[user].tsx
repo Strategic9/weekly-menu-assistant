@@ -42,7 +42,6 @@ export default function UserPage() {
   const router = useRouter()
   const alert = useAlert()
   const { user: userId } = router.query
-  const [isSelected, setIsSelected] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [user, setUser] = useState<User>()
   const [error, setError] = useState(false)
@@ -139,7 +138,11 @@ export default function UserPage() {
           <VStack spacing="8">
             <SimpleGrid minChildWidth="240px" spacing={['6', '8']} w="100%">
               <Select label="Roll" error={errors.role} {...register('role')}>
-                {roles.map((role, i) => <option value={role} key={i}>{role}</option>)}
+                {roles.map((role, i) => (
+                  <option value={role} key={i}>
+                    {role}
+                  </option>
+                ))}
               </Select>
             </SimpleGrid>
           </VStack>

@@ -9,7 +9,6 @@ import { localStorage } from '../../services/localstorage'
 export function SidebarNav() {
   const role = localStorage.get('role')
 
-
   return (
     <Stack spacing="6">
       <NavSection title="Menyer" icon={BiFoodMenu} activePath="/menu">
