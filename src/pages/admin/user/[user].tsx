@@ -141,7 +141,7 @@ export default function UserPage() {
                 {roles.map((role, i) => (
                   <option value={role} key={i}>
                     {role}
-                    </option>
+                  </option>
                 ))}
               </Select>
             </SimpleGrid>
