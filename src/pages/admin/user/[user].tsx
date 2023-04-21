@@ -138,8 +138,9 @@ export default function UserPage() {
           <VStack spacing="8">
             <SimpleGrid minChildWidth="240px" spacing={['6', '8']} w="100%">
               <Select label="Roll" error={errors.role} {...register('role')}>
-                {roles.map((role, i) =>
-                  <option value={role} key={i}></option>)}
+                {roles.map((role, i) => (
+                  <option value={role} key={i}></option>
+                ))}
               </Select>
             </SimpleGrid>
           </VStack>
