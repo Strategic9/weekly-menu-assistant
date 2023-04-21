@@ -41,7 +41,7 @@ export default function GroceryList() {
   const [offset, setOffset] = useState(0)
   const registersPerPage = 10
 
-  const roleContext = useContext(AppContext)
+  const { role } = useContext(AppContext)
 
   const {
     data: useGroceriesData,
@@ -100,7 +100,7 @@ export default function GroceryList() {
                   <Show breakpoint="(min-width: 400px)">
                     <Th fontSize={[14, 15, 18]}>kategori</Th>
                   </Show>
-                  {roleContext === 'admin' && (
+                  {role === 'admin' && (
                     <Th fontSize={[14, 16, 18]} width="8">
                       händelser
                     </Th>
@@ -126,7 +126,7 @@ export default function GroceryList() {
                         )}
                       </Td>
                     </Show>
-                    {roleContext === 'admin' && (
+                    {role === 'admin' && (
                       <Td>
                         <Show breakpoint="(max-width: 400px)">
                           <MenuDishOptions

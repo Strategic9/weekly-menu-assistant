@@ -48,7 +48,7 @@ type UseCategoryData = {
 export default function CategoryList() {
   const [page, setPage] = useState(1)
   const [offset, setOffset] = useState(0)
-  const roleContext = useContext(AppContext)
+  const { role } = useContext(AppContext)
   const registersPerPage = 10
   const {
     data: useCategoriesData,
@@ -107,7 +107,7 @@ export default function CategoryList() {
               <Thead bg="gray.200" fontSize="14px" color="black">
                 <Tr fontSize="14px">
                   <Th fontSize={[14, 15, 18]}>Kategori</Th>
-                  {roleContext === 'admin' && (
+                  {role === 'admin' && (
                     <Th fontSize={[14, 15, 18]} width="8">
                       händelser
                     </Th>
@@ -124,7 +124,7 @@ export default function CategoryList() {
                         </Text>
                       </Box>
                     </Td>
-                    {roleContext === 'admin' && (
+                    {role === 'admin' && (
                       <Td>
                         <Show breakpoint="(max-width: 400px)">
                           <MenuDishOptions
