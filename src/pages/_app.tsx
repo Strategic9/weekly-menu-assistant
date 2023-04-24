@@ -18,13 +18,15 @@ const options: AlertProviderProps = {
   template: Alert
 }
 
-function MyApp({ Component, pageProps }: AppProps) {
+function MyApp({ Component, pageProps: {session, ...pageProps} }) {
   return (
     <>
       <Head>
         <title>Your AI menu assistant | Forkify</title>
       </Head>
-      <SessionProvider session={pageProps.session}>
+      <SessionProvider session={session}>
+        {console.log(session)}
+        
         <QueryClientProvider client={queryClient}>
           <AppProvider>
             <ChakraProvider theme={theme}>
