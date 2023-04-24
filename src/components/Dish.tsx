@@ -3,7 +3,7 @@ import { RiEditLine, RiDeleteBinLine } from 'react-icons/ri'
 import Link from 'next/link'
 import { placeholderImage } from '../services/utils'
 import { useContext } from 'react'
-import { AppContext } from '../cotexts/AppContext'
+import { AppContext } from '../contexts/AppContext'
 
 export default function Dish({ dish, dishIngredient, onMouseEnter, handleDeleteDish }) {
   const { role } = useContext(AppContext)

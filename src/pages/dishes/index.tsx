@@ -17,7 +17,10 @@ type Dish = {
   image: string
   recipe: string
   created_at: string
-  ingredients: Array<{ grocery: Grocery }>
+  ingredients: Array<{
+    isMain: boolean
+    grocery: Grocery
+  }>
 }
 
 type UseDishData = {
@@ -72,9 +75,7 @@ export default function DishList() {
 
   function getDishIngredients(dish: Dish) {
     return !!dish.ingredients && dish.ingredients.length > 0
-      ? dish.ingredients.sort((a, b) => {
-          return a.isMain - b.isMain
-        })
+      ? dish.ingredients.sort((a, b) => Number(a.isMain) - Number(b.isMain))
       : []
   }
 

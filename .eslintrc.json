@@ -14,8 +14,7 @@
     "plugin:@typescript-eslint/recommended",
     "plugin:prettier/recommended"
   ],
-  "overrides": [
-  ],
+  "overrides": [],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaVersion": "latest",
@@ -26,8 +25,10 @@
     "@typescript-eslint"
   ],
   "rules": {
-      "react/react-in-jsx-scope": "off",
-      "react/prop-types": "off"
+    "react/react-in-jsx-scope": "off",
+    "react/prop-types": "off",
+    "react/no-unescaped-entities": "off",
+    "@next/next/no-page-custom-font": "off"
   },
   "ignorePatterns": "src/__tests__/*"
 }

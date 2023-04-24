@@ -31,7 +31,7 @@ import PageWrapper from '../page-wrapper'
 import { MenuDishOptions } from '../../components/Options'
 import Head from 'next/head'
 import { useContext } from 'react'
-import { AppContext } from '../../cotexts/AppContext'
+import { AppContext } from '../../contexts/AppContext'
 
 type Category = {
   id: string

@@ -5,7 +5,7 @@ import { FaShoppingBasket } from 'react-icons/fa'
 import { NavLink } from './NavLink'
 import { NavSection } from './NavSection'
 import { useContext, useEffect } from 'react'
-import { AppContext } from '../../cotexts/AppContext'
+import { AppContext } from '../../contexts/AppContext'
 import { getUser } from '../../services/hooks/useUser'
 import { localStorage } from '../../services/localstorage'
 
@@ -44,6 +44,11 @@ export function SidebarNav() {
         <NavLink href="/categories">Kategorier</NavLink>
         {role === 'admin' && <NavLink href="/categories/add">Lägg till kategori</NavLink>}
       </NavSection>
+      {role === 'admin' && (
+        <NavSection title="Administrera" icon={BiCategory} activePath="/admin">
+          <NavLink href="/admin">Användare</NavLink>
+        </NavSection>
+      )}
       <NavLink className="sidebar-text" icon={RiListCheck} href="/shop-list">
         Inköpslistor
       </NavLink>
