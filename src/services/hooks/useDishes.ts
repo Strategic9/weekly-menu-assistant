@@ -9,6 +9,7 @@ export type Dish = {
   description: string
   ingredients: {
     grocery: Grocery
+    quantity: number
   }[]
   createdAt: string
   mainIngredient: Grocery

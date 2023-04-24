@@ -23,7 +23,7 @@ import {
   useMeasurementUnits
 } from '../../../services/hooks/useMeasurementUnit'
 import { useContext } from 'react'
-import { AppContext } from '../../../cotexts/AppContext'
+import { AppContext } from '../../../contexts/AppContext'
 
 export default function ViewDishPage() {
   const router = useRouter()

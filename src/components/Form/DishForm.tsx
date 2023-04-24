@@ -104,6 +104,7 @@ export default function DishForm(props: DishFormParams) {
   const ingredients: any = props.initialData?.ingredients.filter((i: any) => !i.isMain)
 
   const [ingredientId, setIngredientId] = useState('')
+
   const [indexIngredient, setIndexIngredient] = useState<number>()
 
   const [addIngredient, setAddIngredient] = useState<boolean>()
@@ -186,7 +187,7 @@ export default function DishForm(props: DishFormParams) {
       append({ id: ingredientId, name: name, quantity: quantity, measurementUnitId: mUnit })
 
       setAddIngredient(false)
-      setIngredientsError({})
+      setIngredientsError({ quantity: '', measurement: '' })
       setShowEditIngredient(false)
     } else if (!quantityExists || !mUnit) {
       setIngredientsError({
@@ -209,7 +210,7 @@ export default function DishForm(props: DishFormParams) {
         quantity: quantity,
         measurementUnitId: mUnit
       })
-      setIngredientsError({})
+      setIngredientsError({ quantity: '', measurement: '' })
       setShowEditIngredient(false)
     } else if (!quantityExists || !mUnit) {
       setIngredientsError({
@@ -223,6 +224,7 @@ export default function DishForm(props: DishFormParams) {
     const nameExists = fields.map((item) => item?.name).includes(el.name)
 
     const index = fields.map((item) => item?.name).indexOf(el.name)
+
     setIngredientExists(nameExists)
     nameExists ? openIngredientTag(fields[index], index) : addIngredientName(el)
   }
@@ -352,10 +354,10 @@ export default function DishForm(props: DishFormParams) {
                 measurementUnitsData={measurementUnitsData}
                 ingredientsError={ingredientsError}
                 register={register}
-                trigger={trigger}
+                // trigger={trigger}
                 setShowEditIngredient={setShowEditIngredient}
                 addIngredient={addIngredient ? addNewIngredient : updateIngredient}
-                errors={errors}
+                // errors={errors}
               />
             )}
             <Wrap mt="15px">

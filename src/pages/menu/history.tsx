@@ -63,7 +63,7 @@ export default function Menu() {
           <div>
             {menusHistory &&
               menusHistory.map((menu) => (
-                <>
+                <Box key={menu.id}>
                   <Box mt="10" mb="6">
                     <Flex maxW="100%">
                       <Box mr="16px">
@@ -103,7 +103,7 @@ export default function Menu() {
                     (menuDish) =>
                       !menuDish.dish.id.includes('empty') && (
                         <Flex key={menuDish.dish.id} mb="10px">
-                          <VStack key={menuDish.dish.id} w={['90px', '170px']}>
+                          <VStack w={['90px', '170px']}>
                             <Flex
                               key={menuDish.id.toString()}
                               w="100%"
@@ -128,7 +128,6 @@ export default function Menu() {
 
                           <VStack flex={1}>
                             <HStack
-                              key={menuDish.dish.id}
                               w="100%"
                               h={16}
                               px={4}
@@ -154,7 +153,7 @@ export default function Menu() {
                         </Flex>
                       )
                   )}
-                </>
+                </Box>
               ))}
           </div>
         )}

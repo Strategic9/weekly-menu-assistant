@@ -11,7 +11,7 @@ import { FieldError } from 'react-hook-form'
 interface TextAreaProps extends ChakraTextareaProps {
   name: string
   label?: string
-  error?: FieldError
+  error?: FieldError | Merge<FieldError, FieldErrorsImpl<any>>
 }
 
 const TextAreaBase: ForwardRefRenderFunction<HTMLSelectElement, TextAreaProps> = (
