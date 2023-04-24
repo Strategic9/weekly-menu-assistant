@@ -4,7 +4,6 @@ import { HTTPHandler } from '../api'
 import { longDate, getDays } from '../utils'
 import { addShoppingList } from './useShoppingList'
 import { localStorage } from '../localstorage'
-import { boolean } from 'yup'
 
 export type Menu = {
   user: User
