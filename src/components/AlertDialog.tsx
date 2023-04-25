@@ -30,6 +30,11 @@ export default function AlertDialog({
   const { isOpen, onOpen, onClose } = useDisclosure()
   const cancelRef = useRef()
 
+  const ValidateAlertDialog = () => {
+    onClose()
+    onConfirm()
+  }
+
   return (
     <>
       <Button onClick={onOpen} {...buttonProps}>
@@ -52,7 +57,7 @@ export default function AlertDialog({
             <Button ref={cancelRef} onClick={onClose}>
               Nej
             </Button>
-            <Button colorScheme="oxblood" ml={3} onClick={onConfirm}>
+            <Button colorScheme="oxblood" ml={3} onClick={ValidateAlertDialog}>
               Ja
             </Button>
           </AlertDialogFooter>
