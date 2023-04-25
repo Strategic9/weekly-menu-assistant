@@ -33,6 +33,7 @@ export default function ShopListPage({ id, setId }) {
   const [shopList, setShopList] = useState<ShopList>()
   const [error, setError] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [hasUpdates, setHasUpdates] = useState(false)
 
   useEffect(() => {
     if (shopListId) {
@@ -40,8 +41,9 @@ export default function ShopListPage({ id, setId }) {
       const list = getShoppingListByID(shopListId as string)
       setShopList(list)
       setIsLoading(false)
+      setHasUpdates(false)
     }
-  }, [])
+  }, [hasUpdates])
 
   const { data: useCategoriesData } = useCategories(
     null,
@@ -125,6 +127,7 @@ export default function ShopListPage({ id, setId }) {
     shopList.categories[category].splice(index, 1)
 
     updateShoppingList(shopList)
+    setHasUpdates(true)
     alert.success('Ingrediens borttagen')
   }
 

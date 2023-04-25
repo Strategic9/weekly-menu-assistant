@@ -30,6 +30,11 @@ export default function AlertDialog({
   const { isOpen, onOpen, onClose } = useDisclosure()
   const cancelRef = useRef()
 
+  const ValidateAlertDialog = () => {
+    onClose()
+    onConfirm()
+  }
+
   return (
     <>
       <Button onClick={onOpen} {...buttonProps}>
