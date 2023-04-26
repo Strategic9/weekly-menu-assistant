@@ -106,15 +106,16 @@ export async function getMenu(): Promise<any> {
 // compare if there is a new week menu generated and returns an Array with the new shopping lists
 export const setShoppingLists = (cookieShopList, items) => {
   const cookiesListParsed = cookieShopList ? JSON.parse(cookieShopList) : []
-  const newShopList = items.map((item) => {
+  const shoppingLists = []
+  items.map((item) => {
     if (!cookieShopList) {
-      return generateShopList(item)
+      shoppingLists.push(generateShopList(item))
     } else {
-      const menuExist = cookiesListParsed.find((cookie) => cookie.id === item.id)
-      const shoppingListItem = !menuExist ? generateShopList(menuExist) : []
-      return { ...generateShopList(item), ...shoppingListItem }
+      const isAlreadyAdded = cookiesListParsed.find((cookie) => cookie.id === item.id)
+      !isAlreadyAdded && shoppingLists.push(generateShopList(item))
     }
   })
+  const newShopList = cookiesListParsed.concat(shoppingLists)
   addShoppingList(newShopList)
 }
 
