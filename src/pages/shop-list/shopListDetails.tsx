@@ -93,7 +93,7 @@ export default function ShopListPage({ id, setId }) {
       name: grocery.name,
       amount: 1,
       bought: false,
-      measurementUnit: ''
+      measurementUnit: '1 st'
     }
 
     const category = categoryData.items.find((category) => category.id === grocery.category.id).name
@@ -120,6 +120,7 @@ export default function ShopListPage({ id, setId }) {
       shopList.categories[category].push(newIngredient)
     }
     updateShoppingList(shopList)
+    setHasUpdates(true)
     alert.success('Ingrediens tillagd')
   }
 
@@ -145,7 +146,7 @@ export default function ShopListPage({ id, setId }) {
     if (!shopList || isLoading) {
       return null
     } else {
-      const ingredientValue = parseInt(localGrocery?.measurementUnit?.match(/^\d+/)[0])
+      const ingredientValue = parseInt(localGrocery?.measurementUnit)
       const updatedValue = ingredientValue * localGrocery?.amount
 
       localGrocery.measurementUnit = localGrocery?.measurementUnit?.replace(
