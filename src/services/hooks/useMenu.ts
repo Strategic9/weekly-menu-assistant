@@ -129,6 +129,7 @@ function generateShopList(menu: Menu) {
         const category = ingredient.grocery.category ? ingredient.grocery.category.name : 'övrigt'
         const hasEntry = !!shopList.categories[category]
         const productMeasurement = `${ingredient.quantity} ${ingredient.grocery?.measurementUnits[0]?.measurementUnit?.name}`
+        const addMeasurement = productMeasurement.replace('undefined', 'st')
         if (!hasEntry) {
           shopList.categories[category] = []
         }
@@ -141,7 +142,7 @@ function generateShopList(menu: Menu) {
             name: ingredient.grocery.name,
             amount: 1,
             bought: false,
-            measurementUnit: productMeasurement
+            measurementUnit: addMeasurement
           })
         } else {
           grocery.amount++
