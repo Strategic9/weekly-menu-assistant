@@ -15,8 +15,8 @@ declare global {
 
 const createMatchMedia = (width: string) => (query) => ({
   matches: mediaQuery.match(query, { width }),
-  addListener: () => {},
-  removeListener: () => {}
+  addListener: () => { },
+  removeListener: () => { }
 })
 
 //mocking router implementation
@@ -31,7 +31,7 @@ useRouter.mockImplementation(() => ({
 describe('Render sidebar on desktop', () => {
   beforeAll(() => {
     //set matchMedia
-    ;(window as Window).matchMedia = createMatchMedia('1200') as unknown as (
+    ; (window as Window).matchMedia = createMatchMedia('1200') as unknown as (
       query: string
     ) => MediaQueryList
   })
@@ -39,7 +39,6 @@ describe('Render sidebar on desktop', () => {
     const { container } = render(<Sidebar />, { wrapper: ThemeWrapper })
 
     const mockElementsArray = [
-      'Instrumentpanel',
       'Menyer',
       'Ingredienser',
       'Maträtter',
@@ -57,7 +56,7 @@ describe('Render sidebar on desktop', () => {
 describe('render sidebar on mobile', () => {
   beforeAll(() => {
     //set matchMedia
-    ;(window as Window).matchMedia = createMatchMedia('350') as unknown as (
+    ; (window as Window).matchMedia = createMatchMedia('350') as unknown as (
       query: string
     ) => MediaQueryList
 

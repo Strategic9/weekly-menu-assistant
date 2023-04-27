@@ -76,6 +76,7 @@ export async function getMenu(): Promise<any> {
     }
   })
   const items = JSON.parse(JSON.stringify(data?.items))
+
   if (items.length) {
     const menu = data.items.find(
       (menu) => new Date() >= new Date(menu.startDate) && new Date() <= new Date(menu.endDate)
@@ -129,6 +130,7 @@ function generateShopList(menu: Menu) {
         const category = ingredient.grocery.category ? ingredient.grocery.category.name : 'övrigt'
         const hasEntry = !!shopList.categories[category]
         const productMeasurement = `${ingredient.quantity} ${ingredient.grocery?.measurementUnits[0]?.measurementUnit?.name}`
+        const addMeasurement = productMeasurement.replace('undefined', 'st')
         if (!hasEntry) {
           shopList.categories[category] = []
         }
@@ -141,7 +143,7 @@ function generateShopList(menu: Menu) {
             name: ingredient.grocery.name,
             amount: 1,
             bought: false,
-            measurementUnit: productMeasurement
+            measurementUnit: addMeasurement
           })
         } else {
           grocery.amount++
