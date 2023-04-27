@@ -101,7 +101,7 @@ export const EmptyMenuItem = ({
   isWideVersion
 }) => {
   return (
-    <Draggable draggableId={menuDish.id} index={index}>
+    <Draggable draggableId={index.toString()} index={index}>
       {(provided) => (
         <HStack
           w="100%"
