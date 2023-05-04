@@ -9,6 +9,7 @@ export type Grocery = {
   name: string
   category: Category
   createdAt: string
+  amount: number
   measurementUnits: MeasurementUnit
 }
 
@@ -75,6 +76,7 @@ export async function getGroceryById(groceryId: string, include: string) {
     id: data.id,
     name: data.name,
     category: data.category,
+    amount: data.amount,
     measurementUnits: data.measurementUnits,
     createdAt: setDate(data)
   }

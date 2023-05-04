@@ -34,6 +34,7 @@ export type CreateGroceryFormData = {
   id?: string
   name: string
   categoryId: string
+  amount: number
   measurementUnitId: string
 }
 
@@ -105,6 +106,7 @@ export default function GroceryForm(props: GroceryFormParams) {
       } else return null
     }
   }
+  const amountData = [1,2,3,4,5,6,7,8,9,10]
 
   return (
     <Box
@@ -134,6 +136,18 @@ export default function GroceryForm(props: GroceryFormParams) {
             {categoryData?.items.map((category) => (
               <option key={category.id} value={category.id}>
                 {category.name}
+              </option>
+            ))}
+          </Select>
+          <Select
+            name="Amount"
+            label="Antal"
+            error={errors.amount}
+            {...register('amount')}
+          >
+            {amountData?.map((unit, index) => (
+              <option key={index} value={unit}>
+                {unit}
               </option>
             ))}
           </Select>
@@ -199,6 +213,7 @@ export function GroceryFormModal({
         category: {
           id: grocery.categoryId
         },
+        amount: grocery.amount,
         measurementUnits: [
           {
             id: grocery.measurementUnitId
@@ -241,6 +256,7 @@ export function GroceryFormModal({
             id: '',
             name: newIngredient,
             measurementUnits: null,
+            amount: null,
             category: null,
             createdAt: null
           }}
