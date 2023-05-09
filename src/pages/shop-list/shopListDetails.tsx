@@ -147,9 +147,8 @@ export default function ShopListPage({ id, setId }) {
       const ingredientValue = parseInt(localGrocery?.measurementUnit)
       const updatedValue = ingredientValue * 1
 
-      localGrocery.measurementUnit = localGrocery?.measurementUnit?.toString().replace(
-        `${ingredientValue}`,
-        `${updatedValue}`
+      localGrocery.measurementUnit = localGrocery?.measurementUnit?.toString()
+        .replace(`${ingredientValue}`, `${updatedValue}`
       )
 
       return (
