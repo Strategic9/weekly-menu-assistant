@@ -43,7 +43,7 @@ const SearchIngredientBase: ForwardRefRenderFunction<HTMLInputElement, SearchIng
   const filterResults = (e) => {
     const text = e.target.value
     let results = itemsList
-    if (text != '') {
+    if (text && text != '') {
       const noMatch = itemsList.every((item) => item.name !== text)
       setNewIngredient(noMatch ? text : '')
       results = itemsList.filter((item) => item.name.toLowerCase().startsWith(text.toLowerCase()))
