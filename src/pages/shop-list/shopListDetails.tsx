@@ -91,7 +91,7 @@ export default function ShopListPage({ id, setId }) {
       name: grocery.name,
       amount: grocery.amount,
       bought: false,
-      measurementUnit: grocery.measurementUnits.name
+      measurementUnit: grocery.amount +' st'
     }
 
     const category = categoryData.items.find((category) => category.id === grocery.category.id).name
@@ -145,9 +145,9 @@ export default function ShopListPage({ id, setId }) {
       return null
     } else {
       const ingredientValue = parseInt(localGrocery?.measurementUnit)
-      const updatedValue = ingredientValue * localGrocery?.amount
+      const updatedValue = ingredientValue * 1
 
-      localGrocery.measurementUnit = localGrocery?.measurementUnit?.replace(
+      localGrocery.measurementUnit = localGrocery?.measurementUnit?.toString().replace(
         `${ingredientValue}`,
         `${updatedValue}`
       )
