@@ -91,7 +91,7 @@ export default function ShopListPage({ id, setId }) {
       name: grocery.name,
       amount: grocery.amount,
       bought: false,
-      measurementUnit: grocery.amount +' st'
+      measurementUnit: grocery.amount + ' st'
     }
 
     const category = categoryData.items.find((category) => category.id === grocery.category.id).name

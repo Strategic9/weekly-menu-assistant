@@ -106,7 +106,7 @@ export default function GroceryForm(props: GroceryFormParams) {
       } else return null
     }
   }
-  const amountData = [1,2,3,4,5,6,7,8,9,10]
+  const amountData = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
   return (
     <Box
@@ -139,12 +139,7 @@ export default function GroceryForm(props: GroceryFormParams) {
               </option>
             ))}
           </Select>
-          <Select
-            name="Amount"
-            label="Antal"
-            error={errors.amount}
-            {...register('amount')}
-          >
+          <Select name="Amount" label="Antal" error={errors.amount} {...register('amount')}>
             {amountData?.map((unit, index) => (
               <option key={index} value={unit}>
                 {unit}
