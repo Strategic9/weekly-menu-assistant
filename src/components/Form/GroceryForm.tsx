@@ -251,6 +251,7 @@ export function GroceryFormModal({
             id: '',
             name: newIngredient,
             measurementUnits: null,
+            isMain: null,
             amount: null,
             category: null,
             createdAt: null

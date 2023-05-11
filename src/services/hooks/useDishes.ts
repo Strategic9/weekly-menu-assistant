@@ -9,10 +9,10 @@ export type Dish = {
   description: string
   ingredients: {
     grocery: Grocery
+    isMain: boolean
     quantity: number
   }[]
   createdAt: string
-  mainIngredient: Grocery
   recipe: string
 }
 
@@ -38,7 +38,6 @@ export async function getDishes(page: number, pageLimit = {}): Promise<GetDishes
       ingredients: dish.ingredients,
       image: dish.image,
       recipe: dish.recipe,
-      mainIngredient: dish.mainIngredient,
       temperature: dish.temperature,
       rate: dish.rate,
       portions: dish.portions,
