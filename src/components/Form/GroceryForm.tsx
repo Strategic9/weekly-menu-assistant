@@ -48,7 +48,8 @@ interface GroceryFormParams {
 const createGroceryFormSchema = yup.object({
   name: yup.string().required('Namn måste anges'),
   categoryId: yup.string().required('En kategori måste väljas'),
-  measurementUnitId: yup.string().required('En måttenhet måste väljas')
+  measurementUnitId: yup.string().required('En måttenhet måste väljas'),
+  amount: yup.number().required('Antal/volym måste anges')
 })
 
 export default function GroceryForm(props: GroceryFormParams) {
