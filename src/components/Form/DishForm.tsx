@@ -221,9 +221,9 @@ export default function DishForm(props: DishFormParams) {
   }
 
   const handleAddorUpdate = (el) => {
-    const nameExists = fields.map((item) => item?.name).includes(el.name)
+    const nameExists = fields.map((item) => item?.id).includes(el.name)
 
-    const index = fields.map((item) => item?.name).indexOf(el.name)
+    const index = fields.map((item) => item?.id).indexOf(el.name)
 
     setIngredientExists(nameExists)
     nameExists ? openIngredientTag(fields[index], index) : addIngredientName(el)

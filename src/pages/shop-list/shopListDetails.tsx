@@ -41,7 +41,7 @@ export default function ShopListPage({ id, setId }) {
       setShopList(list)
       setIsLoading(false)
     }
-  }, [shopListId, shopList])
+  }, [shopListId])
 
   const { data: useCategoriesData } = useCategories(
     null,
@@ -89,9 +89,9 @@ export default function ShopListPage({ id, setId }) {
   function handleAddGrocery(grocery: Grocery) {
     const newIngredient = {
       name: grocery.name,
-      amount: 1,
+      amount: grocery.amount,
       bought: false,
-      measurementUnit: '1 st'
+      measurementUnit: grocery.amount + ' st'
     }
 
     const category = categoryData.items.find((category) => category.id === grocery.category.id).name
@@ -118,6 +118,7 @@ export default function ShopListPage({ id, setId }) {
       shopList.categories[category].push(newIngredient)
     }
     updateShoppingList(shopList)
+    router.push(`../shop-list/${shopListId}`)
     alert.success('Ingrediens tillagd')
   }
 
@@ -125,6 +126,7 @@ export default function ShopListPage({ id, setId }) {
     shopList.categories[category].splice(index, 1)
 
     updateShoppingList(shopList)
+    router.push(`../shop-list/${shopListId}`)
     alert.success('Ingrediens borttagen')
   }
 
@@ -143,13 +145,10 @@ export default function ShopListPage({ id, setId }) {
       return null
     } else {
       const ingredientValue = parseInt(localGrocery?.measurementUnit)
-      const updatedValue = ingredientValue * localGrocery?.amount
-
-      localGrocery.measurementUnit = localGrocery?.measurementUnit?.replace(
-        `${ingredientValue}`,
-        `${updatedValue}`
-      )
-
+      const updatedValue = ingredientValue * 1
+      localGrocery.measurementUnit = localGrocery?.measurementUnit
+        .toString()
+        .replace(`${ingredientValue}`, `${updatedValue}`)
       return (
         <Text ml="2" lineHeight={'initial'} fontSize={[14, 15]} color="gray.400">
           {localGrocery?.measurementUnit}

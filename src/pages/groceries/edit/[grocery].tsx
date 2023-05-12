@@ -3,9 +3,9 @@ import { Flex, Text, Spinner } from '@chakra-ui/react'
 import { SubmitHandler } from 'react-hook-form'
 import { useMutation } from 'react-query'
 
-import { api, HTTPHandler } from '../../../services/api'
+import { HTTPHandler } from '../../../services/api'
 import { queryClient } from '../../../services/queryClient'
-import { getGroceryById, Grocery, useGrocery } from '../../../services/hooks/useGroceries'
+import { getGroceryById, Grocery } from '../../../services/hooks/useGroceries'
 import { useRouter } from 'next/router'
 import { useAlert } from 'react-alert'
 import GroceryForm, { CreateGroceryFormData } from '../../../components/Form/GroceryForm'
@@ -49,6 +49,7 @@ export default function GroceryPage() {
           category: {
             id: grocery.categoryId
           },
+          amount: grocery.amount,
           measurementUnits: [
             {
               id: grocery.measurementUnitId

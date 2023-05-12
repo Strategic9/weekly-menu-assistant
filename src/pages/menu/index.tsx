@@ -325,7 +325,7 @@ export default function Menu() {
                         localData.menu.dishes.map((menuDish, index) =>
                           menuDish.dish.id.includes('empty') ? (
                             <EmptyMenuItem
-                              key={menuDish.id}
+                              key={index.toString()}
                               menuDish={menuDish}
                               setLocalData={setLocalData}
                               index={index}
