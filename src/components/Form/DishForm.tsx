@@ -494,6 +494,7 @@ export function DishFormModal({
           name: newDish,
           description: '',
           ingredients: [],
+          mainIngredient: null,
           mainMeasurementUnitId: null,
           recipe: '',
           createdAt: null,
