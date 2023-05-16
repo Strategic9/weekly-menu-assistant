@@ -362,11 +362,11 @@ export default function DishForm(props: DishFormParams) {
             )}
             <Wrap mt="15px">
               {fields.map(
-                  (ingredient: {
-                    id: string
-                    name: string
-                    quantity: string
-                    measurementUnitId: string
+                (ingredient: {
+                  id: string
+                  name: string
+                  quantity: string
+                  measurementUnitId: string
                   }) => (
                   <Tag
                     p="0.4em"
