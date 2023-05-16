@@ -38,10 +38,11 @@ const SearchDishBase: ForwardRefRenderFunction<HTMLInputElement, SearchDishProps
     if (text != '') {
       results = itemsList.filter((item) => item.name.toLowerCase().startsWith(text.toLowerCase()))
     }
-    setsearchResults(results?.slice(0, 20))
+    setsearchResults(results?.slice(0, 10))
   }
 
   useEffect(() => {
+    handleOpenSearchInput(true)
     setsearchResults(itemsList?.slice(0, 10))
   }, [itemsList])
 
