@@ -367,7 +367,7 @@ export default function DishForm(props: DishFormParams) {
                   name: string
                   quantity: string
                   measurementUnitId: string
-                  }) => (
+                }) => (
                   <Tag
                     p="0.4em"
                     onClick={() => handleAddorUpdate(ingredient)}
