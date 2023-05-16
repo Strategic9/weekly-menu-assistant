@@ -6,7 +6,7 @@ import {
   FormErrorMessage
 } from '@chakra-ui/react'
 import { forwardRef, ForwardRefRenderFunction } from 'react'
-import { FieldError } from 'react-hook-form'
+import { FieldError, FieldErrorsImpl, Merge } from 'react-hook-form'
 
 interface SelectProps extends ChakraSelectProps {
   name: string

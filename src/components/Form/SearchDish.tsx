@@ -1,4 +1,4 @@
-import { forwardRef, ForwardRefRenderFunction, useEffect, useState } from 'react'
+import { ChangeEvent, forwardRef, ForwardRefRenderFunction, useEffect, useState } from 'react'
 import {
   InputProps as ChakraInputProps,
   useDisclosure,
@@ -27,22 +27,23 @@ const SearchDishBase: ForwardRefRenderFunction<HTMLInputElement, SearchDishProps
   ref
 ) => {
   const [openSearchInput, handleOpenSearchInput] = useState(false)
-  const [results, setResults] = useState([])
+  const [searchResults, setsearchResults] = useState([])
   const { data: useDishesData } = useDishes(null, {}, {})
   const dishesData = useDishesData as GetDishesResponse
   const itemsList = dishesData?.dishes
 
-  const filterResults = (e) => {
+  const filterResults = (e: ChangeEvent<HTMLInputElement>) => {
     const text = e.target.value
     let results = itemsList
     if (text != '') {
       results = itemsList.filter((item) => item.name.toLowerCase().startsWith(text.toLowerCase()))
     }
-    setResults(results.slice(0, 10))
+    setsearchResults(results?.slice(0, 10))
   }
 
   useEffect(() => {
-    setResults(itemsList?.slice(0, 10))
+    handleOpenSearchInput(true)
+    setsearchResults(itemsList?.slice(0, 10))
   }, [itemsList])
 
   return (
@@ -60,8 +61,8 @@ const SearchDishBase: ForwardRefRenderFunction<HTMLInputElement, SearchDishProps
       />
       {openSearchInput && (
         <Box bg="white">
-          {results ? (
-            results.map((el) => (
+          {searchResults ? (
+            searchResults.map((el) => (
               <HStack
                 width="100%"
                 justifyContent="left"
