@@ -10,6 +10,7 @@ export type Grocery = {
   category: Category
   createdAt: string
   amount: number
+  isMain: boolean
   measurementUnits: MeasurementUnit
 }
 
