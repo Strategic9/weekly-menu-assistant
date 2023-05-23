@@ -165,7 +165,7 @@ export default function Menu() {
 
     const emptyDishes = missingDates.map((date, i) => {
       return {
-        // id: i.toString(),
+        id: i.toString(),
         selectionDate: date,
         dish: {
           id: `empty-${Date.now()}`

@@ -41,6 +41,11 @@ export default function Menu() {
     sortedMenusHistory.filter((date) => {
       return new Date(date.startDate) < new Date()
     })
+    menusHistory.map((menu)=> {
+      const dishesInMenuHistory = menu.dishes
+      dishesInMenuHistory.sort((a,b) => new Date(a.selectionDate).getTime() - new Date(b.selectionDate).getTime());
+      return dishesInMenuHistory
+    })
 
   return (
     <PageWrapper>
