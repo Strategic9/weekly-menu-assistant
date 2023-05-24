@@ -361,6 +361,17 @@ export default function Menu() {
                     Spara
                   </Button>
                 </HStack>
+                <>
+                  <Flex>
+                    <Button
+                      colorScheme="blue"
+                      aria-label="Generera Veckomeny"
+                      onClick={() => generateMenu()}
+                    >
+                      Generera Veckomeny
+                    </Button>
+                  </Flex>
+                </>
               </Flex>
             )}
           </>
