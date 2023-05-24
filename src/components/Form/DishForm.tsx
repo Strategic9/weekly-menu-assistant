@@ -64,14 +64,13 @@ interface DishFormParams {
 const createDishFormSchema = yup.object({
   name: yup.string().required('Namn är obligatoriskt'),
   description: yup.string().required('Beskrivning är obligatorisk'),
-
+  recipe: yup.string().required('recept är obligatorisk'),
   ingredients: yup.array().min(1, 'Ingredienser är obligatoriska'),
 
   mainIngredientId: yup.string().required('Huvudingrediens är obligatoriskt'),
   mainIngredientQuantity: yup.string().required('Mängd/volym är obligatorisk'),
   mainMeasurementUnitId: yup.string().required('Mängd/volym är obligatorisk'),
 
-  recipe: yup.string().required('recept är obligatorisk'),
   portions: yup.string().nullable(),
   temperature: yup.string().nullable(),
   cookingTime: yup.string().nullable(),
@@ -259,54 +258,6 @@ export default function DishForm(props: DishFormParams) {
           <Box>
             <Input name="name" label="Namn" error={errors.name} {...register('name')} />
           </Box>
-          {useGroceriesData && (
-            <Flex flexDirection={'column'} bgColor="grain">
-              <Select
-                w={'100%'}
-                name="mainIngredientId"
-                label={isWideVersion ? 'Huvudingrediens' : 'H ingr.'}
-                error={errors.mainIngredientId}
-                {...register('mainIngredientId')}
-              >
-                {itemsList?.map((grocery) => (
-                  <option key={grocery.id} value={grocery.id}>
-                    {grocery.name}
-                  </option>
-                ))}
-              </Select>
-              <Text m={'var(--chakra-space-4) 0 var(--chakra-space-2) 0'}>Antal/volym</Text>
-              <Flex
-                justifyContent="center"
-                backgroundColor="grain"
-                borderRadius={'var(--chakra-radii-md)'}
-                alignItems={'flex-start'}
-              >
-                <Input
-                  display={'flex'}
-                  justifyContent={'flex-end'}
-                  name={'mainIngredientQuantity'}
-                  {...register('mainIngredientQuantity')}
-                  type={'number'}
-                  error={errors.mainIngredientQuantity}
-                  backgroundColor={'gray.100'}
-                  _placeholder={{ color: 'gray.250' }}
-                  borderRadius={'var(--chakra-radii-md) 0 0 var(--chakra-radii-md)'}
-                  textAlign="right"
-                />
-                <Select
-                  name="mainMeasurementUnitId"
-                  error={errors.mainMeasurementUnitId}
-                  {...register('mainMeasurementUnitId')}
-                  borderRadius={'0 var(--chakra-radii-md) var(--chakra-radii-md) 0'}
-                  textAlign="left"
-                >
-                  {measurementUnitsData?.items.map((unit) => (
-                    <option label={unit.name} key={unit.id} value={unit.id} />
-                  ))}
-                </Select>
-              </Flex>
-            </Flex>
-          )}
 
           <HStack spacing="2">
             <Input
@@ -390,6 +341,57 @@ export default function DishForm(props: DishFormParams) {
                   </Tag>
                 )
               )}
+              <Flex flexDirection={'column'} bgColor="grain">
+                <Select
+                  w={'100%'}
+                  name="mainIngredientId"
+                  label={isWideVersion ? 'Huvudingrediens' : 'H ingr.'}
+                  error={errors.mainIngredientId}
+                  {...register('mainIngredientId')}
+                >
+                  {fields?.map(
+                    (ingredient) => (
+                      (ingredient.id = crypto.randomUUID()),
+                      (
+                        <option key={ingredient.id} value={ingredient.id}>
+                          {ingredient.name}
+                        </option>
+                      )
+                    )
+                  )}
+                </Select>
+                <Text m={'var(--chakra-space-4) 0 var(--chakra-space-2) 0'}>Antal/volym</Text>
+                <Flex
+                  justifyContent="center"
+                  backgroundColor="grain"
+                  borderRadius={'var(--chakra-radii-md)'}
+                  alignItems={'flex-start'}
+                >
+                  <Input
+                    display={'flex'}
+                    justifyContent={'flex-end'}
+                    name={'mainIngredientQuantity'}
+                    {...register('mainIngredientQuantity')}
+                    type={'number'}
+                    error={errors.mainIngredientQuantity}
+                    backgroundColor={'gray.100'}
+                    _placeholder={{ color: 'gray.250' }}
+                    borderRadius={'var(--chakra-radii-md) 0 0 var(--chakra-radii-md)'}
+                    textAlign="right"
+                  />
+                  <Select
+                    name="mainMeasurementUnitId"
+                    error={errors.mainMeasurementUnitId}
+                    {...register('mainMeasurementUnitId')}
+                    borderRadius={'0 var(--chakra-radii-md) var(--chakra-radii-md) 0'}
+                    textAlign="left"
+                  >
+                    {measurementUnitsData?.items.map((unit) => (
+                      <option label={unit.name} key={unit.id} value={unit.id} />
+                    ))}
+                  </Select>
+                </Flex>
+              </Flex>
             </Wrap>
           </Box>
         </Flex>
