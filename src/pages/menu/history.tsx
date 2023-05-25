@@ -42,6 +42,16 @@ export default function Menu() {
       return new Date(date.startDate) < new Date()
     })
 
+  menusHistory &&
+    menusHistory.map((menu) => {
+      const dishesInMenuHistory = menu.dishes
+      dishesInMenuHistory &&
+        dishesInMenuHistory.sort(
+          (a, b) => new Date(a.selectionDate).getTime() - new Date(b.selectionDate).getTime()
+        )
+      return dishesInMenuHistory
+    })
+
   return (
     <PageWrapper>
       <Box as="form" flex="1" borderRadius={8} bg="grain" p={['4', '8']}>

@@ -130,7 +130,7 @@ function generateShopList(menu: Menu) {
         const category = ingredient.grocery.category ? ingredient.grocery.category.name : 'övrigt'
         const hasEntry = !!shopList.categories[category]
         const productMeasurement = `${ingredient.quantity} ${ingredient.grocery?.measurementUnits[0]?.measurementUnit?.name}`
-        
+
         if (!hasEntry) {
           shopList.categories[category] = []
         }
