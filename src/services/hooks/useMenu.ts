@@ -111,7 +111,6 @@ export const setShoppingLists = (cookieShopList, items) => {
     shoppingLists.push(generateShopList(item))
   })
   shoppingLists.length > 0 && addShoppingList(shoppingLists)
-  console.log('shoppingLists', shoppingLists)
 }
 
 export function setShopListCookie(shopList: ShopList) {
