@@ -76,6 +76,7 @@ export async function getMenu(): Promise<any> {
     }
   })
   const items = JSON.parse(JSON.stringify(data?.items))
+  console.log('data?.items', items)
 
   if (items.length) {
     const menu = data.items.find(
@@ -85,7 +86,6 @@ export async function getMenu(): Promise<any> {
     if (menu) {
       menu.startDate = new Date(menu.startDate)
       menu.endDate = new Date(menu.endDate)
-
       menu.dishes.forEach((dish) => (dish.selectionDate = new Date(dish.selectionDate)))
 
       const updatedDishes = checkDishesAndDays(menu)
@@ -105,18 +105,13 @@ export async function getMenu(): Promise<any> {
 
 // compare if there is a new week menu generated and returns an Array with the new shopping lists
 export const setShoppingLists = (cookieShopList, items) => {
-  const cookiesListParsed = cookieShopList ? JSON.parse(cookieShopList) : []
   const shoppingLists = []
+
   items.map((item) => {
-    if (!cookieShopList) {
-      shoppingLists.push(generateShopList(item))
-    } else {
-      const isAlreadyAdded = cookiesListParsed.find((cookie) => cookie.id === item.id)
-      !isAlreadyAdded && shoppingLists.push(generateShopList(item))
-    }
+    shoppingLists.push(generateShopList(item))
   })
-  const newShopList = cookiesListParsed.concat(shoppingLists)
-  addShoppingList(newShopList)
+  shoppingLists.length > 0 && addShoppingList(shoppingLists)
+  console.log('shoppingLists', shoppingLists)
 }
 
 export function setShopListCookie(shopList: ShopList) {
@@ -126,7 +121,7 @@ export function setShopListCookie(shopList: ShopList) {
 function generateShopList(menu: Menu) {
   const shopList = menu.dishes.reduce<ShopList>(
     (shopList, menuDish) => {
-      menuDish.dish.ingredients.map((ingredient) => {
+      menuDish?.dish?.ingredients?.map((ingredient) => {
         const category = ingredient.grocery.category ? ingredient.grocery.category.name : 'övrigt'
         const hasEntry = !!shopList.categories[category]
         const productMeasurement = `${ingredient.quantity} ${ingredient.grocery?.measurementUnits[0]?.measurementUnit?.name}`
