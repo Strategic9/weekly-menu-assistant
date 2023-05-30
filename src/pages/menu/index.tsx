@@ -186,7 +186,6 @@ export default function Menu() {
     if (!!data && !!data.items && !!week) {
       if (menuWeek) {
         setMenuForChoosenWeekExists(true)
-        console.log('menuCurrentWeek', menuCurrentWeek)
         setLocalData({ ...menuCurrentWeek })
 
         organizeByDate(menuCurrentWeek)
