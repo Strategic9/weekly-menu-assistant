@@ -76,7 +76,6 @@ export async function getMenu(): Promise<any> {
     }
   })
   const items = JSON.parse(JSON.stringify(data?.items))
-  console.log('data?.items', items)
 
   if (items.length) {
     const menu = data.items.find(
