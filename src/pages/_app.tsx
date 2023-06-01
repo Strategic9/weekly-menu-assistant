@@ -9,6 +9,7 @@ import Head from 'next/head'
 import { Alert } from '../components/Alert'
 import '../styles/DatePicker.css'
 import { AppProvider } from '../contexts/AppContext'
+import { UserProvider } from '../contexts/UserContext'
 
 const options: AlertProviderProps = {
   position: positions.BOTTOM_CENTER,
@@ -27,11 +28,13 @@ function MyApp({ Component, pageProps }: AppProps) {
       <SessionProvider session={pageProps.session}>
         <QueryClientProvider client={queryClient}>
           <AppProvider>
-            <ChakraProvider theme={theme}>
-              <AlertProvider {...options}>
-                <Component {...pageProps} />
-              </AlertProvider>
-            </ChakraProvider>
+            <UserProvider>
+              <ChakraProvider theme={theme}>
+                <AlertProvider {...options}>
+                  <Component {...pageProps} />
+                </AlertProvider>
+              </ChakraProvider>
+            </UserProvider>
           </AppProvider>
         </QueryClientProvider>
       </SessionProvider>
