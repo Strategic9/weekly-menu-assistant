@@ -292,7 +292,6 @@ export default function Menu() {
                 <FormErrorMessage color="red.600">{errors.endDate.message}</FormErrorMessage>
               )}
             </Box>
-
             <DragDropContext onDragEnd={handleChangeOrder}>
               <HStack spacing={0}>
                 <VStack w={['90px', '170px']}>
@@ -354,26 +353,22 @@ export default function Menu() {
                 </Droppable>
               </HStack>
             </DragDropContext>
-            {hasUpdates && (
-              <Flex mt="8" justify="flex-end">
-                <HStack spacing="4">
+            <Flex mt="8" justify="flex-end">
+              {hasUpdates && (
+                <HStack spacing="4" mr="2">
                   <Button aria-label="spara" type="submit" colorScheme="oxblood">
                     Spara
                   </Button>
                 </HStack>
-                <>
-                  <Flex>
-                    <Button
-                      colorScheme="blue"
-                      aria-label="Generera Veckomeny"
-                      onClick={() => generateMenu()}
-                    >
-                      Generera Veckomeny
-                    </Button>
-                  </Flex>
-                </>
-              </Flex>
-            )}
+              )}
+              <Button
+                colorScheme="blue"
+                aria-label="Generera Veckomeny"
+                onClick={() => generateMenu()}
+              >
+                Generera Veckomeny
+              </Button>
+            </Flex>
           </>
         )}
       </Box>
