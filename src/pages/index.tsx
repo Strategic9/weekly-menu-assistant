@@ -23,6 +23,8 @@ const signInFormSchema = yup.object({
 
 export default function SignIn() {
   const { user, setUser } = useContext(UserContext)
+  console.log(user)
+
   const {
     register,
     handleSubmit,
@@ -91,12 +93,8 @@ export default function SignIn() {
 
   const onLoginSucess = (res) => {
     alert.success('Välkommen in')
-    localStorage.set('token', res.data?.token)
-    localStorage.set('username', res.data?.username)
-    localStorage.set('email', res.data?.email)
-    localStorage.set('user-id', res.data?.userId)
-    localStorage.set('role', res.data?.role)
-    router.push('menu')
+    setUser(res.data!)
+    router.push('/menu')
   }
 
   if (session) {

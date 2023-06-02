@@ -200,7 +200,7 @@ export default function Menu() {
   }, [data, week])
 
   const generateMenu = async () => {
-    const userId = localStorage.getItem('user-id')
+    const userId = user.userId
     const params: GenerateMenuInput = {
       user: {
         id: userId

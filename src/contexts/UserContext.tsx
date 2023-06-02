@@ -1,5 +1,4 @@
 import { createContext, Dispatch, ReactNode, SetStateAction, useMemo, useState } from 'react'
-import User from '../pages/admin/user/[user]'
 
 type UserContext = {
   user: object
@@ -21,9 +20,7 @@ const defaultContext = {
     userId: '',
     username: ''
   },
-  setUser: (user: User) => {
-    email: ''
-  }
+  setUser: (user: User) => {}
 } as UserContext
 const UserContext = createContext(defaultContext)
 
@@ -33,7 +30,7 @@ type UserProviderProps = {
 const UserProvider = ({ children }: UserProviderProps) => {
   const [user, setUser] = useState<User>({
     email: '',
-    role: 'standard',
+    role: '',
     token: '',
     userId: '',
     username: ''

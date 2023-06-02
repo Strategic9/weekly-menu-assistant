@@ -7,7 +7,6 @@ import { HTTPHandler } from '../services/api'
 import { useRouter } from 'next/router'
 import { useAlert } from 'react-alert'
 import { UserContext } from '../contexts/UserContext'
-import { localStorage } from '../services/localstorage'
 import { Logo } from '../components/Header/Logo'
 import { useContext } from 'react'
 
