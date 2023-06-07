@@ -23,14 +23,16 @@ import {
   useMeasurementUnits
 } from '../../../services/hooks/useMeasurementUnit'
 import { useContext } from 'react'
-import { AppContext } from '../../../contexts/AppContext'
+import { UserContext } from '../../../contexts/UserContext'
 
 export default function ViewDishPage() {
   const router = useRouter()
   const { dish: dish_id } = router.query
   const { data } = useDish(dish_id as string)
   const totalStars = Array.from(Array(4 + 1), (_, i) => i)
-  const { role } = useContext(AppContext)
+
+  const { currentUser } = useContext(UserContext)
+  const role = currentUser.role
 
   const { data: useMeasurementUnitsData } = useMeasurementUnits(
     null,

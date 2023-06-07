@@ -47,7 +47,7 @@ const updateMenuFormSchema = yup.object({
 })
 
 export default function Menu() {
-  const { user, setUser } = useContext(UserContext)
+  const { currentUser } = useContext(UserContext)
   const alert = useAlert()
   const [hasUpdates, setHasUpdates] = useBoolean()
   const { data: useMenuData, isLoading, isFetching } = useMenu({})
@@ -200,7 +200,7 @@ export default function Menu() {
   }, [data, week])
 
   const generateMenu = async () => {
-    const userId = user.userId
+    const userId = currentUser.userId
     const params: GenerateMenuInput = {
       user: {
         id: userId

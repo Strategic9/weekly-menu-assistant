@@ -1,42 +1,43 @@
 import { createContext, Dispatch, ReactNode, SetStateAction, useMemo, useState } from 'react'
 
 type UserContext = {
-  user: object
-  setUser: Dispatch<SetStateAction<User>>
+  currentUser: User
+  setCurrentUser: Dispatch<SetStateAction<User>>
 }
 
 type User = {
   email: string
   role: string
-  token: string
+  token?: string
   userId: string
   username: string
 }
-const defaultContext = {
-  user: {
-    email: '',
-    role: 'standard',
-    token: '',
-    userId: '',
-    username: ''
-  },
-  setUser: (user: User) => {}
-} as UserContext
-const UserContext = createContext(defaultContext)
+
+export const defaultUser = {
+  email: '',
+  role: '',
+  token: '',
+  userId: '',
+  username: ''
+}
+
+const UserContext = createContext<UserContext>({
+  currentUser: defaultUser,
+  setCurrentUser: (currentUser: User) => currentUser
+})
 
 type UserProviderProps = {
   children: ReactNode
 }
+
 const UserProvider = ({ children }: UserProviderProps) => {
-  const [user, setUser] = useState<User>({
-    email: '',
-    role: '',
-    token: '',
-    userId: '',
-    username: ''
+  const [currentUser, setCurrentUser] = useState<User>({
+    ...defaultUser
   })
 
-  return <UserContext.Provider value={{ user, setUser }}>{children}</UserContext.Provider>
+  return (
+    <UserContext.Provider value={{ currentUser, setCurrentUser }}>{children}</UserContext.Provider>
+  )
 }
 
 export { UserContext, UserProvider }

@@ -3,10 +3,11 @@ import { RiEditLine, RiDeleteBinLine } from 'react-icons/ri'
 import Link from 'next/link'
 import { placeholderImage } from '../services/utils'
 import { useContext } from 'react'
-import { AppContext } from '../contexts/AppContext'
+import { UserContext } from '../contexts/UserContext'
 
 export default function Dish({ dish, dishIngredient, onMouseEnter, handleDeleteDish }) {
-  const { role } = useContext(AppContext)
+  const { currentUser } = useContext(UserContext)
+  const role = currentUser.role
 
   return (
     <Link href={`/dishes/view/${dish.id}`} passHref>
