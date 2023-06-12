@@ -34,7 +34,7 @@ const signUpFormSchema = yup.object({
 })
 
 export default function SignUp() {
-  const { user, setUser } = useContext(UserContext)
+  const { currentUser, setCurrentUser } = useContext(UserContext)
   const {
     register,
     handleSubmit,
@@ -67,8 +67,8 @@ export default function SignUp() {
       email: values.email,
       password: values.password
     })
-    setUser({ ...res.data.items })
-    console.log(user)
+    setCurrentUser({ ...res.data.items })
+    console.log(currentUser)
 
     router.push('menu')
   }
