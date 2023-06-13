@@ -68,8 +68,6 @@ export default function SignUp() {
       password: values.password
     })
     setCurrentUser({ ...res.data.items })
-    console.log(currentUser)
-
     router.push('menu')
   }
 
