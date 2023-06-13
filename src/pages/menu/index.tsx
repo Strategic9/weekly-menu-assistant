@@ -11,7 +11,7 @@ import {
   FormErrorMessage
 } from '@chakra-ui/react'
 import { useBoolean } from '@chakra-ui/hooks'
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef, useContext } from 'react'
 import { DragDropContext, Droppable, DropResult } from 'react-beautiful-dnd'
 import { Controller, useForm } from 'react-hook-form'
 import * as yup from 'yup'
@@ -32,6 +32,7 @@ import { useAlert } from 'react-alert'
 import { queryClient } from '../../services/queryClient'
 import { EmptyMenuItem, MenuItem } from '../../components/MenuItems'
 import WeekPicker from '../../components/Form/DatePicker/WeekPicker'
+import { UserContext } from '../../contexts/UserContext'
 
 type GenerateMenuInput = {
   user: {
@@ -46,6 +47,7 @@ const updateMenuFormSchema = yup.object({
 })
 
 export default function Menu() {
+  const { currentUser } = useContext(UserContext)
   const alert = useAlert()
   const [hasUpdates, setHasUpdates] = useBoolean()
   const { data: useMenuData, isLoading, isFetching } = useMenu({})
@@ -198,7 +200,7 @@ export default function Menu() {
   }, [data, week])
 
   const generateMenu = async () => {
-    const userId = localStorage.getItem('user-id')
+    const userId = currentUser.userId
     const params: GenerateMenuInput = {
       user: {
         id: userId

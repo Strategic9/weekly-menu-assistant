@@ -31,7 +31,7 @@ import PageWrapper from '../page-wrapper'
 import { MenuDishOptions } from '../../components/Options'
 import Head from 'next/head'
 import { useContext } from 'react'
-import { AppContext } from '../../contexts/AppContext'
+import { UserContext } from '../../contexts/UserContext'
 
 type Category = {
   id: string
@@ -48,7 +48,8 @@ type UseCategoryData = {
 export default function CategoryList() {
   const [page, setPage] = useState(1)
   const [offset, setOffset] = useState(0)
-  const { role } = useContext(AppContext)
+  const { currentUser } = useContext(UserContext)
+  const role = currentUser.role
   const registersPerPage = 10
   const {
     data: useCategoriesData,

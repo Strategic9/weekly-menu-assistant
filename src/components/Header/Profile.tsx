@@ -1,6 +1,6 @@
 import { Flex, Box, Text, Avatar, Image, Button } from '@chakra-ui/react'
-import { useEffect, useState } from 'react'
-import { localStorage } from '../../services/localstorage'
+import { useContext, useEffect, useState } from 'react'
+import { UserContext } from '../../contexts/UserContext'
 import ProfileDropdown from './ProfileDropdown'
 
 interface ProfileProps {
@@ -10,10 +10,11 @@ interface ProfileProps {
 export function Profile({ showProfileData = true }: ProfileProps) {
   const [username, setUsername] = useState('')
   const [email, setEmail] = useState('')
+  const { currentUser } = useContext(UserContext)
 
   useEffect(() => {
-    setUsername(localStorage.get('username'))
-    setEmail(localStorage.get('email'))
+    setUsername(currentUser.username)
+    setEmail(currentUser.email)
   }, [])
 
   return (

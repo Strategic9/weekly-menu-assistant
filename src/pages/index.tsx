@@ -4,11 +4,13 @@ import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup'
 import { Input } from '../components/Form/Input'
 import { api } from '../services/api'
-import { localStorage } from '../services/localstorage'
+import { UserContext } from '../contexts/UserContext'
+import { useContext, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import { useAlert } from 'react-alert'
 import { Logo } from '../components/Header/Logo'
 import { useSession, signIn, signOut } from 'next-auth/react'
+import { localStorage } from '../services/localstorage'
 
 type SignInFormData = {
   email: string
@@ -30,7 +32,8 @@ export default function SignIn() {
   })
   const router = useRouter()
   const alert = useAlert()
-  const { data: session } = useSession()
+  const { data: session, status } = useSession()
+  const { setCurrentUser } = useContext(UserContext)
 
   const onSuccess = async () => {
     await api
@@ -90,16 +93,16 @@ export default function SignIn() {
   const onLoginSucess = (res) => {
     alert.success('Välkommen in')
     localStorage.set('token', res.data?.token)
-    localStorage.set('username', res.data?.username)
-    localStorage.set('email', res.data?.email)
     localStorage.set('user-id', res.data?.userId)
-    localStorage.set('role', res.data?.role)
+    setCurrentUser(res.data)
     router.push('menu')
   }
 
-  if (session) {
-    onSuccess()
-  }
+  useEffect(() => {
+    if (session) {
+      onSuccess()
+    }
+  }, [session])
 
   return (
     <Flex w="100vw" h="100vh" align="center" justify="center" bg="grain">
