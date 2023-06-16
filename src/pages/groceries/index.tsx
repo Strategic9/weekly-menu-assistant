@@ -29,7 +29,7 @@ import TooltipButton from '../../components/TooltipButton'
 import { useAlert } from 'react-alert'
 import PageWrapper from '../page-wrapper'
 import { MenuDishOptions } from '../../components/Options'
-import { AppContext } from '../../contexts/AppContext'
+import { UserContext } from '../../contexts/UserContext'
 
 type UseGroceryData = {
   items: Grocery[]
@@ -41,7 +41,8 @@ export default function GroceryList() {
   const [offset, setOffset] = useState(0)
   const registersPerPage = 10
 
-  const { role } = useContext(AppContext)
+  const { currentUser } = useContext(UserContext)
+  const role = currentUser.role
 
   const {
     data: useGroceriesData,

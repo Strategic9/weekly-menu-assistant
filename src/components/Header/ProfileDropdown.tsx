@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import {
   Popover,
   PopoverTrigger,
@@ -9,20 +9,21 @@ import {
   PopoverArrow
 } from '@chakra-ui/react'
 import { HTTPHandler } from '../../services/api'
-import { localStorage } from '../../services/localstorage'
 import { signOut } from 'next-auth/react'
+import { UserContext, defaultUser } from '../../contexts/UserContext'
+import { localStorage } from '../../services/localstorage'
 
 export const ProfileDropdown = ({ children }) => {
+  const { setCurrentUser } = useContext(UserContext)
   const token = localStorage.get('token')
 
   const handleLogOut = async (token: string) => {
     try {
       await HTTPHandler.post('users/logout', token)
+      setCurrentUser(defaultUser)
       localStorage.delete('token')
-      localStorage.delete('username')
-      localStorage.delete('email')
       localStorage.delete('user-id')
-      signOut()
+      signOut({ callbackUrl: '/' })
     } catch (err) {
       console.error(err)
     }

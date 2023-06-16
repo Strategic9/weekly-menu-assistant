@@ -6,8 +6,9 @@ import { Input } from '../components/Form/Input'
 import { HTTPHandler } from '../services/api'
 import { useRouter } from 'next/router'
 import { useAlert } from 'react-alert'
-import { localStorage } from '../services/localstorage'
+import { UserContext } from '../contexts/UserContext'
 import { Logo } from '../components/Header/Logo'
+import { useContext } from 'react'
 
 type SignUpFormData = {
   email: string
@@ -33,6 +34,7 @@ const signUpFormSchema = yup.object({
 })
 
 export default function SignUp() {
+  const { currentUser, setCurrentUser } = useContext(UserContext)
   const {
     register,
     handleSubmit,
@@ -65,9 +67,7 @@ export default function SignUp() {
       email: values.email,
       password: values.password
     })
-    localStorage.set('token', res.data?.token)
-    localStorage.set('username', res.data?.username)
-    localStorage.set('email', res.data?.email)
+    setCurrentUser({ ...res.data.items })
     router.push('menu')
   }
 
