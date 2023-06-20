@@ -66,8 +66,7 @@ export default function Menu() {
     control,
     handleSubmit,
     formState: { errors },
-    setValue,
-    getValues
+    setValue
   } = useForm({
     resolver: yupResolver(updateMenuFormSchema)
   })
@@ -105,37 +104,16 @@ export default function Menu() {
     setHasUpdates.on()
   }
 
-  const getDishesIds = (dishes) => {
+  const onFormSubmit = async (values) => {
     const dishesIds = []
 
-    if (dishes.length === 0) {
-      return
-    }
-    dishes.map((dish) => {
+    values.dishes.map((dish) => {
       !dish.dish.id.includes('empty') &&
         dishesIds.push({
           id: dish.dish.id,
           selectionDate: dish.selectionDate
         })
     })
-    return dishesIds
-  }
-
-  const updateMenu = async (updatedMenu) => {
-    await HTTPHandler.patch(`menus/${menuCurrentWeek.menu.id}`, {
-      ...updatedMenu
-    })
-      .then(() => {
-        queryClient.invalidateQueries('menu')
-        alert.success('Meny sparad')
-      })
-      .catch(() => {
-        alert.error('Fel vid uppdatering av meny')
-      })
-  }
-
-  const onFormSubmit = async (values) => {
-    const dishesIds = getDishesIds(values.dishes)
 
     if (hasUpdates) {
       const updatedMenu = {
@@ -143,7 +121,17 @@ export default function Menu() {
         endDate: values.endDate,
         dishes: dishesIds
       }
-      updateMenu(updatedMenu)
+
+      await HTTPHandler.patch(`menus/${menuCurrentWeek.menu.id}`, {
+        ...updatedMenu
+      })
+        .then(() => {
+          queryClient.invalidateQueries('menu')
+          alert.success('Meny sparad')
+        })
+        .catch(() => {
+          alert.error('Fel vid uppdatering av meny')
+        })
 
       setHasUpdates.off()
     }
@@ -211,7 +199,7 @@ export default function Menu() {
     }
   }, [data, week])
 
-  const generateNewMenu = async () => {
+  const generateMenu = async () => {
     const userId = currentUser.userId
     const params: GenerateMenuInput = {
       user: {
@@ -237,21 +225,6 @@ export default function Menu() {
       })
   }
 
-  const generateMenu = async () => {
-    if (menuCurrentWeek) {
-      const dishesIds = getDishesIds(menuCurrentWeek.menu.dishes)
-      const values = getValues()
-      const updatedMenu = {
-        startDate: values.startDate,
-        endDate: values.endDate,
-        dishes: dishesIds
-      }
-      updateMenu(updatedMenu)
-    } else {
-      generateNewMenu()
-    }
-  }
-
   return (
     <PageWrapper>
       <Box
@@ -271,7 +244,7 @@ export default function Menu() {
           <>
             <WeekPicker definedWeek={week} setWeek={setWeek} />
             <Flex>
-              <Button aria-label="Generera Veckomeny" mt="20px" onClick={() => generateNewMenu()}>
+              <Button aria-label="Generera Veckomeny" mt="20px" onClick={() => generateMenu()}>
                 Generera Veckomeny
               </Button>
             </Flex>
