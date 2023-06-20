@@ -121,18 +121,18 @@ export default function Menu() {
     return dishesIds
   }
 
-  const updateMenu = async (updatedMenu) => {
-    await HTTPHandler.patch(`menus/${menuCurrentWeek.menu.id}`, {
-      ...updatedMenu
-    })
-      .then(() => {
-        queryClient.invalidateQueries('menu')
-        alert.success('Meny sparad')
-      })
-      .catch(() => {
-        alert.error('Fel vid uppdatering av meny')
-      })
-  }
+  // const updateMenu = async (updatedMenu) => {
+  //   await HTTPHandler.patch(`menus/${menuCurrentWeek.menu.id}`, {
+  //     ...updatedMenu
+  //   })
+  //     .then(() => {
+  //       queryClient.invalidateQueries('menu')
+  //       alert.success('Meny sparad')
+  //     })
+  //     .catch(() => {
+  //       alert.error('Fel vid uppdatering av meny')
+  //     })
+  // }
 
   const onFormSubmit = async (values) => {
     const dishesIds = getDishesIds(values.dishes)
@@ -143,7 +143,17 @@ export default function Menu() {
         endDate: values.endDate,
         dishes: dishesIds
       }
-      updateMenu(updatedMenu)
+
+      await HTTPHandler.patch(`menus/${menuCurrentWeek.menu.id}`, {
+        ...updatedMenu
+      })
+        .then(() => {
+          queryClient.invalidateQueries('menu')
+          alert.success('Meny sparad')
+        })
+        .catch(() => {
+          alert.error('Fel vid uppdatering av meny')
+        })
 
       setHasUpdates.off()
     }
@@ -246,7 +256,20 @@ export default function Menu() {
         endDate: values.endDate,
         dishes: dishesIds
       }
-      updateMenu(updatedMenu)
+
+      await HTTPHandler.patch(`/menus/generate/${menuCurrentWeek.menu.id}`, {
+        ...updatedMenu
+      })
+        .then(() => {
+          queryClient.invalidateQueries('menu')
+          alert.success('Meny sparad')
+        })
+        .catch(() => {
+          alert.error('Fel vid uppdatering av meny')
+        })
+
+      // setHasUpdates.off()
+      // updateMenu(updatedMenu)
     } else {
       generateNewMenu()
     }
