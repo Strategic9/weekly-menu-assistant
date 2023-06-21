@@ -11,7 +11,7 @@ import {
   FormErrorMessage
 } from '@chakra-ui/react'
 import { useBoolean } from '@chakra-ui/hooks'
-import { useEffect, useState, useRef, useContext } from 'react'
+import { useEffect, useState, useRef, useContext, useMemo } from 'react'
 import { DragDropContext, Droppable, DropResult } from 'react-beautiful-dnd'
 import { Controller, useForm } from 'react-hook-form'
 import * as yup from 'yup'
@@ -51,7 +51,7 @@ export default function Menu() {
   const alert = useAlert()
   const [hasUpdates, setHasUpdates] = useBoolean()
   const { data: useMenuData, isLoading, isFetching } = useMenu({})
-  const data: any = useMenuData
+  const data: any = useMemo(() => useMenuData, [useMenuData])
   let menuCurrentWeek
 
   const [week, setWeek] = useState(null)
@@ -61,6 +61,7 @@ export default function Menu() {
 
   const [menuForChoosenWeekExists, setMenuForChoosenWeekExists] = useState(false)
   const [localData, setLocalData] = useState({ ...data })
+  // const [localData, setLocalData] = useState({})
 
   const {
     control,
@@ -122,7 +123,7 @@ export default function Menu() {
         dishes: dishesIds
       }
 
-      await HTTPHandler.patch(`menus/${menuCurrentWeek.menu.id}`, {
+      await HTTPHandler.patch(`menus/${localData.menu.id}`, {
         ...updatedMenu
       })
         .then(() => {
@@ -137,56 +138,50 @@ export default function Menu() {
     }
   }
 
-  const menuWeek =
-    data &&
-    data?.items.find(
-      (menu) =>
-        menu.startDate.split('T')[0] === startDateWeek && menu.endDate.split('T')[0] === endDateWeek
-    )
-
-  if (menuWeek) {
-    const backendweekdays = menuWeek?.dishes?.map((dish) => {
-      return new Date(dish.selectionDate)
-    })
-
-    const days = []
-
-    for (
-      let date = new Date(week[0]);
-      date <= new Date(week[1]);
-      date.setDate(date.getDate() + 1)
-    ) {
-      days.push(new Date(date))
-    }
-
-    const missingDates = days.filter((day) => {
-      return !backendweekdays?.some((backendDay) => {
-        return day.toDateString() === backendDay.toDateString()
-      })
-    })
-
-    const emptyDishes = missingDates.map((date, i) => {
-      return {
-        // id: i.toString(),
-        selectionDate: date,
-        dish: {
-          id: `empty-${Date.now()}`
-        }
-      }
-    })
-
-    const currentMenu = menuWeek?.dishes
-
-    const concatenatedDishes = [...currentMenu, ...emptyDishes]
-
-    menuWeek.dishes = concatenatedDishes
-
-    menuCurrentWeek = { menu: menuWeek }
-  }
-
   useEffect(() => {
-    if (!!data && !!data.items && !!week) {
+    if (!!data && !!week) {
+      const menuWeek = data?.items.find(
+        (menu) =>
+          menu.startDate.split('T')[0] === startDateWeek &&
+          menu.endDate.split('T')[0] === endDateWeek
+      )
+
       if (menuWeek) {
+        const backendweekdays = menuWeek?.dishes?.map((dish) => {
+          return new Date(dish.selectionDate)
+        })
+
+        const days = []
+
+        for (
+          let date = new Date(week[0]);
+          date <= new Date(week[1]);
+          date.setDate(date.getDate() + 1)
+        ) {
+          days.push(new Date(date))
+        }
+
+        const missingDates = days.filter((day) => {
+          return !backendweekdays?.some((backendDay) => {
+            return day.toDateString() === backendDay.toDateString()
+          })
+        })
+
+        const emptyDishes = missingDates.map((date, i) => {
+          return {
+            // id: i.toString(),
+            selectionDate: date,
+            dish: {
+              id: `empty-${Date.now()}`
+            }
+          }
+        })
+
+        const currentMenu = menuWeek?.dishes
+
+        menuWeek.dishes = [...currentMenu, ...emptyDishes]
+
+        menuCurrentWeek = { menu: menuWeek }
         setMenuForChoosenWeekExists(true)
         setLocalData({ ...menuCurrentWeek })
 
@@ -235,12 +230,16 @@ export default function Menu() {
         p={['4', '8']}
         onSubmit={handleSubmit(onFormSubmit)}
       >
-        <Flex mb="8" align="center">
+        <Flex mb="8" justifyContent="center">
           <Heading size="lg" fontWeight="normal">
             Veckomeny
           </Heading>
         </Flex>
-        {!menuForChoosenWeekExists ? (
+        {isLoading ? (
+          <Flex justifyContent="center">
+            <Spinner size="lg" color="gray.500" ml="4" />
+          </Flex>
+        ) : !menuForChoosenWeekExists ? (
           <>
             <WeekPicker definedWeek={week} setWeek={setWeek} />
             <Flex>
@@ -249,10 +248,6 @@ export default function Menu() {
               </Button>
             </Flex>
           </>
-        ) : isLoading || isFetching || !localData ? (
-          <Box w="100%" m="auto">
-            <Spinner size="lg" color="gray.500" ml="4" />
-          </Box>
         ) : (
           <>
             <Box mt="6" mb="6">
@@ -298,7 +293,7 @@ export default function Menu() {
               <HStack spacing={0}>
                 <VStack w={['90px', '170px']}>
                   {localData?.menu &&
-                    localData.menu.dishes.map((menuDish, i) => (
+                    localData?.menu.dishes.map((menuDish, i) => (
                       <Flex
                         key={menuDish.id?.toString()}
                         w="100%"
@@ -331,7 +326,7 @@ export default function Menu() {
                               setLocalData={setLocalData}
                               index={index}
                               setValue={setValue}
-                              data={menuCurrentWeek}
+                              data={localData}
                               setHasUpdates={setHasUpdates}
                               isWideVersion={isWideVersion}
                             />
@@ -342,7 +337,7 @@ export default function Menu() {
                               index={index}
                               setValue={setValue}
                               setLocalData={setLocalData}
-                              data={menuCurrentWeek}
+                              data={localData}
                               setHasUpdates={setHasUpdates}
                               isWideVersion={isWideVersion}
                             />
