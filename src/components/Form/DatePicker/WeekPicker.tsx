@@ -1,5 +1,5 @@
 import { Input } from '@chakra-ui/react'
-import { Dispatch, useEffect, useState } from 'react'
+import { Dispatch, useEffect, useRef } from 'react'
 import ReactDatePicker from 'react-datepicker'
 
 export const WeekPicker = ({
@@ -9,18 +9,17 @@ export const WeekPicker = ({
   setWeek: Dispatch<object>
   definedWeek?: object
 }) => {
-  const [startDate, setStartDate] = useState(null)
-  const [endDate, setEndDate] = useState(null)
+  const startDateRef = useRef(null)
+  const endDateRef = useRef(null)
 
   const onChange = (date) => {
     const week = getWeekRange(date)
 
     const [startDay, endDay] = week
-
     setWeek([startDay, endDay])
 
-    setStartDate(startDay)
-    setEndDate(endDay)
+    startDateRef.current = startDay
+    endDateRef.current = endDay
   }
 
   const getWeekRange = (date) => {
@@ -56,10 +55,10 @@ export const WeekPicker = ({
     <Input
       as={ReactDatePicker}
       id="weekly-date-picker"
-      selected={startDate}
+      selected={startDateRef.current}
       onChange={onChange}
-      startDate={startDate}
-      endDate={definedWeek ? definedWeek[1] : endDate}
+      startDate={startDateRef.current}
+      endDate={definedWeek ? definedWeek[1] : endDateRef.current}
       minDate={new Date()}
       calendarStartDay={1}
       fontSize={['sm', 'md']}
