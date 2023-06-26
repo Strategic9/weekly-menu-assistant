@@ -189,6 +189,7 @@ export default function Menu() {
         setMenuForChoosenWeekExists(true)
         setEnableGenerateBtn(currentMenu.length < 7)
       } else {
+        setLocalData({})
         setMenuForChoosenWeekExists(false)
       }
     }
