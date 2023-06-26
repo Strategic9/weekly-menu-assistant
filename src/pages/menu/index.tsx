@@ -11,7 +11,7 @@ import {
   FormErrorMessage
 } from '@chakra-ui/react'
 import { useBoolean } from '@chakra-ui/hooks'
-import { useEffect, useState, useRef, useContext } from 'react'
+import { useEffect, useState, useContext, useMemo } from 'react'
 import { DragDropContext, Droppable, DropResult } from 'react-beautiful-dnd'
 import { Controller, useForm } from 'react-hook-form'
 import * as yup from 'yup'
@@ -31,16 +31,27 @@ import { HTTPHandler } from '../../services/api'
 import { useAlert } from 'react-alert'
 import { queryClient } from '../../services/queryClient'
 import { EmptyMenuItem, MenuItem } from '../../components/MenuItems'
-import WeekPicker from '../../components/Form/DatePicker/WeekPicker'
+import { getWeekRange, WeekPicker } from '../../components/Form/DatePicker/WeekPicker'
 import { UserContext } from '../../contexts/UserContext'
 
 type GenerateMenuInput = {
   user: {
     id: string
   }
-  startDate: string
-  endDate: string
+  startDate: Date
+  endDate: Date
 }
+
+type FormInputs = {
+  startDate: Date
+  endDate: Date
+  dishes: DishesId
+}
+
+type DishesId = Array<{
+  id: string
+  selectionDate: string
+}>
 
 const updateMenuFormSchema = yup.object({
   dishes: yup.array()
@@ -51,23 +62,20 @@ export default function Menu() {
   const alert = useAlert()
   const [hasUpdates, setHasUpdates] = useBoolean()
   const { data: useMenuData, isLoading, isFetching } = useMenu({})
-  const data: any = useMenuData
-  let menuCurrentWeek
+  const data: any = useMemo(() => useMenuData, [useMenuData])
 
-  const [week, setWeek] = useState(null)
-
-  const startDateWeek = week && convertDateToString(week[0])
-  const endDateWeek = week && convertDateToString(week[1])
+  const [week, setWeek] = useState(getWeekRange(new Date()))
 
   const [menuForChoosenWeekExists, setMenuForChoosenWeekExists] = useState(false)
-  const [localData, setLocalData] = useState({ ...data })
+  const [localData, setLocalData] = useState(null)
+  const [enableGenerateBtn, setEnableGenerateBtn] = useState(false)
 
   const {
     control,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
     setValue
-  } = useForm({
+  } = useForm<FormInputs>({
     resolver: yupResolver(updateMenuFormSchema)
   })
 
@@ -83,6 +91,7 @@ export default function Menu() {
   })
 
   const handleChangeOrder = (result: DropResult) => {
+    const menuCurrentWeek = localData
     const { destination, source } = result
     if (!destination) {
       return
@@ -105,7 +114,7 @@ export default function Menu() {
   }
 
   const onFormSubmit = async (values) => {
-    const dishesIds = []
+    const dishesIds: DishesId = []
 
     values.dishes.map((dish) => {
       !dish.dish.id.includes('empty') &&
@@ -116,13 +125,13 @@ export default function Menu() {
     })
 
     if (hasUpdates) {
-      const updatedMenu = {
+      const updatedMenu: FormInputs = {
         startDate: values.startDate,
         endDate: values.endDate,
         dishes: dishesIds
       }
 
-      await HTTPHandler.patch(`menus/${menuCurrentWeek.menu.id}`, {
+      await HTTPHandler.patch(`menus/${localData?.menu.id}`, {
         ...updatedMenu
       })
         .then(() => {
@@ -137,66 +146,55 @@ export default function Menu() {
     }
   }
 
-  const menuWeek =
-    data &&
-    data?.items.find(
-      (menu) =>
-        menu.startDate.split('T')[0] === startDateWeek && menu.endDate.split('T')[0] === endDateWeek
-    )
-
-  if (menuWeek) {
-    const backendweekdays = menuWeek?.dishes?.map((dish) => {
-      return new Date(dish.selectionDate)
-    })
-
-    const days = []
-
-    for (
-      let date = new Date(week[0]);
-      date <= new Date(week[1]);
-      date.setDate(date.getDate() + 1)
-    ) {
-      days.push(new Date(date))
-    }
-
-    const missingDates = days.filter((day) => {
-      return !backendweekdays?.some((backendDay) => {
-        return day.toDateString() === backendDay.toDateString()
-      })
-    })
-
-    const emptyDishes = missingDates.map((date, i) => {
-      return {
-        // id: i.toString(),
-        selectionDate: date,
-        dish: {
-          id: `empty-${Date.now()}`
-        }
-      }
-    })
-
-    const currentMenu = menuWeek?.dishes
-
-    const concatenatedDishes = [...currentMenu, ...emptyDishes]
-
-    menuWeek.dishes = concatenatedDishes
-
-    menuCurrentWeek = { menu: menuWeek }
-  }
-
   useEffect(() => {
-    if (!!data && !!data.items && !!week) {
-      if (menuWeek) {
-        setMenuForChoosenWeekExists(true)
-        setLocalData({ ...menuCurrentWeek })
+    if (data) {
+      const menuWeek = data?.items.find(
+        (menu) =>
+          menu.startDate.split('T')[0] === convertDateToString(week[0]) &&
+          menu.endDate.split('T')[0] === convertDateToString(week[1])
+      )
 
+      if (menuWeek) {
+        const backendweekdays: Array<Date> = menuWeek?.dishes?.map((dish) => {
+          return new Date(dish.selectionDate)
+        })
+        const days: Array<Date> = []
+        for (
+          let date = new Date(week[0]);
+          date <= new Date(week[1]);
+          date.setDate(date.getDate() + 1)
+        ) {
+          days.push(new Date(date))
+        }
+        const missingDates = days.filter((day) => {
+          return !backendweekdays?.some((backendDay) => {
+            return day.toDateString() === backendDay.toDateString()
+          })
+        })
+
+        const emptyDishes = missingDates.map((date, i) => {
+          return {
+            selectionDate: date,
+            dish: {
+              id: `empty-${Date.now()}`
+            }
+          }
+        })
+
+        const currentMenu = menuWeek?.dishes
+        menuWeek.dishes = [...currentMenu, ...emptyDishes]
+        const menuCurrentWeek = { menu: menuWeek }
+        setLocalData({ ...menuCurrentWeek })
         organizeByDate(menuCurrentWeek)
+        setMenuForChoosenWeekExists(true)
+        setEnableGenerateBtn(currentMenu.length < 7)
       } else {
+        setLocalData({})
         setMenuForChoosenWeekExists(false)
       }
-      setValue('startDate', week[0])
-      setValue('endDate', week[1])
     }
+    setValue('startDate', week[0])
+    setValue('endDate', week[1])
   }, [data, week])
 
   const generateMenu = async () => {
@@ -211,7 +209,7 @@ export default function Menu() {
 
     await HTTPHandler.post('/menus/generate', params)
       .then((response) => {
-        menuCurrentWeek = { menu: response.data }
+        const menuCurrentWeek = { menu: response.data }
         setLocalData({ ...menuCurrentWeek })
         setMenuForChoosenWeekExists(true)
         queryClient.invalidateQueries('menu')
@@ -225,6 +223,17 @@ export default function Menu() {
       })
   }
 
+  const clearMenu = async () => {
+    await HTTPHandler.delete(`menus/${localData?.menu.id}`)
+      .then(() => {
+        queryClient.invalidateQueries('menu')
+        alert.success('Meny raderad')
+      })
+      .catch(() => {
+        alert.error('Fel vid radering av menyn')
+      })
+  }
+
   return (
     <PageWrapper>
       <Box
@@ -235,12 +244,16 @@ export default function Menu() {
         p={['4', '8']}
         onSubmit={handleSubmit(onFormSubmit)}
       >
-        <Flex mb="8" align="center">
+        <Flex mb="8" justifyContent="center">
           <Heading size="lg" fontWeight="normal">
             Veckomeny
           </Heading>
         </Flex>
-        {!menuForChoosenWeekExists ? (
+        {isLoading || isFetching || isSubmitting || !localData ? (
+          <Flex justifyContent="center">
+            <Spinner size="lg" color="gray.500" ml="4" />
+          </Flex>
+        ) : !menuForChoosenWeekExists ? (
           <>
             <WeekPicker definedWeek={week} setWeek={setWeek} />
             <Flex>
@@ -249,10 +262,6 @@ export default function Menu() {
               </Button>
             </Flex>
           </>
-        ) : isLoading || isFetching || !localData ? (
-          <Box w="100%" m="auto">
-            <Spinner size="lg" color="gray.500" ml="4" />
-          </Box>
         ) : (
           <>
             <Box mt="6" mb="6">
@@ -298,7 +307,7 @@ export default function Menu() {
               <HStack spacing={0}>
                 <VStack w={['90px', '170px']}>
                   {localData?.menu &&
-                    localData.menu.dishes.map((menuDish, i) => (
+                    localData?.menu.dishes.map((menuDish, i) => (
                       <Flex
                         key={menuDish.id?.toString()}
                         w="100%"
@@ -319,7 +328,7 @@ export default function Menu() {
                       </Flex>
                     ))}
                 </VStack>
-                <Droppable droppableId={`menu-${menuCurrentWeek?.menu.id}`}>
+                <Droppable droppableId={`menu-${localData?.menu.id}`}>
                   {(provided) => (
                     <VStack flex={1} ref={provided.innerRef} {...provided.droppableProps}>
                       {localData?.menu &&
@@ -331,7 +340,7 @@ export default function Menu() {
                               setLocalData={setLocalData}
                               index={index}
                               setValue={setValue}
-                              data={menuCurrentWeek}
+                              data={localData}
                               setHasUpdates={setHasUpdates}
                               isWideVersion={isWideVersion}
                             />
@@ -342,7 +351,7 @@ export default function Menu() {
                               index={index}
                               setValue={setValue}
                               setLocalData={setLocalData}
-                              data={menuCurrentWeek}
+                              data={localData}
                               setHasUpdates={setHasUpdates}
                               isWideVersion={isWideVersion}
                             />
@@ -356,20 +365,29 @@ export default function Menu() {
               </HStack>
             </DragDropContext>
             <Flex mt="8" justify="flex-end">
-              {hasUpdates && (
-                <HStack spacing="4" mr="2">
-                  <Button aria-label="spara" type="submit" colorScheme="oxblood">
+              <HStack spacing="4">
+                {hasUpdates && (
+                  <Button aria-label="spara" type="submit" mr="2" colorScheme="oxblood">
                     Spara
                   </Button>
-                </HStack>
-              )}
-              <Button
-                colorScheme="blue"
-                aria-label="Generera Veckomeny"
-                onClick={() => generateMenu()}
-              >
-                Generera Veckomeny
-              </Button>
+                )}
+                <Button
+                  aria-label="Generera Veckomeny"
+                  onClick={() => clearMenu()}
+                  mr="2"
+                  disabled={enableGenerateBtn}
+                >
+                  klar
+                </Button>
+                <Button
+                  colorScheme="blue"
+                  aria-label="Generera Veckomeny"
+                  onClick={() => generateMenu()}
+                  disabled={!enableGenerateBtn}
+                >
+                  Generera Veckomeny
+                </Button>
+              </HStack>
             </Flex>
           </>
         )}
