@@ -164,3 +164,44 @@ export function useMenu(options: UseQueryOptions) {
     ...options
   })
 }
+
+export const generatWeekDaysDate = (week: Array<Date>) => {
+  const days: Array<Date> = []
+  for (let date = new Date(week[0]); date <= new Date(week[1]); date.setDate(date.getDate() + 1)) {
+    days.push(new Date(date))
+  }
+
+  return days
+}
+
+export const getDaysWithoutDish = (days: Array<Date>, backendweekdays: Array<Date>) => {
+  return days.filter((day) => {
+    return !backendweekdays?.some((backendDay) => {
+      return day.toDateString() === backendDay.toDateString()
+    })
+  })
+}
+
+export const generateEmptyDishes = (daysWhitoutDish: Array<Date>) => {
+  return daysWhitoutDish.map((date) => {
+    return {
+      selectionDate: date,
+      dish: {
+        id: `empty-${Date.now()}`
+      }
+    }
+  })
+}
+
+export const generateEmptyWeekMenu = (days: Array<Date>) => {
+  const emptyDishes = generateEmptyDishes(days)
+  return {
+    menu: {
+      id: `empty-${Date.now()}`,
+      createdAt: new Date().toISOString(),
+      startDate: days[0].toISOString(),
+      endDate: days[days.length - 1].toISOString(),
+      dishes: emptyDishes
+    }
+  }
+}
