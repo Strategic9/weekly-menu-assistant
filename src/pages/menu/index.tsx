@@ -17,7 +17,13 @@ import { Controller, useForm } from 'react-hook-form'
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup'
 import { DatePicker } from '../../components/Form/DatePicker'
-import { useMenu } from '../../services/hooks/useMenu'
+import {
+  generatWeekDaysDate,
+  generateEmptyDishes,
+  generateEmptyWeekMenu,
+  getDaysWithoutDish,
+  useMenu
+} from '../../services/hooks/useMenu'
 import {
   addDays,
   arrayMove,
@@ -66,7 +72,6 @@ export default function Menu() {
 
   const [week, setWeek] = useState(getWeekRange(new Date()))
 
-  const [menuForChoosenWeekExists, setMenuForChoosenWeekExists] = useState(false)
   const [localData, setLocalData] = useState(null)
   const [enableGenerateBtn, setEnableGenerateBtn] = useState(false)
 
@@ -91,7 +96,7 @@ export default function Menu() {
   })
 
   const handleChangeOrder = (result: DropResult) => {
-    const menuCurrentWeek = localData
+    const currentWeekMenu = localData
     const { destination, source } = result
     if (!destination) {
       return
@@ -99,16 +104,16 @@ export default function Menu() {
     if (destination.droppableId === source.droppableId && destination.index === source.index) {
       return
     }
-    const startDate = new Date(menuCurrentWeek.menu.startDate)
+    const startDate = new Date(currentWeekMenu.menu.startDate)
 
-    arrayMove(menuCurrentWeek.menu.dishes, source.index, destination.index)
+    arrayMove(currentWeekMenu.menu.dishes, source.index, destination.index)
 
-    for (let i = 0; i < menuCurrentWeek.menu.dishes.length; i++) {
-      menuCurrentWeek.menu.dishes[i].selectionDate = addDays(startDate, i)
+    for (let i = 0; i < currentWeekMenu.menu.dishes.length; i++) {
+      currentWeekMenu.menu.dishes[i].selectionDate = addDays(startDate, i)
     }
 
-    setValue('dishes', menuCurrentWeek.menu.dishes)
-    setLocalData({ ...menuCurrentWeek })
+    setValue('dishes', currentWeekMenu.menu.dishes)
+    setLocalData({ ...currentWeekMenu })
 
     setHasUpdates.on()
   }
@@ -148,50 +153,37 @@ export default function Menu() {
 
   useEffect(() => {
     if (data) {
-      const menuWeek = data?.items.find(
+      const weekMenu = data?.items.find(
         (menu) =>
           menu.startDate.split('T')[0] === convertDateToString(week[0]) &&
           menu.endDate.split('T')[0] === convertDateToString(week[1])
       )
 
-      if (menuWeek) {
-        const backendweekdays: Array<Date> = menuWeek?.dishes?.map((dish) => {
+      const days: Array<Date> = generatWeekDaysDate(week)
+      let currentWeekMenu
+
+      if (weekMenu) {
+        const backendweekdays: Array<Date> = weekMenu?.dishes?.map((dish) => {
           return new Date(dish.selectionDate)
         })
-        const days: Array<Date> = []
-        for (
-          let date = new Date(week[0]);
-          date <= new Date(week[1]);
-          date.setDate(date.getDate() + 1)
-        ) {
-          days.push(new Date(date))
-        }
-        const missingDates = days.filter((day) => {
-          return !backendweekdays?.some((backendDay) => {
-            return day.toDateString() === backendDay.toDateString()
-          })
-        })
 
-        const emptyDishes = missingDates.map((date, i) => {
-          return {
-            selectionDate: date,
-            dish: {
-              id: `empty-${Date.now()}`
-            }
-          }
-        })
+        const daysWithoutDish = getDaysWithoutDish(days, backendweekdays)
 
-        const currentMenu = menuWeek?.dishes
-        menuWeek.dishes = [...currentMenu, ...emptyDishes]
-        const menuCurrentWeek = { menu: menuWeek }
-        setLocalData({ ...menuCurrentWeek })
-        organizeByDate(menuCurrentWeek)
-        setMenuForChoosenWeekExists(true)
-        setEnableGenerateBtn(currentMenu.length < 7)
+        const emptyDishes = generateEmptyDishes(daysWithoutDish)
+
+        const currentMenu = weekMenu?.dishes
+        weekMenu.dishes = [...currentMenu, ...emptyDishes]
+        currentWeekMenu = { menu: weekMenu }
+        setLocalData({ ...currentWeekMenu })
+        organizeByDate(currentWeekMenu)
       } else {
-        setLocalData({})
-        setMenuForChoosenWeekExists(false)
+        currentWeekMenu = generateEmptyWeekMenu(days)
+        setLocalData({ ...currentWeekMenu })
       }
+
+      setEnableGenerateBtn(
+        currentWeekMenu?.menu?.dishes?.filter((d) => d.dish.id.includes('empty-'))?.length > 0
+      )
     }
     setValue('startDate', week[0])
     setValue('endDate', week[1])
@@ -209,9 +201,8 @@ export default function Menu() {
 
     await HTTPHandler.post('/menus/generate', params)
       .then((response) => {
-        const menuCurrentWeek = { menu: response.data }
-        setLocalData({ ...menuCurrentWeek })
-        setMenuForChoosenWeekExists(true)
+        const currentWeekMenu = { menu: response.data }
+        setLocalData({ ...currentWeekMenu })
         queryClient.invalidateQueries('menu')
       })
       .catch((error) => {
@@ -253,15 +244,6 @@ export default function Menu() {
           <Flex justifyContent="center">
             <Spinner size="lg" color="gray.500" ml="4" />
           </Flex>
-        ) : !menuForChoosenWeekExists ? (
-          <>
-            <WeekPicker definedWeek={week} setWeek={setWeek} />
-            <Flex>
-              <Button aria-label="Generera Veckomeny" mt="20px" onClick={() => generateMenu()}>
-                Generera Veckomeny
-              </Button>
-            </Flex>
-          </>
         ) : (
           <>
             <Box mt="6" mb="6">
