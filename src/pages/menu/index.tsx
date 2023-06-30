@@ -67,7 +67,7 @@ export default function Menu() {
   const { currentUser } = useContext(UserContext)
   const alert = useAlert()
   const [hasUpdates, setHasUpdates] = useBoolean()
-  const { data: useMenuData, isLoading, isFetching } = useMenu({})
+  const { data: useMenuData, isLoading, isFetching } = useMenu({}, currentUser.userId)
   const data: any = useMemo(() => useMenuData, [useMenuData])
 
   const [week, setWeek] = useState(getWeekRange(new Date()))

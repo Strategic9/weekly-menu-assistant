@@ -66,13 +66,14 @@ const checkDishesAndDays = (menu) => {
   return menu.dishes.sort((a, b) => a.selectionDate.getTime() - b.selectionDate.getTime())
 }
 
-export async function getMenu(): Promise<any> {
+export async function getMenu(userId: string): Promise<any> {
   //const { shopList: cookieShopList } = parseCookies()
   const cookieShopList = localStorage.get('shopList')
   const { data } = await HTTPHandler.get('menus', {
     params: {
       'page[limit]': 1000,
-      'page[offset]': 0
+      'page[offset]': 0,
+      'fields[userId]': userId
     }
   })
   const items = JSON.parse(JSON.stringify(data?.items))
@@ -158,10 +159,11 @@ function generateShopList(menu: Menu) {
   return shopList
 }
 
-export function useMenu(options: UseQueryOptions) {
-  return useQuery(['menu'], () => getMenu(), {
+export function useMenu(options: UseQueryOptions, userId: string) {
+  return useQuery(['menu'], () => getMenu(userId), {
     staleTime: 1000 * 60 * 10, // 10 minutes
-    ...options
+    ...options,
+    enabled: !!userId
   })
 }
 
