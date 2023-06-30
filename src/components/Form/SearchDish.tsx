@@ -7,7 +7,8 @@ import {
   ButtonProps,
   Text,
   Image,
-  HStack
+  HStack,
+  Flex
 } from '@chakra-ui/react'
 import { FieldError } from 'react-hook-form'
 import { Input } from './Input'
@@ -87,9 +88,9 @@ const SearchDishBase: ForwardRefRenderFunction<HTMLInputElement, SearchDishProps
               </HStack>
             ))
           ) : (
-            <Box py="4" mx="auto">
+            <Flex justifyContent="center" py="4">
               <Spinner />
-            </Box>
+            </Flex>
           )}
         </Box>
       )}

@@ -66,13 +66,14 @@ const checkDishesAndDays = (menu) => {
   return menu.dishes.sort((a, b) => a.selectionDate.getTime() - b.selectionDate.getTime())
 }
 
-export async function getMenu(): Promise<any> {
+export async function getMenu(userId: string): Promise<any> {
   //const { shopList: cookieShopList } = parseCookies()
   const cookieShopList = localStorage.get('shopList')
   const { data } = await HTTPHandler.get('menus', {
     params: {
       'page[limit]': 1000,
-      'page[offset]': 0
+      'page[offset]': 0,
+      'fields[userId]': userId
     }
   })
   const items = JSON.parse(JSON.stringify(data?.items))
@@ -104,12 +105,17 @@ export async function getMenu(): Promise<any> {
 
 // compare if there is a new week menu generated and returns an Array with the new shopping lists
 export const setShoppingLists = (cookieShopList, items) => {
-  const shoppingLists = []
-
-  items.map((item) => {
-    shoppingLists.push(generateShopList(item))
+  const cookiesListParsed = cookieShopList ? JSON.parse(cookieShopList) : []
+  const newShopList = items.map((item) => {
+    if (!cookieShopList) {
+      return generateShopList(item)
+    } else {
+      const menuExist = cookiesListParsed.find((cookie) => cookie.id === item.id)
+      const shoppingListItem = !menuExist ? generateShopList(menuExist) : []
+      return { ...generateShopList(item), ...shoppingListItem }
+    }
   })
-  shoppingLists.length > 0 && addShoppingList(shoppingLists)
+  addShoppingList(newShopList)
 }
 
 export function setShopListCookie(shopList: ShopList) {
@@ -153,9 +159,51 @@ function generateShopList(menu: Menu) {
   return shopList
 }
 
-export function useMenu(options: UseQueryOptions) {
-  return useQuery(['menu'], () => getMenu(), {
+export function useMenu(options: UseQueryOptions, userId: string) {
+  return useQuery(['menu'], () => getMenu(userId), {
     staleTime: 1000 * 60 * 10, // 10 minutes
-    ...options
+    ...options,
+    enabled: !!userId
   })
+}
+
+export const generatWeekDaysDate = (week: Array<Date>) => {
+  const days: Array<Date> = []
+  for (let date = new Date(week[0]); date <= new Date(week[1]); date.setDate(date.getDate() + 1)) {
+    days.push(new Date(date))
+  }
+
+  return days
+}
+
+export const getDaysWithoutDish = (days: Array<Date>, backendweekdays: Array<Date>) => {
+  return days.filter((day) => {
+    return !backendweekdays?.some((backendDay) => {
+      return day.toDateString() === backendDay.toDateString()
+    })
+  })
+}
+
+export const generateEmptyDishes = (daysWhitoutDish: Array<Date>) => {
+  return daysWhitoutDish.map((date) => {
+    return {
+      selectionDate: date,
+      dish: {
+        id: `empty-${Date.now()}`
+      }
+    }
+  })
+}
+
+export const generateEmptyWeekMenu = (days: Array<Date>) => {
+  const emptyDishes = generateEmptyDishes(days)
+  return {
+    menu: {
+      id: `empty-${Date.now()}`,
+      createdAt: new Date().toISOString(),
+      startDate: days[0].toISOString(),
+      endDate: days[days.length - 1].toISOString(),
+      dishes: emptyDishes
+    }
+  }
 }
