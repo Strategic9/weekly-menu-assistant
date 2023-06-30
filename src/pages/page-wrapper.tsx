@@ -1,11 +1,10 @@
 import { Box, Flex } from '@chakra-ui/react'
-import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
 import { ReactNode, useContext, useEffect, useState } from 'react'
 import { Header } from '../components/Header'
 import { Sidebar } from '../components/Sidebar'
 import { SidebarDrawerProvider } from '../contexts/SidebarDrawerContext'
-import { defaultUser, UserContext } from '../contexts/UserContext'
+import { UserContext } from '../contexts/UserContext'
 import { getUser } from '../services/hooks/useUser'
 import { localStorage } from '../services/localstorage'
 
@@ -16,7 +15,6 @@ interface PageWrapperProps {
 export default function PageWrapper({ children }: PageWrapperProps) {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(true)
-  const { data: session, status } = useSession()
   const { setCurrentUser } = useContext(UserContext)
 
   useEffect(() => {

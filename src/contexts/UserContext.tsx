@@ -35,9 +35,9 @@ const UserProvider = ({ children }: UserProviderProps) => {
     ...defaultUser
   })
 
-  return (
-    <UserContext.Provider value={{ currentUser, setCurrentUser }}>{children}</UserContext.Provider>
-  )
+  const contextValue = useMemo(() => ({ currentUser, setCurrentUser }), [currentUser])
+
+  return <UserContext.Provider value={contextValue}>{children}</UserContext.Provider>
 }
 
 export { UserContext, UserProvider }
