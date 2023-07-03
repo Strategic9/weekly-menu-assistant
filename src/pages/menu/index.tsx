@@ -30,7 +30,8 @@ import {
   getDayName,
   getMonthName,
   convertDateToString,
-  organizeByDate
+  organizeByDate,
+  getDishesIds
 } from '../../services/utils'
 import PageWrapper from '../page-wrapper'
 import { HTTPHandler } from '../../services/api'
@@ -120,15 +121,7 @@ export default function Menu() {
   }
 
   const onFormSubmit = async (values) => {
-    const dishesIds: DishesId = []
-
-    values.dishes.map((dish) => {
-      !dish.dish.id.includes('empty') &&
-        dishesIds.push({
-          id: dish.dish.id,
-          selectionDate: dish.selectionDate
-        })
-    })
+    const dishesIds: DishesId = getDishesIds(values.dishes)
 
     if (hasUpdates) {
       const updatedMenu: FormInputs = {
@@ -183,7 +176,7 @@ export default function Menu() {
       }
 
       setEnableGenerateBtn(
-        currentWeekMenu?.menu?.dishes?.filter((d) => d.dish.id.includes('empty-'))?.length > 0
+        currentWeekMenu?.menu?.dishes?.filter((d) => d.dish.id.includes('empty'))?.length > 0
       )
     }
     setValue('startDate', week[0])
@@ -215,8 +208,8 @@ export default function Menu() {
       })
   }
   const generateMenu = async () => {
-    if (localData) {
-      // const dishesIds = getDishesIds(localData.menu.dishes)
+    if (localData && !localData.menu.id.includes('empty')) {
+      const dishesIds: DishesId = getDishesIds(localData.menu.dishes)
       const values = getValues()
       const updatedMenu = {
         startDate: values.startDate,
@@ -224,33 +217,35 @@ export default function Menu() {
         dishes: dishesIds
       }
 
-      // await HTTPHandler.patch(`/menus/generate/${menuCurrentWeek.menu.id}`, {
-      //   ...updatedMenu
-      // })
-      //   .then(() => {
-      //     queryClient.invalidateQueries('menu')
-      //     alert.success('Meny sparad')
-      //   })
-      //   .catch(() => {
-      //     alert.error('Fel vid uppdatering av meny')
-      //   })
+      await HTTPHandler.patch(`/menus/generate/${localData.menu.id}`, {
+        ...updatedMenu
+      })
+        .then(() => {
+          queryClient.invalidateQueries('menu')
+          alert.success('Meny sparad')
+        })
+        .catch(() => {
+          alert.error('Fel vid uppdatering av meny')
+        })
 
-      // setHasUpdates.off()
-      // updateMenu(updatedMenu)
+      setHasUpdates.off()
     } else {
       generateNewMenu()
     }
   }
 
   const clearMenu = async () => {
-    await HTTPHandler.delete(`menus/${localData?.menu.id}`)
-      .then(() => {
-        queryClient.invalidateQueries('menu')
-        alert.success('Meny raderad')
-      })
-      .catch(() => {
-        alert.error('Fel vid radering av menyn')
-      })
+    const menuId = localData?.menu.id
+    if (!menuId.includes('empty')) {
+      await HTTPHandler.delete(`menus/${localData?.menu.id}`)
+        .then(() => {
+          queryClient.invalidateQueries('menu')
+          alert.success('Meny raderad')
+        })
+        .catch(() => {
+          alert.error('Fel vid radering av menyn')
+        })
+    }
   }
 
   return (
@@ -319,7 +314,7 @@ export default function Menu() {
                   {localData?.menu &&
                     localData?.menu.dishes.map((menuDish, i) => (
                       <Flex
-                        key={menuDish.id?.toString()}
+                        key={menuDish.id ? menuDish.id?.toString() : i}
                         w="100%"
                         h={16}
                         p={['10px']}

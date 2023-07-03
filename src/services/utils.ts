@@ -68,3 +68,21 @@ export const longDate = (date) => {
 
 export const placeholderImage =
   'https://images.unsplash.com/photo-1584255014406-2a68ea38e48c?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTZ8fGZvcmt8ZW58MHx8MHx8&auto=format&fit=crop&w=500&q=60'
+
+/**
+ * The function `getDishesIds` takes an array of dishes and returns an array of
+ * objects containing the dish id and selection date, excluding dishes with ids that include the word 'empty'.
+ * @param dishes - The `dishes` parameter is an array of objects.
+ */
+export const getDishesIds = (dishes: []) => {
+  const dishesIds = []
+  dishes.forEach(
+    (d: any) =>
+      !d.dish.id.includes('empty') &&
+      dishesIds.push({
+        id: d.dish.id,
+        selectionDate: d.selectionDate
+      })
+  )
+  return dishesIds
+}
