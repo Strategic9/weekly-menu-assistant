@@ -68,18 +68,19 @@ export default function Menu() {
   const { currentUser } = useContext(UserContext)
   const alert = useAlert()
   const [hasUpdates, setHasUpdates] = useBoolean()
-  const { data: useMenuData, isLoading, isFetching } = useMenu({}, currentUser.userId)
+  const { data: useMenuData } = useMenu({}, currentUser.userId)
   const data: any = useMemo(() => useMenuData, [useMenuData])
 
   const [week, setWeek] = useState(getWeekRange(new Date()))
 
   const [localData, setLocalData] = useState(null)
+  const [pageIsLoading, setPageIsLoading] = useState(true)
   const [enableGenerateBtn, setEnableGenerateBtn] = useState(false)
 
   const {
     control,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors },
     setValue,
     getValues
   } = useForm<FormInputs>({
@@ -124,6 +125,7 @@ export default function Menu() {
     const dishesIds: DishesId = getDishesIds(values.dishes)
 
     if (hasUpdates) {
+      setPageIsLoading(true)
       const updatedMenu: FormInputs = {
         startDate: values.startDate,
         endDate: values.endDate,
@@ -168,47 +170,23 @@ export default function Menu() {
         const currentMenu = weekMenu?.dishes
         weekMenu.dishes = [...currentMenu, ...emptyDishes]
         currentWeekMenu = { menu: weekMenu }
-        setLocalData({ ...currentWeekMenu })
         organizeByDate(currentWeekMenu)
       } else {
         currentWeekMenu = generateEmptyWeekMenu(days)
-        setLocalData({ ...currentWeekMenu })
       }
-
+      setLocalData({ ...currentWeekMenu })
       setEnableGenerateBtn(
         currentWeekMenu?.menu?.dishes?.filter((d) => d.dish.id.includes('empty'))?.length > 0
       )
+      setPageIsLoading(false)
     }
     setValue('startDate', week[0])
     setValue('endDate', week[1])
   }, [data, week])
 
-  const generateNewMenu = async () => {
-    const userId = currentUser.userId
-    const params: GenerateMenuInput = {
-      user: {
-        id: userId
-      },
-      startDate: week[0],
-      endDate: week[1]
-    }
-
-    await HTTPHandler.post('/menus/generate', params)
-      .then((response) => {
-        const currentWeekMenu = { menu: response.data }
-        setLocalData({ ...currentWeekMenu })
-        queryClient.invalidateQueries('menu')
-      })
-      .catch((error) => {
-        const msg =
-          error.response.data.details === 'generate.menu.error.not.enough.dishes'
-            ? 'No dishes information found'
-            : 'Fel vid menygenerering'
-        alert.error(msg)
-      })
-  }
   const generateMenu = async () => {
     if (localData && !localData.menu.id.includes('empty')) {
+      setPageIsLoading(true)
       const dishesIds: DishesId = getDishesIds(localData.menu.dishes)
       const values = getValues()
       const updatedMenu = {
@@ -226,17 +204,43 @@ export default function Menu() {
         })
         .catch(() => {
           alert.error('Fel vid uppdatering av meny')
+          setPageIsLoading(false)
         })
 
       setHasUpdates.off()
     } else {
-      generateNewMenu()
+      setPageIsLoading(true)
+      const userId = currentUser.userId
+      const params: GenerateMenuInput = {
+        user: {
+          id: userId
+        },
+        startDate: week[0],
+        endDate: week[1]
+      }
+
+      await HTTPHandler.post('/menus/generate', params)
+        .then((response) => {
+          const currentWeekMenu = { menu: response.data }
+          setLocalData({ ...currentWeekMenu })
+          queryClient.invalidateQueries('menu')
+          alert.success('Meny skapad')
+        })
+        .catch((error) => {
+          const msg =
+            error.response.data.details === 'generate.menu.error.not.enough.dishes'
+              ? 'No dishes information found'
+              : 'Fel vid menygenerering'
+          alert.error(msg)
+          setPageIsLoading(false)
+        })
     }
   }
 
   const clearMenu = async () => {
     const menuId = localData?.menu.id
     if (!menuId.includes('empty')) {
+      setPageIsLoading(true)
       await HTTPHandler.delete(`menus/${localData?.menu.id}`)
         .then(() => {
           queryClient.invalidateQueries('menu')
@@ -244,6 +248,7 @@ export default function Menu() {
         })
         .catch(() => {
           alert.error('Fel vid radering av menyn')
+          setPageIsLoading(false)
         })
     }
   }
@@ -263,7 +268,7 @@ export default function Menu() {
             Veckomeny
           </Heading>
         </Flex>
-        {isLoading || isFetching || isSubmitting || !localData ? (
+        {pageIsLoading ? (
           <Flex justifyContent="center">
             <Spinner size="lg" color="gray.500" ml="4" />
           </Flex>
