@@ -30,7 +30,8 @@ import {
   getDayName,
   getMonthName,
   convertDateToString,
-  organizeByDate
+  organizeByDate,
+  getDishesIds
 } from '../../services/utils'
 import PageWrapper from '../page-wrapper'
 import { HTTPHandler } from '../../services/api'
@@ -67,19 +68,21 @@ export default function Menu() {
   const { currentUser } = useContext(UserContext)
   const alert = useAlert()
   const [hasUpdates, setHasUpdates] = useBoolean()
-  const { data: useMenuData, isLoading, isFetching } = useMenu({}, currentUser.userId)
+  const { data: useMenuData } = useMenu({}, currentUser.userId)
   const data: any = useMemo(() => useMenuData, [useMenuData])
 
   const [week, setWeek] = useState(getWeekRange(new Date()))
 
   const [localData, setLocalData] = useState(null)
+  const [pageIsLoading, setPageIsLoading] = useState(true)
   const [enableGenerateBtn, setEnableGenerateBtn] = useState(false)
 
   const {
     control,
     handleSubmit,
-    formState: { errors, isSubmitting },
-    setValue
+    formState: { errors },
+    setValue,
+    getValues
   } = useForm<FormInputs>({
     resolver: yupResolver(updateMenuFormSchema)
   })
@@ -119,17 +122,10 @@ export default function Menu() {
   }
 
   const onFormSubmit = async (values) => {
-    const dishesIds: DishesId = []
-
-    values.dishes.map((dish) => {
-      !dish.dish.id.includes('empty') &&
-        dishesIds.push({
-          id: dish.dish.id,
-          selectionDate: dish.selectionDate
-        })
-    })
+    const dishesIds: DishesId = getDishesIds(values.dishes)
 
     if (hasUpdates) {
+      setPageIsLoading(true)
       const updatedMenu: FormInputs = {
         startDate: values.startDate,
         endDate: values.endDate,
@@ -174,55 +170,87 @@ export default function Menu() {
         const currentMenu = weekMenu?.dishes
         weekMenu.dishes = [...currentMenu, ...emptyDishes]
         currentWeekMenu = { menu: weekMenu }
-        setLocalData({ ...currentWeekMenu })
         organizeByDate(currentWeekMenu)
       } else {
         currentWeekMenu = generateEmptyWeekMenu(days)
-        setLocalData({ ...currentWeekMenu })
       }
-
+      setLocalData({ ...currentWeekMenu })
       setEnableGenerateBtn(
-        currentWeekMenu?.menu?.dishes?.filter((d) => d.dish.id.includes('empty-'))?.length > 0
+        currentWeekMenu?.menu?.dishes?.filter((d) => d.dish.id.includes('empty'))?.length > 0
       )
+      setPageIsLoading(false)
     }
     setValue('startDate', week[0])
     setValue('endDate', week[1])
   }, [data, week])
 
   const generateMenu = async () => {
-    const userId = currentUser.userId
-    const params: GenerateMenuInput = {
-      user: {
-        id: userId
-      },
-      startDate: week[0],
-      endDate: week[1]
-    }
+    if (localData && !localData.menu.id.includes('empty')) {
+      setPageIsLoading(true)
+      const dishesIds: DishesId = getDishesIds(localData.menu.dishes)
+      const values = getValues()
+      const updatedMenu = {
+        startDate: values.startDate,
+        endDate: values.endDate,
+        dishes: dishesIds
+      }
 
-    await HTTPHandler.post('/menus/generate', params)
-      .then((response) => {
-        const currentWeekMenu = { menu: response.data }
-        setLocalData({ ...currentWeekMenu })
-        queryClient.invalidateQueries('menu')
+      await HTTPHandler.patch(`/menus/generate/${localData.menu.id}`, {
+        ...updatedMenu
       })
-      .catch((error) => {
-        const msg =
-          error.response.data.details === 'generate.menu.error.not.enough.dishes'
-            ? 'No dishes information found'
-            : 'Fel vid menygenerering'
-        alert.error(msg)
-      })
+        .then(() => {
+          queryClient.invalidateQueries('menu')
+          alert.success('Meny sparad')
+        })
+        .catch(() => {
+          alert.error('Fel vid uppdatering av meny')
+          setPageIsLoading(false)
+        })
+
+      setHasUpdates.off()
+    } else {
+      setPageIsLoading(true)
+      const userId = currentUser.userId
+      const params: GenerateMenuInput = {
+        user: {
+          id: userId
+        },
+        startDate: week[0],
+        endDate: week[1]
+      }
+
+      await HTTPHandler.post('/menus/generate', params)
+        .then((response) => {
+          const currentWeekMenu = { menu: response.data }
+          setLocalData({ ...currentWeekMenu })
+          queryClient.invalidateQueries('menu')
+          alert.success('Meny skapad')
+        })
+        .catch((error) => {
+          const msg =
+            error.response.data.details === 'generate.menu.error.not.enough.dishes'
+              ? 'No dishes information found'
+              : 'Fel vid menygenerering'
+          alert.error(msg)
+          setPageIsLoading(false)
+        })
+    }
   }
 
   const clearMenu = async () => {
-    await HTTPHandler.delete(`menus/${localData?.menu.id}`)
-      .then(() => {
-        queryClient.invalidateQueries('menu')
-        alert.success('Meny raderad')
-      })
-      .catch(() => {
-        alert.error('Fel vid radering av menyn')
-      })
+    const menuId = localData?.menu.id
+    if (!menuId.includes('empty')) {
+      setPageIsLoading(true)
+      await HTTPHandler.delete(`menus/${localData?.menu.id}`)
+        .then(() => {
+          queryClient.invalidateQueries('menu')
+          alert.success('Meny raderad')
+        })
+        .catch(() => {
+          alert.error('Fel vid radering av menyn')
+          setPageIsLoading(false)
+        })
+    }
   }
 
   return (
@@ -240,7 +268,7 @@ export default function Menu() {
             Veckomeny
           </Heading>
         </Flex>
-        {isLoading || isFetching || isSubmitting || !localData ? (
+        {pageIsLoading ? (
           <Flex justifyContent="center">
             <Spinner size="lg" color="gray.500" ml="4" />
           </Flex>
@@ -291,7 +319,7 @@ export default function Menu() {
                   {localData?.menu &&
                     localData?.menu.dishes.map((menuDish, i) => (
                       <Flex
-                        key={menuDish.id?.toString()}
+                        key={menuDish.id ? menuDish.id?.toString() : i}
                         w="100%"
                         h={16}
                         p={['10px']}

@@ -123,7 +123,7 @@ export function setShopListCookie(shopList: ShopList) {
 }
 
 function generateShopList(menu: Menu) {
-  const shopList = menu.dishes.reduce<ShopList>(
+  const shopList = menu?.dishes?.reduce<ShopList>(
     (shopList, menuDish) => {
       menuDish?.dish?.ingredients?.map((ingredient) => {
         const category = ingredient.grocery.category ? ingredient.grocery.category.name : 'övrigt'
